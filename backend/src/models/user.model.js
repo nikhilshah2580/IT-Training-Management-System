@@ -37,9 +37,39 @@ const userSchema = new mongoose.Schema(
       default: "student",
     },
 
+    googleId: {
+      type: String,
+      default: "",
+      sparse: true,
+    },
+
     isVerified: {
       type: Boolean,
       default: false,
+    },
+
+      verificationOtp: {
+      type: String,
+      default: "",
+      select: false,
+    },
+
+    verificationOtpExpire: {
+      type: Date,
+      default: null,
+      select: false,
+    },
+
+    resetOtp: {
+      type: String,
+      default: "",
+      select: false,
+    },
+
+    resetOtpExpire: {
+      type: Date,
+      default: null,
+      select: false,
     },
 
     refreshToken: {

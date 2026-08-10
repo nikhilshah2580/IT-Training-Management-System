@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   deleteUser,
   getCurrentUser,
@@ -14,6 +15,7 @@ import {
   forgotPasswordController,
   verifyOtpController,
   resetPasswordController,
+  createUserByAdmin,
 } from "../controllers/user.controller.js";
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
@@ -22,26 +24,29 @@ import upload from "../middlewares/upload.middleware.js";
 
 const userRoutes = express.Router();
 
-// Public Routes
+
+// PUBLIC ROUTES
+
 userRoutes.post("/signup", upload.single("photo"), signUpUser);
 userRoutes.post("/login", loginUser);
-userRoutes.post("/logout", verifyToken, logoutUser);
 userRoutes.post("/google-login", googleLogin);
 userRoutes.post("/forgot-password", forgotPasswordController);
 userRoutes.post("/verify-otp", verifyOtpController);
 userRoutes.post("/reset-password", resetPasswordController);
 
-// Logged-in User Routes
-userRoutes.put("/change-password", verifyToken, changePassword);
-userRoutes.get("/me", verifyToken, getCurrentUser);
-userRoutes.post("/refresh-token", refreshToken);
-userRoutes.put("/profile", verifyToken, upload.single("photo"), updateProfile);
 
-// Admin Only Routes
-userRoutes.get("/", verifyToken, verifyAdmin, getUsers);
-userRoutes
-  .route("/:id")
-  .put(verifyToken, verifyAdmin, updateUser)
-  .delete(verifyToken, verifyAdmin, deleteUser);
+
+// AUTHENTICATED USER ROUTES
+
+userRoutes.post("/logout", verifyToken, logoutUser);
+userRoutes.post("/refresh-token", refreshToken);
+userRoutes.get("/me", verifyToken, getCurrentUser);
+userRoutes.put("/profile",verifyToken,upload.single("photo"),updateProfile);
+userRoutes.put("/change-password",verifyToken,changePassword);
+
+// ADMIN ROUTES
+userRoutes.post("/admin/create",verifyToken,verifyAdmin,createUserByAdmin);
+userRoutes.get("/",verifyToken,verifyAdmin,getUsers);
+userRoutes.route("/:id").put(verifyToken,verifyAdmin,updateUser).delete(verifyToken,verifyAdmin,deleteUser);
 
 export default userRoutes;

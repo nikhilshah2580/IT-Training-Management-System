@@ -1,4 +1,5 @@
 import uploadOnCloudinary from "../utils/cloudinary.js";
+
 import {
   accessCookieOptions,
   refreshCookieOptions,
@@ -13,23 +14,41 @@ import {
   forgotPassword,
   verifyOtp,
   resetPassword,
+  verifyEmail,
+  resendVerificationOtp,
 } from "../services/auth.service.js";
 
 import {
   getCurrentUserService,
   updateProfileService,
   getUsersService,
+  getUserService,
+  createUserService,
   updateUserService,
   deleteUserService,
   changePasswordService,
 } from "../services/user.service.js";
 
-/*  REGISTER */
+/* ----------------------------------------
+   SIGN UP
+----------------------------------------- */
+
 export const signUpUser = async (req, res) => {
   let photo = "";
 
   if (req.file) {
-    const image = await uploadOnCloudinary(req.file.path);
+    const image = await uploadOnCloudinary(
+      req.file.path,
+    );
+
+    if (!image?.secure_url) {
+      const error = new Error(
+        "Image upload failed",
+      );
+      error.statusCode = 500;
+      throw error;
+    }
+
     photo = image.secure_url;
   }
 
@@ -38,202 +57,433 @@ export const signUpUser = async (req, res) => {
     photo,
   });
 
-  res.cookie("accessToken", result.accessToken, accessCookieOptions);
-  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
+  res.cookie(
+    "accessToken",
+    result.accessToken,
+    accessCookieOptions,
+  );
 
-  res.status(201).json({
+  res.cookie(
+    "refreshToken",
+    result.refreshToken,
+    refreshCookieOptions,
+  );
+
+  return res.status(201).json({
     success: true,
-    message: "User Registered Successfully",
+    message:
+      "Registration successful. Please verify your email.",
     user: result.user,
   });
 };
 
-/*  LOGIN */
+/* ----------------------------------------
+   VERIFY EMAIL
+----------------------------------------- */
+
+export const verifyEmailController = async (
+  req,
+  res,
+) => {
+  const { email, otp } = req.body;
+
+  const result = await verifyEmail(
+    email,
+    otp,
+  );
+
+  return res.status(200).json(result);
+};
+
+/* ----------------------------------------
+   RESEND EMAIL OTP
+----------------------------------------- */
+
+export const resendVerificationOtpController =
+  async (req, res) => {
+    const result =
+      await resendVerificationOtp(
+        req.body.email,
+      );
+
+    return res.status(200).json(result);
+  };
+
+/* ----------------------------------------
+   LOGIN
+----------------------------------------- */
+
 export const loginUser = async (req, res) => {
   const result = await login(req.body);
 
-  res.cookie("accessToken", result.accessToken, accessCookieOptions);
-  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
+  res.cookie(
+    "accessToken",
+    result.accessToken,
+    accessCookieOptions,
+  );
 
-  res.status(200).json({
+  res.cookie(
+    "refreshToken",
+    result.refreshToken,
+    refreshCookieOptions,
+  );
+
+  return res.status(200).json({
     success: true,
-    message: "Login Successful",
+    message: "Login successful",
     user: result.user,
   });
 };
 
-//google LOgin
+/* ----------------------------------------
+   GOOGLE LOGIN
+----------------------------------------- */
+
 export const googleLogin = async (req, res) => {
-  const result = await googleLoginService(req.body.credential);
+  const result =
+    await googleLoginService(
+      req.body.credential,
+    );
 
-  res.cookie("accessToken", result.accessToken, accessCookieOptions);
-  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
+  res.cookie(
+    "accessToken",
+    result.accessToken,
+    accessCookieOptions,
+  );
 
-  res.status(200).json({
+  res.cookie(
+    "refreshToken",
+    result.refreshToken,
+    refreshCookieOptions,
+  );
+
+  return res.status(200).json({
     success: true,
     message: "Google login successful",
     user: result.user,
   });
 };
 
-/*  LOGOUT*/
+/* ----------------------------------------
+   LOGOUT
+----------------------------------------- */
+
 export const logoutUser = async (req, res) => {
   await logout(req.user._id);
 
-  res.clearCookie("accessToken", accessCookieOptions);
-  res.clearCookie("refreshToken", refreshCookieOptions);
+  res.clearCookie(
+    "accessToken",
+    accessCookieOptions,
+  );
 
-  res.status(200).json({
+  res.clearCookie(
+    "refreshToken",
+    refreshCookieOptions,
+  );
+
+  return res.status(200).json({
     success: true,
-    message: "Logout Successful",
+    message: "Logout successful",
   });
 };
 
-/* CURRENT USER*/
-export const getCurrentUser = async (req, res) => {
-  const user = await getCurrentUserService(req.user._id);
+/* ----------------------------------------
+   CURRENT USER
+----------------------------------------- */
 
-  res.status(200).json({
+export const getCurrentUser = async (
+  req,
+  res,
+) => {
+  const user =
+    await getCurrentUserService(
+      req.user._id,
+    );
+
+  return res.status(200).json({
     success: true,
     user,
   });
 };
 
-/*  UPDATE PROFILE */
-export const updateProfile = async (req, res) => {
+/* ----------------------------------------
+   UPDATE PROFILE
+----------------------------------------- */
+
+export const updateProfile = async (
+  req,
+  res,
+) => {
   let photo;
 
   if (req.file) {
-    const image = await uploadOnCloudinary(req.file.path);
+    const image = await uploadOnCloudinary(
+      req.file.path,
+    );
+
+    if (!image?.secure_url) {
+      const error = new Error(
+        "Image upload failed",
+      );
+      error.statusCode = 500;
+      throw error;
+    }
+
     photo = image.secure_url;
   }
 
-  const user = await updateProfileService(req.user._id, {
-    ...req.body,
-    photo,
-  });
+  const user =
+    await updateProfileService(
+      req.user._id,
+      {
+        ...req.body,
+        ...(photo !== undefined && {
+          photo,
+        }),
+      },
+    );
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
-    message: "Profile Updated Successfully",
+    message: "Profile updated successfully",
     user,
   });
 };
 
-/* GET USERS*/
+/* ----------------------------------------
+   ADMIN CREATE USER
+----------------------------------------- */
+
+export const createUserByAdmin = async (
+  req,
+  res,
+) => {
+  const user =
+    await createUserService(req.body);
+
+  return res.status(201).json({
+    success: true,
+    message: "User created successfully",
+    user,
+  });
+};
+
+/* ----------------------------------------
+   ADMIN GET USERS
+----------------------------------------- */
+
 export const getUsers = async (req, res) => {
-  const users = await getUsersService();
+  const {
+    role,
+    search,
+    page,
+    limit,
+  } = req.query;
 
-  res.status(200).json({
+  const result =
+    await getUsersService({
+      role,
+      search,
+      page,
+      limit,
+    });
+
+  return res.status(200).json({
     success: true,
-    users,
+    ...result,
   });
 };
 
-/*  UPDATE USER */
-export const updateUser = async (req, res) => {
-  const user = await updateUserService(req.params.id, req.body);
+/* ----------------------------------------
+   ADMIN GET SINGLE USER
+----------------------------------------- */
 
-  if (!user) {
-    const err = new Error("User not found");
-    err.statusCode = 404;
-    throw err;
-  }
+export const getUser = async (req, res) => {
+  const user =
+    await getUserService(
+      req.params.id,
+    );
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
-    message: "User Updated Successfully",
     user,
   });
 };
 
-/*  DELETE USER*/
-export const deleteUser = async (req, res) => {
-  const user = await deleteUserService(req.params.id);
+/* ----------------------------------------
+   ADMIN UPDATE USER
+----------------------------------------- */
 
-  if (!user) {
-    const err = new Error("User not found");
-    err.statusCode = 404;
-    throw err;
-  }
+export const updateUser = async (
+  req,
+  res,
+) => {
+  const user =
+    await updateUserService(
+      req.params.id,
+      req.body,
+    );
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
-    message: "User Deleted Successfully",
+    message: "User updated successfully",
+    user,
   });
 };
 
-//refresh token
-export const refreshToken = async (req, res) => {
-  const token = req.cookies.refreshToken;
+/* ----------------------------------------
+   ADMIN DELETE USER
+----------------------------------------- */
 
-  const result = await refreshAccessToken(token);
+export const deleteUser = async (
+  req,
+  res,
+) => {
+  await deleteUserService(
+    req.params.id,
+  );
 
-  res.cookie("accessToken", result.accessToken, accessCookieOptions);
-  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
-
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
-    message: "Token refreshed successfully",
+    message: "User deleted successfully",
   });
 };
 
-export const forgotPasswordController = async (req, res) => {
-  try {
-    console.log(req.body);
+/* ----------------------------------------
+   REFRESH TOKEN
+----------------------------------------- */
 
-    const result = await forgotPassword(req.body.email);
+export const refreshToken = async (
+  req,
+  res,
+) => {
+  const token =
+    req.cookies.refreshToken;
 
-    res.status(200).json(result);
-  } catch (error) {
-    console.error(error);
+  const result =
+    await refreshAccessToken(token);
 
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  res.cookie(
+    "accessToken",
+    result.accessToken,
+    accessCookieOptions,
+  );
 
-//verify otp
-export const verifyOtpController = async (req, res) => {
-  const { email, otp } = req.body;
+  res.cookie(
+    "refreshToken",
+    result.refreshToken,
+    refreshCookieOptions,
+  );
 
-  const result = await verifyOtp(email, otp);
-  res.status(200).json(result);
-};
-
-//reset password
-export const resetPasswordController = async (req, res) => {
-  const { email, otp, password } = req.body;
-
-  const result = await resetPassword(email, otp, password);
-
-  res.status(200).json(result);
-};
-
-//change password
-export const changePassword = async (req, res) => {
-  const { currentPassword, newPassword, confirmPassword } = req.body;
-
-  if (!currentPassword || !newPassword || !confirmPassword) {
-    return res.status(400).json({
-      success: false,
-      message: "All fields are required.",
-    });
-  }
-
-  if (newPassword !== confirmPassword) {
-    return res.status(400).json({
-      success: false,
-      message: "Passwords do not match.",
-    });
-  }
-
-  await changePasswordService(req.user._id, currentPassword, newPassword);
-
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
-    message: "Password changed successfully.",
+    message:
+      "Token refreshed successfully",
+  });
+};
+
+/* ----------------------------------------
+   FORGOT PASSWORD
+----------------------------------------- */
+
+export const forgotPasswordController =
+  async (req, res) => {
+    const result =
+      await forgotPassword(
+        req.body.email,
+      );
+
+    return res.status(200).json(result);
+  };
+
+/* ----------------------------------------
+   VERIFY RESET OTP
+----------------------------------------- */
+
+export const verifyOtpController = async (
+  req,
+  res,
+) => {
+  const {
+    email,
+    otp,
+  } = req.body;
+
+  const result = await verifyOtp(
+    email,
+    otp,
+  );
+
+  return res.status(200).json(result);
+};
+
+/* ----------------------------------------
+   RESET PASSWORD
+----------------------------------------- */
+
+export const resetPasswordController =
+  async (req, res) => {
+    const {
+      email,
+      otp,
+      password,
+    } = req.body;
+
+    const result =
+      await resetPassword(
+        email,
+        otp,
+        password,
+      );
+
+    return res.status(200).json(result);
+  };
+
+/* ----------------------------------------
+   CHANGE PASSWORD
+----------------------------------------- */
+
+export const changePassword = async (
+  req,
+  res,
+) => {
+  const {
+    currentPassword,
+    newPassword,
+    confirmPassword,
+  } = req.body;
+
+  if (
+    !currentPassword ||
+    !newPassword ||
+    !confirmPassword
+  ) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "All fields are required",
+    });
+  }
+
+  if (
+    newPassword !== confirmPassword
+  ) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Passwords do not match",
+    });
+  }
+
+  await changePasswordService(
+    req.user._id,
+    currentPassword,
+    newPassword,
+  );
+
+  return res.status(200).json({
+    success: true,
+    message:
+      "Password changed successfully",
   });
 };

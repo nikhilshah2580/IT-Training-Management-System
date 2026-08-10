@@ -14,12 +14,6 @@ const paymentSchema = new mongoose.Schema(
             required: true,
         },
 
-        enrollment: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Enrollment",
-            default: null,
-        },
-
         amount: {
             type: Number,
             required: true,
@@ -28,13 +22,7 @@ const paymentSchema = new mongoose.Schema(
 
         paymentMethod: {
             type: String,
-            enum: [
-                "eSewa",
-                "Khalti",
-                "Stripe",
-                "PayPal",
-                "Cash",
-            ],
+            enum: ["eSewa", "Khalti", "Cash"],
             required: true,
         },
 
@@ -47,31 +35,26 @@ const paymentSchema = new mongoose.Schema(
 
         paymentStatus: {
             type: String,
-            enum: ["Pending", "Paid", "Failed", "Refunded"],
+            enum: ["Pending", "Paid", "Failed"],
             default: "Pending",
-        },
-
-        paymentType: {
-            type: String,
-            enum: ["Full", "Installment"],
-            default: "Full",
-        },
-
-        installmentNumber: {
-            type: Number,
-            default: 1,
-            min: 1,
         },
 
         invoiceNumber: {
             type: String,
-            default: "",
+            unique: true,
+            sparse: true,
             trim: true,
         },
 
         paidAt: {
             type: Date,
             default: null,
+        },
+
+        notes: {
+            type: String,
+            default: "",
+            trim: true,
         },
     },
     {

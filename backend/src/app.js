@@ -4,6 +4,8 @@ import globalErrorMiddleware from "./middlewares/globalError.middleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import contactRoutes from "./routes/contact.routes.js";
+import courseRoutes from "./routes/course.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 
 
 const app = express();
@@ -19,6 +21,8 @@ app.use(
 );
 app.use("/api/users", userRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.use(globalErrorMiddleware);
 

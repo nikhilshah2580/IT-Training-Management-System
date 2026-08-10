@@ -6,34 +6,36 @@ const courseSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
+            maxlength: 150,
         },
 
         description: {
             type: String,
             required: true,
+            trim: true,
         },
 
         category: {
             type: String,
+            required: true,
             enum: [
                 "Programming",
                 "Web Development",
                 "Data Science & Analytics",
                 "Graphic Design",
-                "Database",
                 "Networking",
                 "Cyber Security",
+                "Database",
                 "Cloud Computing",
-                "DevOps",
                 "Other",
             ],
-            required: true,
         },
 
-        level: {
+        skillLevel: {
             type: String,
-            enum: ["Beginner", "Intermediate", "Advanced"],
             required: true,
+            enum: ["Beginner", "Intermediate", "Advanced"],
+            default: "Beginner",
         },
 
         syllabus: {
@@ -44,6 +46,7 @@ const courseSchema = new mongoose.Schema(
         duration: {
             type: String,
             required: true,
+            trim: true,
         },
 
         fee: {
@@ -61,11 +64,7 @@ const courseSchema = new mongoose.Schema(
         prerequisites: {
             type: String,
             default: "",
-        },
-
-        image: {
-            type: String,
-            default: "",
+            trim: true,
         },
 
         enrollmentDeadline: {
@@ -73,21 +72,36 @@ const courseSchema = new mongoose.Schema(
             default: null,
         },
 
-        startDate: {
-            type: Date,
-            default: null,
+        courseImage: {
+            type: String,
+            default: "",
         },
 
-        endDate: {
-            type: Date,
-            default: null,
-        },
+        resources: [
+            {
+                title: {
+                    type: String,
+                    trim: true,
+                },
 
-        maxStudents: {
-            type: Number,
-            default: 0,
-            min: 0,
-        },
+                type: {
+                    type: String,
+                    enum: ["Video", "PDF", "Document", "Link", "Other"],
+                },
+
+                url: {
+                    type: String,
+                    trim: true,
+                },
+            },
+        ],
+
+        enrolledStudents: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
 
         totalStudents: {
             type: Number,
@@ -97,8 +111,8 @@ const courseSchema = new mongoose.Schema(
 
         status: {
             type: String,
-            enum: ["Active", "Inactive", "Draft"],
-            default: "Draft",
+            enum: ["Pending", "Active", "Inactive", "Rejected"],
+            default: "Pending",
         },
 
         isApproved: {
@@ -106,14 +120,35 @@ const courseSchema = new mongoose.Schema(
             default: false,
         },
 
-        isFeatured: {
-            type: Boolean,
-            default: false,
+        approvedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+
+        approvedAt: {
+            type: Date,
+            default: null,
         },
     },
     {
         timestamps: true,
     },
 );
+
+courseSchema.index({
+    title: "text",
+    description: "text",
+});
+
+courseSchema.index({
+    category: 1,
+    skillLevel: 1,
+    status: 1,
+});
+
+courseSchema.index({
+    instructor: 1,
+});
 
 export default mongoose.model("Course", courseSchema);
