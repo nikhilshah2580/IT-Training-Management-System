@@ -6,23 +6,20 @@ const assignmentSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Course",
             required: true,
-        },
-
-        instructor: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
+            index: true,
         },
 
         title: {
             type: String,
             required: true,
             trim: true,
+            maxlength: 150,
         },
 
         description: {
             type: String,
             required: true,
+            trim: true,
         },
 
         dueDate: {
@@ -33,12 +30,6 @@ const assignmentSchema = new mongoose.Schema(
         attachment: {
             type: String,
             default: "",
-        },
-
-        totalMarks: {
-            type: Number,
-            default: 100,
-            min: 0,
         },
 
         status: {
@@ -52,4 +43,7 @@ const assignmentSchema = new mongoose.Schema(
     },
 );
 
-export default mongoose.model("Assignment", assignmentSchema);
+export default mongoose.model(
+    "Assignment",
+    assignmentSchema,
+);

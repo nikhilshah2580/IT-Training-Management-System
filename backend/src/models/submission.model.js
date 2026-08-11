@@ -6,27 +6,37 @@ const submissionSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Assignment",
             required: true,
+            index: true,
         },
 
         student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+            index: true,
         },
 
         file: {
             type: String,
             required: true,
+            trim: true,
+        },
+
+        submittedAt: {
+            type: Date,
+            default: Date.now,
         },
 
         grade: {
             type: Number,
-            default: null,
             min: 0,
+            max: 100,
+            default: null,
         },
 
         feedback: {
             type: String,
+            trim: true,
             default: "",
         },
 
@@ -36,13 +46,14 @@ const submissionSchema = new mongoose.Schema(
             default: "Submitted",
         },
 
-        submittedAt: {
-            type: Date,
-            default: Date.now,
-        },
-
         gradedAt: {
             type: Date,
+            default: null,
+        },
+
+        gradedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
             default: null,
         },
     },
@@ -51,9 +62,14 @@ const submissionSchema = new mongoose.Schema(
     },
 );
 
+// Prevent accidental duplicate submission records
 submissionSchema.index(
     { assignment: 1, student: 1 },
     { unique: true },
 );
 
-export default mongoose.model("Submission", submissionSchema);
+export default mongoose.model(
+    "Submission",
+    submissionSchema,
+);
+
