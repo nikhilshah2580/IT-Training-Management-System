@@ -6,31 +6,26 @@ const demoClassSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Course",
             required: true,
+            index: true,
         },
 
-        student: {
+        instructor: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            default: null,
+            required: true,
+            index: true,
         },
 
-        name: {
+        title: {
             type: String,
             required: true,
             trim: true,
         },
 
-        email: {
+        description: {
             type: String,
-            required: true,
-            lowercase: true,
             trim: true,
-        },
-
-        phone: {
-            type: String,
-            required: true,
-            trim: true,
+            default: "",
         },
 
         date: {
@@ -41,33 +36,107 @@ const demoClassSchema = new mongoose.Schema(
         startTime: {
             type: String,
             required: true,
+            trim: true,
         },
 
         endTime: {
             type: String,
             required: true,
+            trim: true,
+        },
+
+        duration: {
+            type: Number,
+            required: true,
+            min: 1,
         },
 
         mode: {
             type: String,
-            enum: ["Online", "Physical"],
+            enum: ["Online", "Offline"],
             default: "Online",
         },
 
         meetingLink: {
             type: String,
             default: "",
+            trim: true,
+        },
+
+        location: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
+        maxSeats: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
+
+        bookedSeats: {
+            type: Number,
+            default: 0,
+            min: 0,
         },
 
         status: {
             type: String,
-            enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
-            default: "Pending",
+            enum: [
+                "Scheduled",
+                "Completed",
+                "Cancelled",
+            ],
+            default: "Scheduled",
         },
+
+        bookings: [
+            {
+                student: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                },
+
+                bookedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+
+                status: {
+                    type: String,
+                    enum: [
+                        "Booked",
+                        "Cancelled",
+                        "Attended",
+                        "Absent",
+                    ],
+                    default: "Booked",
+                },
+            },
+        ],
     },
     {
         timestamps: true,
     },
 );
 
-export default mongoose.model("DemoClass", demoClassSchema);
+/*
+  Prevent the same student from booking
+  the same demo class more than once.
+*/
+demoClassSchema.index(
+    {
+        _id: 1,
+        "bookings.student": 1,
+    },
+    {
+        unique: true,
+        sparse: true,
+    },
+);
+
+export default mongoose.model(
+    "DemoClass",
+    demoClassSchema,
+);
