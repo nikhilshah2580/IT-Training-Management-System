@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 
 const certificateSchema = new mongoose.Schema(
     {
+        certificateNumber: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+        },
+
         student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
@@ -14,11 +21,10 @@ const certificateSchema = new mongoose.Schema(
             required: true,
         },
 
-        certificateNumber: {
-            type: String,
+        issuedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
             required: true,
-            unique: true,
-            trim: true,
         },
 
         issueDate: {
@@ -26,9 +32,16 @@ const certificateSchema = new mongoose.Schema(
             default: Date.now,
         },
 
-        certificateUrl: {
-            type: String,
-            default: "",
+        completionDate: {
+            type: Date,
+            default: Date.now,
+        },
+
+        grade: {
+            type: Number,
+            min: 0,
+            max: 100,
+            default: null,
         },
 
         status: {
@@ -36,10 +49,25 @@ const certificateSchema = new mongoose.Schema(
             enum: ["Issued", "Revoked"],
             default: "Issued",
         },
+
+        certificateUrl: {
+            type: String,
+            default: "",
+        },
+
+        verificationCode: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+        },
     },
     {
         timestamps: true,
     },
 );
 
-export default mongoose.model("Certificate", certificateSchema);
+certificateSchema.index({ student: 1 });
+certificateSchema.index({ course: 1 });
+
+export default mongoose.model("Certificate", certificateSchema); 

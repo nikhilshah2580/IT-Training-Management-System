@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
 
-const courseResourceSchema = new mongoose.Schema(
+const resourceSchema = new mongoose.Schema(
     {
         course: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Course",
             required: true,
+            index: true,
         },
 
         instructor: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+            index: true,
         },
 
         title: {
@@ -22,23 +24,25 @@ const courseResourceSchema = new mongoose.Schema(
 
         description: {
             type: String,
+            trim: true,
             default: "",
         },
 
         type: {
             type: String,
-            enum: ["Video", "PDF", "Document", "Link", "Other"],
+            enum: ["video", "pdf", "document", "link", "image", "other"],
             required: true,
         },
 
         url: {
             type: String,
             required: true,
+            trim: true,
         },
 
-        order: {
-            type: Number,
-            default: 0,
+        publicId: {
+            type: String,
+            default: "",
         },
 
         isPublished: {
@@ -51,4 +55,4 @@ const courseResourceSchema = new mongoose.Schema(
     },
 );
 
-export default mongoose.model("CourseResource", courseResourceSchema);
+export default mongoose.model("Resource", resourceSchema);

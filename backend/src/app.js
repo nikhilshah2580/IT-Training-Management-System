@@ -8,6 +8,8 @@ import courseRoutes from "./routes/course.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import assignmentRoutes from "./routes/assignment.routes.js";
 import submissionRoutes from "./routes/submission.routes.js";
+import attendanceRoutes from "./routes/attendance.routes.js";
+import certificateRoutes from "./routes/certificate.routes.js";
 
 
 const app = express();
@@ -27,6 +29,8 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/submissions", submissionRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/certificates", certificateRoutes);
 
 app.use(globalErrorMiddleware);
 
