@@ -125,7 +125,7 @@ export const updateResourceService = async (id, instructorId, data) => {
 
 export const adminUpdateResourceService = async (id, data) => {
     const resource = await Resource.findByIdAndUpdate(id, data, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
     })
         .populate("course", "title")

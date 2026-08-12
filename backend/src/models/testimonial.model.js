@@ -5,28 +5,21 @@ const testimonialSchema = new mongoose.Schema(
         student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            required: true,
+        },
+
+        course: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course",
             default: null,
         },
 
-        name: {
+        message: {
             type: String,
             required: true,
             trim: true,
-        },
-
-        photo: {
-            type: String,
-            default: "",
-        },
-
-        content: {
-            type: String,
-            required: true,
-        },
-
-        videoUrl: {
-            type: String,
-            default: "",
+            minlength: 10,
+            maxlength: 1000,
         },
 
         rating: {
@@ -41,11 +34,26 @@ const testimonialSchema = new mongoose.Schema(
             enum: ["Pending", "Approved", "Rejected"],
             default: "Pending",
         },
+
+        isFeatured: {
+            type: Boolean,
+            default: false,
+        },
+
+        adminNote: {
+            type: String,
+            default: "",
+            trim: true,
+        },
     },
     {
         timestamps: true,
     },
 );
+
+testimonialSchema.index({ status: 1 });
+testimonialSchema.index({ student: 1 });
+testimonialSchema.index({ course: 1 });
 
 export default mongoose.model(
     "Testimonial",

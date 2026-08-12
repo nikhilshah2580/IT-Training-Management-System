@@ -171,7 +171,7 @@ export const updateCourseService = async (
             id,
             data,
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             },
         ).populate(
@@ -300,7 +300,7 @@ export const updateCourseStatusService = async (
             id,
             { status },
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             },
         );

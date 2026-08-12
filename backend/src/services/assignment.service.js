@@ -188,7 +188,7 @@ export const updateAssignmentService = async (
         id,
         allowedUpdates,
         {
-            new: true,
+            returnDocument: "after",
             runValidators: true,
         },
     ).populate(

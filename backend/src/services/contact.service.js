@@ -15,7 +15,7 @@ export const getContactService = async (id) => {
 };
 
 export const updateContactStatusService = async (id, status) => {
-  return await Contact.findByIdAndUpdate(id, { status }, { new: true });
+  return await Contact.findByIdAndUpdate(id, { status }, { returnDocument: "after" });
 };
 
 export const deleteContactService = async (id) => {
@@ -31,7 +31,7 @@ export const replyContactService = async (id, reply) => {
       status: "Replied",
     },
     {
-      new: true,
+      returnDocument: "after",
     },
   );
 };

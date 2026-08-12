@@ -162,7 +162,7 @@ export const updateEnrollmentStatusService = async (id, status) => {
     }
 
     const enrollment = await Enrollment.findByIdAndUpdate(id, updates, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
     })
         .populate("student", "fullName email phone photo")
@@ -204,7 +204,7 @@ export const updateEnrollmentPaymentStatusService = async (id, paymentStatus) =>
     }
 
     const enrollment = await Enrollment.findByIdAndUpdate(id, updates, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
     })
         .populate("student", "fullName email phone photo")
@@ -243,7 +243,7 @@ export const updateEnrollmentProgressService = async (id, progress) => {
     }
 
     const enrollment = await Enrollment.findByIdAndUpdate(id, updates, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
     })
         .populate("student", "fullName email phone photo")
@@ -270,7 +270,7 @@ export const cancelEnrollmentService = async (id) => {
             status: "Cancelled",
         },
         {
-            new: true,
+            returnDocument: "after",
             runValidators: true,
         },
     );

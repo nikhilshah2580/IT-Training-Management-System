@@ -14,6 +14,9 @@ import resourceRoutes from "./routes/resource.routes.js";
 import demoClassRoutes from "./routes/demoClass.routes.js";
 import enrollmentRoutes from "./routes/enrollment.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
+import testimonialRoutes from "./routes/testimonial.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+import jobPlacementRoutes from "./routes/jobPlacement.routes.js";
 
 
 const app = express();
@@ -39,6 +42,10 @@ app.use("/api/resources", resourceRoutes);
 app.use("/api/demo-classes", demoClassRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/job-placements", jobPlacementRoutes);
+
 
 app.use(globalErrorMiddleware);
 

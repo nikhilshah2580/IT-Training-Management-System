@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema(
     {
-        student: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
-
         course: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Course",
+            required: true,
+        },
+
+        student: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
             required: true,
         },
 
@@ -25,6 +25,8 @@ const reviewSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
+            minlength: 3,
+            maxlength: 1000,
         },
 
         status: {
@@ -38,9 +40,10 @@ const reviewSchema = new mongoose.Schema(
     },
 );
 
-reviewSchema.index(
-    { student: 1, course: 1 },
-    { unique: true },
-);
+// One student can review a particular course only once
+reviewSchema.index({ course: 1, student: 1 }, { unique: true });
+
+reviewSchema.index({ course: 1, status: 1 });
+reviewSchema.index({ student: 1 });
 
 export default mongoose.model("Review", reviewSchema);

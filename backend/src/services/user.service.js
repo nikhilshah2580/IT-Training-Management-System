@@ -7,17 +7,14 @@ import User from "../models/user.model.js";
    SAFE USER FIELDS
 ----------------------------------------- */
 
-const safeUserFields =
-  "-password -refreshToken -resetOtp -resetOtpExpire -verificationOtp -verificationOtpExpire";
+const safeUserFields = "-password -refreshToken -resetOtp -resetOtpExpire -verificationOtp -verificationOtpExpire";
 
 /* ----------------------------------------
    CURRENT USER
 ----------------------------------------- */
 
 export const getCurrentUserService = async (id) => {
-  const user = await User.findById(id).select(
-    safeUserFields,
-  );
+  const user = await User.findById(id).select(safeUserFields);
 
   if (!user) {
     const error = new Error("User not found");
@@ -32,10 +29,7 @@ export const getCurrentUserService = async (id) => {
    UPDATE PROFILE
 ----------------------------------------- */
 
-export const updateProfileService = async (
-  id,
-  data,
-) => {
+export const updateProfileService = async (id, data) => {
   const updates = {};
 
   if (data.fullName !== undefined) {
@@ -51,9 +45,7 @@ export const updateProfileService = async (
     });
 
     if (existingUser) {
-      const error = new Error(
-        "Email already exists",
-      );
+      const error = new Error("Email already exists");
       error.statusCode = 400;
       throw error;
     }
@@ -76,14 +68,10 @@ export const updateProfileService = async (
     updates.photo = data.photo;
   }
 
-  const user = await User.findByIdAndUpdate(
-    id,
-    updates,
-    {
-      new: true,
-      runValidators: true,
-    },
-  ).select(safeUserFields);
+  const user = await User.findByIdAndUpdate(id, updates, {
+    returnDocument: "after",
+    runValidators: true,
+  }).select(safeUserFields);
 
   if (!user) {
     const error = new Error("User not found");
@@ -99,12 +87,7 @@ export const updateProfileService = async (
    ADMIN
 ----------------------------------------- */
 
-export const getUsersService = async ({
-  role,
-  search,
-  page = 1,
-  limit = 20,
-} = {}) => {
+export const getUsersService = async ({ role, search, page = 1, limit = 20 } = {}) => {
   const filter = {};
 
   if (role) {
@@ -134,24 +117,14 @@ export const getUsersService = async ({
     ];
   }
 
-  const currentPage = Math.max(
-    Number(page) || 1,
-    1,
-  );
+  const currentPage = Math.max(Number(page) || 1, 1);
 
-  const perPage = Math.min(
-    Math.max(Number(limit) || 20, 1),
-    100,
-  );
+  const perPage = Math.min(Math.max(Number(limit) || 20, 1), 100);
 
   const skip = (currentPage - 1) * perPage;
 
   const [users, total] = await Promise.all([
-    User.find(filter)
-      .select(safeUserFields)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(perPage),
+    User.find(filter).select(safeUserFields).sort({ createdAt: -1 }).skip(skip).limit(perPage),
 
     User.countDocuments(filter),
   ]);
@@ -162,9 +135,7 @@ export const getUsersService = async ({
       page: currentPage,
       limit: perPage,
       total,
-      totalPages: Math.ceil(
-        total / perPage,
-      ),
+      totalPages: Math.ceil(total / perPage),
     },
   };
 };
@@ -181,9 +152,7 @@ export const getUserService = async (id) => {
     throw error;
   }
 
-  const user = await User.findById(id).select(
-    safeUserFields,
-  );
+  const user = await User.findById(id).select(safeUserFields);
 
   if (!user) {
     const error = new Error("User not found");
@@ -199,15 +168,7 @@ export const getUserService = async (id) => {
 ----------------------------------------- */
 
 export const createUserService = async (data) => {
-  const {
-    fullName,
-    email,
-    password,
-    phone = "",
-    address = "",
-    photo = "",
-    role = "student",
-  } = data;
+  const { fullName, email, password, phone = "", address = "", photo = "", role = "student" } = data;
 
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -216,17 +177,12 @@ export const createUserService = async (data) => {
   });
 
   if (existingUser) {
-    const error = new Error(
-      "Email already exists",
-    );
+    const error = new Error("Email already exists");
     error.statusCode = 400;
     throw error;
   }
 
-  const hashedPassword = await bcrypt.hash(
-    password,
-    12,
-  );
+  const hashedPassword = await bcrypt.hash(password, 12);
 
   const user = await User.create({
     fullName,
@@ -240,19 +196,14 @@ export const createUserService = async (data) => {
     isVerified: true,
   });
 
-  return await User.findById(user._id).select(
-    safeUserFields,
-  );
+  return await User.findById(user._id).select(safeUserFields);
 };
 
 /* ----------------------------------------
    ADMIN UPDATE USER
 ----------------------------------------- */
 
-export const updateUserService = async (
-  id,
-  data,
-) => {
+export const updateUserService = async (id, data) => {
   const updates = {};
 
   if (data.fullName !== undefined) {
@@ -268,9 +219,7 @@ export const updateUserService = async (
     });
 
     if (existingUser) {
-      const error = new Error(
-        "Email already exists",
-      );
+      const error = new Error("Email already exists");
       error.statusCode = 400;
       throw error;
     }
@@ -291,16 +240,10 @@ export const updateUserService = async (
   }
 
   if (data.role !== undefined) {
-    const validRoles = [
-      "admin",
-      "student",
-      "instructor",
-    ];
+    const validRoles = ["admin", "student", "instructor"];
 
     if (!validRoles.includes(data.role)) {
-      const error = new Error(
-        "Invalid user role",
-      );
+      const error = new Error("Invalid user role");
       error.statusCode = 400;
       throw error;
     }
@@ -309,29 +252,20 @@ export const updateUserService = async (
   }
 
   if (data.isVerified !== undefined) {
-    updates.isVerified = Boolean(
-      data.isVerified,
-    );
+    updates.isVerified = Boolean(data.isVerified);
   }
 
   if (data.password) {
-    updates.password = await bcrypt.hash(
-      data.password,
-      12,
-    );
+    updates.password = await bcrypt.hash(data.password, 12);
 
     // Invalidate existing sessions
     updates.refreshToken = "";
   }
 
-  const user = await User.findByIdAndUpdate(
-    id,
-    updates,
-    {
-      new: true,
-      runValidators: true,
-    },
-  ).select(safeUserFields);
+  const user = await User.findByIdAndUpdate(id, updates, {
+    returnDocument: "after",
+    runValidators: true,
+  }).select(safeUserFields);
 
   if (!user) {
     const error = new Error("User not found");
@@ -369,14 +303,8 @@ export const deleteUserService = async (id) => {
    CHANGE PASSWORD
 ----------------------------------------- */
 
-export const changePasswordService = async (
-  userId,
-  currentPassword,
-  newPassword,
-) => {
-  const user = await User.findById(userId).select(
-    "+password +refreshToken",
-  );
+export const changePasswordService = async (userId, currentPassword, newPassword) => {
+  const user = await User.findById(userId).select("+password +refreshToken");
 
   if (!user) {
     const error = new Error("User not found");
@@ -385,38 +313,26 @@ export const changePasswordService = async (
   }
 
   if (!user.password) {
-    const error = new Error(
-      "Google accounts cannot change password here",
-    );
+    const error = new Error("Google accounts cannot change password here");
     error.statusCode = 400;
     throw error;
   }
 
-  const isMatch = await bcrypt.compare(
-    currentPassword,
-    user.password,
-  );
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
 
   if (!isMatch) {
-    const error = new Error(
-      "Current password is incorrect",
-    );
+    const error = new Error("Current password is incorrect");
     error.statusCode = 400;
     throw error;
   }
 
   if (currentPassword === newPassword) {
-    const error = new Error(
-      "New password must be different",
-    );
+    const error = new Error("New password must be different");
     error.statusCode = 400;
     throw error;
   }
 
-  user.password = await bcrypt.hash(
-    newPassword,
-    12,
-  );
+  user.password = await bcrypt.hash(newPassword, 12);
 
   // Force login again after password change.
   user.refreshToken = "";

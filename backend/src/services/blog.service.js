@@ -111,7 +111,7 @@ export const incrementBlogViewsService = async (id) => {
             },
         },
         {
-            new: true,
+            returnDocument: "after",
         },
     );
 };
@@ -210,7 +210,7 @@ export const updateBlogService = async (id, data, userId, userRole) => {
     }
 
     return await Blog.findByIdAndUpdate(id, data, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
     }).populate("author", "fullName email photo role");
 };
