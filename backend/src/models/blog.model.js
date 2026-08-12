@@ -6,18 +6,22 @@ const blogSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
+            maxlength: 200,
         },
 
         slug: {
             type: String,
             required: true,
             unique: true,
+            lowercase: true,
             trim: true,
         },
 
         excerpt: {
             type: String,
-            default: "",
+            required: true,
+            trim: true,
+            maxlength: 500,
         },
 
         content: {
@@ -25,21 +29,31 @@ const blogSchema = new mongoose.Schema(
             required: true,
         },
 
-        image: {
+        featuredImage: {
             type: String,
             default: "",
         },
 
         category: {
             type: String,
-            default: "",
-            trim: true,
+            enum: [
+                "Programming",
+                "Web Development",
+                "Data Science",
+                "Cyber Security",
+                "Graphic Design",
+                "Career",
+                "Technology",
+                "Other",
+            ],
+            default: "Technology",
         },
 
         tags: [
             {
                 type: String,
                 trim: true,
+                lowercase: true,
             },
         ],
 
@@ -51,7 +65,7 @@ const blogSchema = new mongoose.Schema(
 
         status: {
             type: String,
-            enum: ["Draft", "Published"],
+            enum: ["Draft", "Published", "Archived"],
             default: "Draft",
         },
 
@@ -59,10 +73,26 @@ const blogSchema = new mongoose.Schema(
             type: Date,
             default: null,
         },
+
+        views: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+
+        isFeatured: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
     },
 );
+
+blogSchema.index({ title: "text", content: "text", tags: "text" });
+blogSchema.index({ category: 1 });
+blogSchema.index({ status: 1 });
+blogSchema.index({ createdAt: -1 });
 
 export default mongoose.model("Blog", blogSchema);

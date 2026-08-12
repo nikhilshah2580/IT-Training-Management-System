@@ -12,6 +12,8 @@ import attendanceRoutes from "./routes/attendance.routes.js";
 import certificateRoutes from "./routes/certificate.routes.js";
 import resourceRoutes from "./routes/resource.routes.js";
 import demoClassRoutes from "./routes/demoClass.routes.js";
+import enrollmentRoutes from "./routes/enrollment.routes.js";
+import blogRoutes from "./routes/blog.routes.js";
 
 
 const app = express();
@@ -35,7 +37,8 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/demo-classes", demoClassRoutes);
-
+app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/blogs", blogRoutes);
 
 app.use(globalErrorMiddleware);
 

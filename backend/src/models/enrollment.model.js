@@ -19,33 +19,34 @@ const enrollmentSchema = new mongoose.Schema(
             default: Date.now,
         },
 
-        startDate: {
-            type: Date,
-            default: null,
-        },
-
-        completionDate: {
-            type: Date,
-            default: null,
-        },
-
-        progress: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 100,
-        },
-
         status: {
             type: String,
             enum: [
                 "Pending",
+                "Approved",
                 "Active",
                 "Completed",
                 "Cancelled",
-                "Dropped",
             ],
             default: "Pending",
+        },
+
+        paymentStatus: {
+            type: String,
+            enum: ["Pending", "Paid", "Failed"],
+            default: "Pending",
+        },
+
+        progress: {
+            type: Number,
+            min: 0,
+            max: 100,
+            default: 0,
+        },
+
+        completedAt: {
+            type: Date,
+            default: null,
         },
     },
     {
@@ -53,9 +54,15 @@ const enrollmentSchema = new mongoose.Schema(
     },
 );
 
+/*
+  A student cannot enroll in the same course twice.
+*/
 enrollmentSchema.index(
     { student: 1, course: 1 },
     { unique: true },
 );
 
-export default mongoose.model("Enrollment", enrollmentSchema);
+export default mongoose.model(
+    "Enrollment",
+    enrollmentSchema,
+);
