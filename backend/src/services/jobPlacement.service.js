@@ -163,7 +163,7 @@ export const updateJobPlacementService = async (id, data) => {
     }
 
     const updatedPlacement = await JobPlacement.findByIdAndUpdate(id, data, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
     }).populate("student", "fullName email phone photo");
 
