@@ -1,13 +1,13 @@
 import { Server } from "socket.io";
 
-let io;
+let io = null;
 
-const onlineUsers = new Map();
+// Initialize Socket.io
 
 export const initializeSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: process.env.FRONTEND_URL || "http://localhost:5173",
       credentials: true,
     },
   });
@@ -15,36 +15,75 @@ export const initializeSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("Socket connected:", socket.id);
 
-    socket.on("register", (userId) => {
+    // User Room
+
+    socket.on("join", (userId) => {
       if (!userId) return;
 
-      onlineUsers.set(userId.toString(), socket.id);
+      socket.join(`user:${userId}`);
 
-      socket.userId = userId.toString();
-
-      console.log(`User ${userId} connected`);
+      console.log(`User ${userId} joined room user:${userId}`);
     });
 
-    socket.on("disconnect", () => {
-      if (socket.userId) {
-        onlineUsers.delete(socket.userId);
-      }
+    // Admin Room
 
+    socket.on("joinAdmin", () => {
+      socket.join("admins");
+
+      console.log(`Admin joined admin room: ${socket.id}`);
+    });
+
+    // Disconnect
+
+    socket.on("disconnect", () => {
       console.log("Socket disconnected:", socket.id);
     });
   });
 
+  console.log("Socket.io initialized");
+
   return io;
 };
 
-export const emitNotification = (userId, notification) => {
-  if (!io) return;
+// Get Socket.io Instance
 
-  const socketId = onlineUsers.get(userId.toString());
+export const getIO = () => {
+  if (!io) {
+    throw new Error("Socket.io has not been initialized");
+  }
 
-  if (!socketId) {
+  return io;
+};
+
+//Emit Notification
+export const emitNotification = ({ userId, notification }) => {
+  if (!io) {
+    console.error("Socket.io has not been initialized");
+
     return;
   }
 
-  io.to(socketId).emit("newNotification", notification);
+  if (!userId) {
+    console.error("emitNotification: userId is required");
+
+    return;
+  }
+
+  io.to(`user:${userId}`).emit("notification", notification);
+
+  console.log(`Notification emitted to user:${userId}`);
+};
+
+//Emit Notification To Admins
+
+export const emitAdminNotification = (notification) => {
+  if (!io) {
+    console.error("Socket.io has not been initialized");
+
+    return;
+  }
+
+  io.to("admins").emit("notification", notification);
+
+  console.log("Notification emitted to admins");
 };

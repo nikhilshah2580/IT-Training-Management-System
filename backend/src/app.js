@@ -1,8 +1,8 @@
 import express from "express";
+import cors from "cors";
 import userRoutes from "./routes/user.routes.js";
 import globalErrorMiddleware from "./middlewares/globalError.middleware.js";
 import cookieParser from "cookie-parser";
-import cors from "cors";
 import courseRoutes from "./routes/course.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import assignmentRoutes from "./routes/assignment.routes.js";
@@ -19,6 +19,8 @@ import jobPlacementRoutes from "./routes/jobPlacement.routes.js";
 import jobListingRoutes from "./routes/jobListing.routes.js";
 import instructorProfileRoutes from "./routes/instructorProfile.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 
 const app = express();
@@ -49,8 +51,8 @@ app.use("/api/job-placements", jobPlacementRoutes);
 app.use("/api/job-listings", jobListingRoutes);
 app.use("/api/instructor-profiles", instructorProfileRoutes);
 app.use("/api/notifications", notificationRoutes);
-
-
+app.use("/api/contacts", contactRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 
 app.use(globalErrorMiddleware);
