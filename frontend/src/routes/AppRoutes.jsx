@@ -4,6 +4,7 @@ import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
+import UserManagement from "../pages/admin/UserManagement";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
@@ -33,7 +34,7 @@ const AppRoutes = () => {
                     <Route path="/admin" element={<AdminLayout />}>
                         <Route index element={<Navigate to="dashboard" replace />} />
                         <Route path="dashboard" element={<AdminDashboard />} />
-                        <Route path="users" element={<h1>User Management</h1>} />
+                        <Route path="users" element={<UserManagement />} />
                         <Route path="courses" element={<h1>Course Management</h1>} />
                     </Route>
                 </Route>
