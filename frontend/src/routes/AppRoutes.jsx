@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
@@ -8,19 +7,19 @@ import Unauthorized from "../pages/Unauthorized";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
+import PublicLayout from "../layouts/PublicLayout";
 
 const AppRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
                 {/* PUBLIC */}
-                <Route path="/" element={<Home />} />
-
-                <Route path="/login" element={<Login />} />
-
-                <Route path="/signup" element={<Signup />} />
-
-                <Route path="/unauthorized" element={<Unauthorized />} />
+                <Route element={<PublicLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/unauthorized" element={<Unauthorized />} />
+                </Route>
 
                 {/* AUTHENTICATED */}
                 <Route element={<ProtectedRoute />}>
