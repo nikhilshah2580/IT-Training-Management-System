@@ -9,6 +9,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
 import PublicLayout from "../layouts/PublicLayout";
 import AdminLayout from "../layouts/AdminLayout";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 const AppRoutes = () => {
     return (
@@ -29,12 +30,13 @@ const AppRoutes = () => {
 
                 {/* ADMIN */}
                 <Route element={<RoleProtectedRoute allowedRoles={["admin"]} />}>
-                    <Route path="/admin" element={<AdminLayout />} />
-                    <Route index element={<Navigate to="dashboard" replace />} />
-                    <Route path="dashboard" element={<h1>Admin Dashboard</h1>} />
-                    <Route path="users" element={<h1>User Management</h1>} />
-                    <Route path="courses" element={<h1>Course Management</h1>} />
-            </Route>
+                    <Route path="/admin" element={<AdminLayout />}>
+                        <Route index element={<Navigate to="dashboard" replace />} />
+                        <Route path="dashboard" element={<AdminDashboard />} />
+                        <Route path="users" element={<h1>User Management</h1>} />
+                        <Route path="courses" element={<h1>Course Management</h1>} />
+                    </Route>
+                </Route>
 
             {/* INSTRUCTOR */}
             <Route element={<RoleProtectedRoute allowedRoles={["instructor"]} />}>
