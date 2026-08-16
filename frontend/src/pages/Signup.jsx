@@ -145,7 +145,7 @@ const Signup = () => {
                 autoComplete="email"
                 required
                 disabled={loading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
               />
             </div>
 
@@ -166,7 +166,7 @@ const Signup = () => {
                   autoComplete="new-password"
                   required
                   disabled={loading}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-20 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-20 outline-none transition focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
                 />
 
                 <button
@@ -179,9 +179,7 @@ const Signup = () => {
                 </button>
               </div>
 
-              <p className="mt-2 text-xs text-gray-500">
-                Password must contain at least 6 characters.
-              </p>
+              <p className="mt-2 text-xs text-gray-500">Password must contain at least 6 characters.</p>
             </div>
 
             {/* Submit */}
