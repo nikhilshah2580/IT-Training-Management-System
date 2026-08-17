@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import NotFound from "../pages/NotFound";
+import Courses from "../pages/Courses";
 import Unauthorized from "../pages/Unauthorized";
 import UserManagement from "../pages/admin/UserManagement";
 import CourseManagement from "../pages/admin/CourseManagement";
@@ -20,19 +21,25 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
 import PublicLayout from "../layouts/PublicLayout";
 import AdminLayout from "../layouts/AdminLayout";
+import AuthLayout from "../layouts/AuthLayout";
 
 const AppRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
+                {/* Auth LAYOUT */}
+                <Route element={<AuthLayout />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                </Route>
+
                 {/* PUBLIC */}
                 <Route element={<PublicLayout />}>
                     <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
                     <Route path="/course/:id" element={<CourseDetails />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
-                </Route>
+                    <Route path="/Courses" element={<Courses />} />
+                </Route> 
 
                 {/* AUTHENTICATED */}
                 <Route element={<ProtectedRoute />}>
@@ -51,24 +58,24 @@ const AppRoutes = () => {
                     </Route>
                 </Route>
 
-            {/* INSTRUCTOR */}
-            <Route element={<RoleProtectedRoute allowedRoles={["instructor"]} />}>
-                <Route path="/instructor/dashboard" element={<h1>Instructor Dashboard</h1>} />
-                <Route path="/instructor/courses" element={<MyCourses />} />
-                <Route path="/instructor/courses/create" element={<CreateCourse />} />
-                <Route path="/instructor/courses/:id/edit" element={<EditCourse />} />
-                <Route path="/instructor/courses/:id/students" element={<CourseStudents />} />
-            </Route>
+                {/* INSTRUCTOR */}
+                <Route element={<RoleProtectedRoute allowedRoles={["instructor"]} />}>
+                    <Route path="/instructor/dashboard" element={<h1>Instructor Dashboard</h1>} />
+                    <Route path="/instructor/courses" element={<MyCourses />} />
+                    <Route path="/instructor/courses/create" element={<CreateCourse />} />
+                    <Route path="/instructor/courses/:id/edit" element={<EditCourse />} />
+                    <Route path="/instructor/courses/:id/students" element={<CourseStudents />} />
+                </Route>
 
-            {/* STUDENT */}
-            <Route element={<RoleProtectedRoute allowedRoles={["student"]} />}>
-                <Route path="/student/dashboard" element={<h1>Student Dashboard</h1>} />
-                <Route path="/student/enrollments" element={<MyEnrollments />} />
-            </Route>
+                {/* STUDENT */}
+                <Route element={<RoleProtectedRoute allowedRoles={["student"]} />}>
+                    <Route path="/student/dashboard" element={<h1>Student Dashboard</h1>} />
+                    <Route path="/student/enrollments" element={<MyEnrollments />} />
+                </Route>
 
-            {/* 404 */}
-            <Route path="*" element={<NotFound />} />
-        </Routes>
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+            </Routes>
         </BrowserRouter >
     );
 };
