@@ -5,6 +5,11 @@ import Signup from "../pages/Signup";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import UserManagement from "../pages/admin/UserManagement";
+import CourseManagement from "../pages/admin/CourseManagement";
+import MyCourses from "../pages/instructor/MyCourses";
+import CreateCourse from "../pages/instructor/CreateCourse";
+import EditCourse from "../pages/instructor/EditCourse";
+import AdminEditCourse from "../pages/admin/EditCourse";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
@@ -35,13 +40,17 @@ const AppRoutes = () => {
                         <Route index element={<Navigate to="dashboard" replace />} />
                         <Route path="dashboard" element={<AdminDashboard />} />
                         <Route path="users" element={<UserManagement />} />
-                        <Route path="courses" element={<h1>Course Management</h1>} />
+                        <Route path="courses" element={<CourseManagement />} />
+                        <Route path="courses/:id/edit" element={<AdminEditCourse />} />
                     </Route>
                 </Route>
 
             {/* INSTRUCTOR */}
             <Route element={<RoleProtectedRoute allowedRoles={["instructor"]} />}>
                 <Route path="/instructor/dashboard" element={<h1>Instructor Dashboard</h1>} />
+                <Route path="/instructor/courses" element={<MyCourses />} />
+                <Route path="/instructor/courses/create" element={<CreateCourse />} />
+                <Route path="/instructor/courses/:id/edit" element={<EditCourse />} />
             </Route>
 
             {/* STUDENT */}
