@@ -18,6 +18,14 @@ export const getMyEnrollments = async () => {
     return response.data;
 };
 
+
+// INSTRUCTOR GET ENROLLMENTS
+export const getInstructorEnrollments = async (params = {}) => {
+    const response = await api.get("/enrollments/instructor", {params, });
+
+    return response.data;
+};
+
 // ADMIN - GET ALL ENROLLMENTS
 
 export const getEnrollments = async (params = {}) => {

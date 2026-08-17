@@ -13,6 +13,8 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminEditCourse from "../pages/admin/EditCourse";
 import MyEnrollments from "../pages/student/MyEnrollments";
 import CourseDetails from "../pages/CourseDetails";
+import EnrollmentManagement from "../pages/admin/EnrollmentManagement";
+import CourseStudents from "../pages/instructor/CourseStudents";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
@@ -44,6 +46,7 @@ const AppRoutes = () => {
                         <Route path="dashboard" element={<AdminDashboard />} />
                         <Route path="users" element={<UserManagement />} />
                         <Route path="courses" element={<CourseManagement />} />
+                        <Route path="enrollments" element={<EnrollmentManagement />} />
                         <Route path="courses/:id/edit" element={<AdminEditCourse />} />
                     </Route>
                 </Route>
@@ -54,6 +57,7 @@ const AppRoutes = () => {
                 <Route path="/instructor/courses" element={<MyCourses />} />
                 <Route path="/instructor/courses/create" element={<CreateCourse />} />
                 <Route path="/instructor/courses/:id/edit" element={<EditCourse />} />
+                <Route path="/instructor/courses/:id/students" element={<CourseStudents />} />
             </Route>
 
             {/* STUDENT */}
