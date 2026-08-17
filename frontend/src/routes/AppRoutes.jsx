@@ -9,13 +9,15 @@ import CourseManagement from "../pages/admin/CourseManagement";
 import MyCourses from "../pages/instructor/MyCourses";
 import CreateCourse from "../pages/instructor/CreateCourse";
 import EditCourse from "../pages/instructor/EditCourse";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminEditCourse from "../pages/admin/EditCourse";
+import MyEnrollments from "../pages/student/MyEnrollments";
+import CourseDetails from "../pages/CourseDetails";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
 import PublicLayout from "../layouts/PublicLayout";
 import AdminLayout from "../layouts/AdminLayout";
-import AdminDashboard from "../pages/admin/AdminDashboard";
 
 const AppRoutes = () => {
     return (
@@ -26,6 +28,7 @@ const AppRoutes = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/course/:id" element={<CourseDetails />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                 </Route>
 
@@ -56,6 +59,7 @@ const AppRoutes = () => {
             {/* STUDENT */}
             <Route element={<RoleProtectedRoute allowedRoles={["student"]} />}>
                 <Route path="/student/dashboard" element={<h1>Student Dashboard</h1>} />
+                <Route path="/student/enrollments" element={<MyEnrollments />} />
             </Route>
 
             {/* 404 */}
