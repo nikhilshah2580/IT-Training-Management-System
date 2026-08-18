@@ -1,10 +1,7 @@
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
 
-/* ----------------------------------------
-   CREATE COURSE
------------------------------------------ */
-
+// CREATE COURSE
 export const createCourseService = async (data, instructorId) => {
     const instructor = await User.findById(instructorId);
 
@@ -15,9 +12,7 @@ export const createCourseService = async (data, instructorId) => {
     }
 
     if (instructor.role !== "instructor") {
-        const error = new Error(
-            "Selected user is not an instructor",
-        );
+        const error = new Error("Selected user is not an instructor");
         error.statusCode = 400;
         throw error;
     }
@@ -35,10 +30,7 @@ export const createCourseService = async (data, instructorId) => {
     );
 };
 
-/* ----------------------------------------
-   GET ALL COURSES
------------------------------------------ */
-
+// GET ALL COURSES
 export const getCoursesService = async ({
     category,
     skillLevel,
@@ -73,19 +65,13 @@ export const getCoursesService = async ({
     }
 
     const pageNumber = Math.max(Number(page) || 1, 1);
-    const limitNumber = Math.min(
-        Math.max(Number(limit) || 10, 1),
-        100,
-    );
+    const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 100);
 
     const skip = (pageNumber - 1) * limitNumber;
 
     const [courses, total] = await Promise.all([
         Course.find(query)
-            .populate(
-                "instructor",
-                "fullName email phone photo",
-            )
+            .populate("instructor", "fullName email phone photo")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limitNumber),
@@ -104,31 +90,39 @@ export const getCoursesService = async ({
     };
 };
 
-/* ----------------------------------------
-   GET SINGLE COURSE
------------------------------------------ */
-
-export const getCourseService = async (id) => {
-    return await Course.findById(id)
-        .populate(
-            "instructor",
-            "fullName email phone photo",
-        )
-        .populate(
-            "approvedBy",
-            "fullName email",
-        );
+// PUBLIC COURSES Only approved/active courses are public.
+export const getPublicCoursesService = async (params = {}) => {
+    return getCoursesService({
+        ...params,
+        status: "Active",
+    });
 };
 
-/* ----------------------------------------
-   UPDATE COURSE
------------------------------------------ */
-
-export const updateCourseService = async (
-    id,
-    data,
-    user,
+// INSTRUCTOR COURSES
+export const getInstructorCoursesService = async (
+    instructorId,
+    params = {},
 ) => {
+    return getCoursesService({
+        ...params,
+        instructor: instructorId,
+    });
+};
+
+// ADMIN COURSES
+export const getAdminCoursesService = async (params = {}) => {
+    return getCoursesService(params);
+};
+
+// GET SINGLE COURSE
+export const getCourseService = async (id) => {
+    return await Course.findById(id)
+        .populate("instructor", "fullName email phone photo")
+        .populate("approvedBy", "fullName email");
+};
+
+// UPDATE COURSE
+export const updateCourseService = async (id, data, user) => {
     const course = await Course.findById(id);
 
     if (!course) {
@@ -138,58 +132,64 @@ export const updateCourseService = async (
     }
 
     /*
-      Instructor can update only their own course.
-      Admin can update any course.
-    */
+        Instructor can update only their own course.
+        Admin can update any course.
+      */
 
     if (
         user.role === "instructor" &&
-        course.instructor.toString() !==
-        user._id.toString()
+        course.instructor.toString() !== user._id.toString()
     ) {
-        const error = new Error(
-            "You can only update your own courses",
-        );
+        const error = new Error("You can only update your own courses");
         error.statusCode = 403;
         throw error;
     }
 
     /*
-      Instructor editing a course sends it back
-      for admin approval.
-    */
+        Instructor editing a course sends it back
+        for admin approval.
+      */
+
+    const allowedFields = [
+        "title",
+        "description",
+        "category",
+        "skillLevel",
+        "syllabus",
+        "duration",
+        "fee",
+        "prerequisites",
+        "enrollmentDeadline",
+        "courseImage",
+        "resources",
+    ];
+
+    const updates = {};
+    allowedFields.forEach((field) => {
+        if (data[field] !== undefined) {
+            updates[field] = data[field];
+        }
+    });
 
     if (user.role === "instructor") {
-        data.status = "Pending";
-        data.isApproved = false;
-        data.approvedBy = null;
-        data.approvedAt = null;
+        updates.status = "Pending";
+        updates.isApproved = false;
+        updates.approvedBy = null;
+        updates.approvedAt = null;
     }
 
-    const updatedCourse =
-        await Course.findByIdAndUpdate(
-            id,
-            data,
-            {
-                returnDocument: "after",
-                runValidators: true,
-            },
-        ).populate(
-            "instructor",
-            "fullName email phone photo",
-        );
+    // Admin may explicitly change status through the dedicated status endpoint.
+    // Do not allow arbitrary approval fields through this edit endpoint.
+    const updatedCourse = await Course.findByIdAndUpdate(id, updates, {
+        returnDocument: "after",
+        runValidators: true,
+    }).populate("instructor", "fullName email phone photo");
 
     return updatedCourse;
 };
 
-/* ----------------------------------------
-   DELETE COURSE
------------------------------------------ */
-
-export const deleteCourseService = async (
-    id,
-    user,
-) => {
+// DELETE COURSE
+export const deleteCourseService = async (id, user) => {
     const course = await Course.findById(id);
 
     if (!course) {
@@ -200,12 +200,9 @@ export const deleteCourseService = async (
 
     if (
         user.role === "instructor" &&
-        course.instructor.toString() !==
-        user._id.toString()
+        course.instructor.toString() !== user._id.toString()
     ) {
-        const error = new Error(
-            "You can only delete your own courses",
-        );
+        const error = new Error("You can only delete your own courses");
         error.statusCode = 403;
         throw error;
     }
@@ -215,14 +212,8 @@ export const deleteCourseService = async (
     return course;
 };
 
-/* ----------------------------------------
-   APPROVE COURSE
------------------------------------------ */
-
-export const approveCourseService = async (
-    id,
-    adminId,
-) => {
+// APPROVE COURSE
+export const approveCourseService = async (id, adminId) => {
     const course = await Course.findById(id);
 
     if (!course) {
@@ -239,23 +230,12 @@ export const approveCourseService = async (
     await course.save();
 
     return await Course.findById(course._id)
-        .populate(
-            "instructor",
-            "fullName email phone photo",
-        )
-        .populate(
-            "approvedBy",
-            "fullName email",
-        );
+        .populate("instructor", "fullName email phone photo")
+        .populate("approvedBy", "fullName email");
 };
 
-/* ----------------------------------------
-   REJECT COURSE
------------------------------------------ */
-
-export const rejectCourseService = async (
-    id,
-) => {
+// REJECT COURSE
+export const rejectCourseService = async (id) => {
     const course = await Course.findById(id);
 
     if (!course) {
@@ -272,38 +252,25 @@ export const rejectCourseService = async (
     return course;
 };
 
-/* ----------------------------------------
-   CHANGE COURSE STATUS
------------------------------------------ */
-
-export const updateCourseStatusService = async (
-    id,
-    status,
-) => {
-    const allowedStatuses = [
-        "Pending",
-        "Active",
-        "Inactive",
-        "Rejected",
-    ];
+// CHANGE COURSE STATUS
+export const updateCourseStatusService = async (id, status) => {
+    const allowedStatuses = ["Pending", "Active", "Inactive", "Rejected"];
 
     if (!allowedStatuses.includes(status)) {
-        const error = new Error(
-            "Invalid course status",
-        );
+        const error = new Error("Invalid course status");
         error.statusCode = 400;
         throw error;
     }
 
-    const course =
-        await Course.findByIdAndUpdate(
-            id,
-            { status },
-            {
-                returnDocument: "after",
-                runValidators: true,
-            },
-        );
+    const updates = {
+        status,
+        ...(status === "Active" ? { isApproved: true } : { isApproved: false }),
+    };
+
+    const course = await Course.findByIdAndUpdate(id, updates, {
+        returnDocument: "after",
+        runValidators: true,
+    });
 
     if (!course) {
         const error = new Error("Course not found");

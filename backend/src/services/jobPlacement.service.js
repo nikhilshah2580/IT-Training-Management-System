@@ -1,10 +1,7 @@
 import JobPlacement from "../models/jobPlacement.model.js";
 import User from "../models/user.model.js";
 
-/* ----------------------------------------
-   CREATE PLACEMENT
------------------------------------------ */
-
+// CREATE PLACEMENT
 export const createJobPlacementService = async (data) => {
     const {
         student,
@@ -52,14 +49,19 @@ export const createJobPlacementService = async (data) => {
         notes,
     });
 
-    return await JobPlacement.findById(placement._id).populate("student", "fullName email phone photo");
+    return await JobPlacement.findById(placement._id).populate(
+        "student",
+        "fullName email phone photo",
+    );
 };
 
-/* ----------------------------------------
-   GET ALL PLACEMENTS
------------------------------------------ */
-
-export const getJobPlacementsService = async ({ status, search, page = 1, limit = 10 } = {}) => {
+// GET ALL PLACEMENTS
+export const getJobPlacementsService = async ({
+    status,
+    search,
+    page = 1,
+    limit = 10,
+} = {}) => {
     const currentPage = Math.max(Number(page) || 1, 1);
     const perPage = Math.min(Math.max(Number(limit) || 10, 1), 100);
 
@@ -89,7 +91,11 @@ export const getJobPlacementsService = async ({ status, search, page = 1, limit 
     const skip = (currentPage - 1) * perPage;
 
     const [placements, total] = await Promise.all([
-        JobPlacement.find(filter).populate("student", "fullName email phone photo").sort({ placementDate: -1 }).skip(skip).limit(perPage),
+        JobPlacement.find(filter)
+            .populate("student", "fullName email phone photo")
+            .sort({ placementDate: -1 })
+            .skip(skip)
+            .limit(perPage),
 
         JobPlacement.countDocuments(filter),
     ]);
@@ -105,18 +111,15 @@ export const getJobPlacementsService = async ({ status, search, page = 1, limit 
     };
 };
 
-/* ----------------------------------------
-   GET SINGLE PLACEMENT
------------------------------------------ */
-
+// GET SINGLE PLACEMENT
 export const getJobPlacementService = async (id) => {
-    return await JobPlacement.findById(id).populate("student", "fullName email phone photo");
+    return await JobPlacement.findById(id).populate(
+        "student",
+        "fullName email phone photo",
+    );
 };
 
-/* ----------------------------------------
-   GET STUDENT PLACEMENTS
------------------------------------------ */
-
+// GET STUDENT PLACEMENTS
 export const getStudentPlacementsService = async (studentId) => {
     const student = await User.findById(studentId);
 
@@ -133,10 +136,7 @@ export const getStudentPlacementsService = async (studentId) => {
         .sort({ placementDate: -1 });
 };
 
-/* ----------------------------------------
-   UPDATE PLACEMENT
------------------------------------------ */
-
+// UPDATE PLACEMENT
 export const updateJobPlacementService = async (id, data) => {
     const placement = await JobPlacement.findById(id);
 
@@ -170,10 +170,7 @@ export const updateJobPlacementService = async (id, data) => {
     return updatedPlacement;
 };
 
-/* ----------------------------------------
-   UPDATE PLACEMENT STATUS
------------------------------------------ */
-
+// UPDATE PLACEMENT STATUS
 export const updateJobPlacementStatusService = async (id, status) => {
     const allowedStatuses = ["Placed", "Joined", "Resigned", "Pending"];
 
@@ -195,10 +192,7 @@ export const updateJobPlacementStatusService = async (id, status) => {
     return placement;
 };
 
-/* ----------------------------------------
-   DELETE PLACEMENT
------------------------------------------ */
-
+// DELETE PLACEMENT
 export const deleteJobPlacementService = async (id) => {
     return await JobPlacement.findByIdAndDelete(id);
 };

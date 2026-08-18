@@ -4,28 +4,19 @@ import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
 
 import User from "../models/user.model.js";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../utils/token.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.js";
 import sendEmail from "../utils/sendEmail.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-/* ----------------------------------------
-   Helper
------------------------------------------ */
-
+// Helper
 const getSafeUser = async (id) => {
   return await User.findById(id).select(
     "-password -refreshToken -resetOtp -resetOtpExpire -verificationOtp -verificationOtpExpire",
   );
 };
 
-/* ----------------------------------------
-   REGISTER
------------------------------------------ */
-
+// REGISTER
 export const register = async (data) => {
   const {
     fullName,
@@ -37,6 +28,12 @@ export const register = async (data) => {
   } = data;
 
   const normalizedEmail = email?.toLowerCase().trim();
+
+  if (!fullName?.trim() || !normalizedEmail || !password) {
+    const error = new Error("Full name, email and password are required");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const existingUser = await User.findOne({
     email: normalizedEmail,
@@ -50,13 +47,9 @@ export const register = async (data) => {
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  const verificationOtp = crypto
-    .randomInt(100000, 1000000)
-    .toString();
+  const verificationOtp = crypto.randomInt(100000, 1000000).toString();
 
-  const verificationOtpExpire = new Date(
-    Date.now() + 10 * 60 * 1000,
-  );
+  const verificationOtpExpire = new Date(Date.now() + 10 * 60 * 1000);
 
   const user = await User.create({
     fullName,
@@ -99,11 +92,7 @@ export const register = async (data) => {
     </div>
   `;
 
-  await sendEmail(
-    user.email,
-    "Verify Your Email - Sipalaya Info Tech",
-    html,
-  );
+  await sendEmail(user.email, "Verify Your Email - Sipalaya Info Tech", html);
 
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
@@ -118,18 +107,13 @@ export const register = async (data) => {
   };
 };
 
-/* ----------------------------------------
-   VERIFY EMAIL
------------------------------------------ */
-
+// VERIFY EMAIL
 export const verifyEmail = async (email, otp) => {
   const normalizedEmail = email?.toLowerCase().trim();
 
   const user = await User.findOne({
     email: normalizedEmail,
-  }).select(
-    "+verificationOtp +verificationOtpExpire",
-  );
+  }).select("+verificationOtp +verificationOtpExpire");
 
   if (!user) {
     const error = new Error("User not found");
@@ -155,10 +139,7 @@ export const verifyEmail = async (email, otp) => {
     throw error;
   }
 
-  if (
-    !user.verificationOtpExpire ||
-    user.verificationOtpExpire < new Date()
-  ) {
+  if (!user.verificationOtpExpire || user.verificationOtpExpire < new Date()) {
     const error = new Error("Verification OTP expired");
     error.statusCode = 400;
     throw error;
@@ -176,18 +157,13 @@ export const verifyEmail = async (email, otp) => {
   };
 };
 
-/* ----------------------------------------
-   RESEND VERIFICATION OTP
------------------------------------------ */
-
+// RESEND VERIFICATION OTP
 export const resendVerificationOtp = async (email) => {
   const normalizedEmail = email?.toLowerCase().trim();
 
   const user = await User.findOne({
     email: normalizedEmail,
-  }).select(
-    "+verificationOtp +verificationOtpExpire",
-  );
+  }).select("+verificationOtp +verificationOtpExpire");
 
   if (!user) {
     const error = new Error("User not found");
@@ -201,14 +177,10 @@ export const resendVerificationOtp = async (email) => {
     throw error;
   }
 
-  const otp = crypto
-    .randomInt(100000, 1000000)
-    .toString();
+  const otp = crypto.randomInt(100000, 1000000).toString();
 
   user.verificationOtp = otp;
-  user.verificationOtpExpire = new Date(
-    Date.now() + 10 * 60 * 1000,
-  );
+  user.verificationOtpExpire = new Date(Date.now() + 10 * 60 * 1000);
 
   await user.save();
 
@@ -222,11 +194,7 @@ export const resendVerificationOtp = async (email) => {
     </div>
   `;
 
-  await sendEmail(
-    user.email,
-    "Email Verification OTP",
-    html,
-  );
+  await sendEmail(user.email, "Email Verification OTP", html);
 
   return {
     success: true,
@@ -234,10 +202,7 @@ export const resendVerificationOtp = async (email) => {
   };
 };
 
-/* ----------------------------------------
-   LOGIN
------------------------------------------ */
-
+// LOGIN
 export const login = async ({ email, password }) => {
   const normalizedEmail = email?.toLowerCase().trim();
 
@@ -251,18 +216,27 @@ export const login = async ({ email, password }) => {
     throw error;
   }
 
-  if (user.authProvider === "google") {
+  if ((user.authProvider || "local") === "google") {
+    const error = new Error("This account uses Google login");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!user.isVerified) {
+    const error = new Error("Please verify your email before logging in");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  if (!user.password) {
     const error = new Error(
-      "This account uses Google login",
+      "Password authentication is not available for this account",
     );
     error.statusCode = 400;
     throw error;
   }
 
-  const validPassword = await bcrypt.compare(
-    password,
-    user.password,
-  );
+  const validPassword = await bcrypt.compare(password, user.password);
 
   if (!validPassword) {
     const error = new Error("Invalid credentials");
@@ -283,10 +257,7 @@ export const login = async ({ email, password }) => {
   };
 };
 
-/* ----------------------------------------
-   GOOGLE LOGIN
------------------------------------------ */
-
+// GOOGLE LOGIN
 export const googleLoginService = async (credential) => {
   if (!credential) {
     const error = new Error("Google credential is required");
@@ -302,9 +273,7 @@ export const googleLoginService = async (credential) => {
   const payload = ticket.getPayload();
 
   if (!payload?.email) {
-    const error = new Error(
-      "Google account email not available",
-    );
+    const error = new Error("Google account email not available");
     error.statusCode = 400;
     throw error;
   }
@@ -326,10 +295,7 @@ export const googleLoginService = async (credential) => {
       isVerified: true,
     });
   } else {
-    if (
-      user.authProvider === "local" &&
-      !user.googleId
-    ) {
+    if (user.authProvider === "local" && !user.googleId) {
       user.googleId = payload.sub;
     }
 
@@ -352,14 +318,9 @@ export const googleLoginService = async (credential) => {
   };
 };
 
-/* ----------------------------------------
-   LOGOUT
------------------------------------------ */
-
+// LOGOUT
 export const logout = async (id) => {
-  const user = await User.findById(id).select(
-    "+refreshToken",
-  );
+  const user = await User.findById(id).select("+refreshToken");
 
   if (!user) {
     const error = new Error("User not found");
@@ -374,10 +335,7 @@ export const logout = async (id) => {
   return true;
 };
 
-/* ----------------------------------------
-   REFRESH TOKEN
------------------------------------------ */
-
+// REFRESH TOKEN
 export const refreshAccessToken = async (token) => {
   if (!token) {
     const error = new Error("Refresh token missing");
@@ -388,19 +346,14 @@ export const refreshAccessToken = async (token) => {
   let decoded;
 
   try {
-    decoded = jwt.verify(
-      token,
-      process.env.JWT_REFRESH_SECRET_KEY,
-    );
+    decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY);
   } catch {
     const error = new Error("Invalid refresh token");
     error.statusCode = 401;
     throw error;
   }
 
-  const user = await User.findById(decoded.id).select(
-    "+refreshToken",
-  );
+  const user = await User.findById(decoded.id).select("+refreshToken");
 
   if (!user) {
     const error = new Error("User not found");
@@ -409,9 +362,7 @@ export const refreshAccessToken = async (token) => {
   }
 
   if (user.refreshToken !== token) {
-    const error = new Error(
-      "Refresh token mismatch",
-    );
+    const error = new Error("Refresh token mismatch");
     error.statusCode = 401;
     throw error;
   }
@@ -429,18 +380,13 @@ export const refreshAccessToken = async (token) => {
   };
 };
 
-/* ----------------------------------------
-   FORGOT PASSWORD
------------------------------------------ */
-
+// FORGOT PASSWORD
 export const forgotPassword = async (email) => {
   const normalizedEmail = email?.toLowerCase().trim();
 
   const user = await User.findOne({
     email: normalizedEmail,
-  }).select(
-    "+resetOtp +resetOtpExpire",
-  );
+  }).select("+resetOtp +resetOtpExpire");
 
   if (!user) {
     const error = new Error("User not found");
@@ -448,15 +394,11 @@ export const forgotPassword = async (email) => {
     throw error;
   }
 
-  const otp = crypto
-    .randomInt(100000, 1000000)
-    .toString();
+  const otp = crypto.randomInt(100000, 1000000).toString();
 
   user.resetOtp = otp;
 
-  user.resetOtpExpire = new Date(
-    Date.now() + 10 * 60 * 1000,
-  );
+  user.resetOtpExpire = new Date(Date.now() + 10 * 60 * 1000);
 
   await user.save();
 
@@ -485,11 +427,7 @@ export const forgotPassword = async (email) => {
     </div>
   `;
 
-  await sendEmail(
-    user.email,
-    "Password Reset OTP - Sipalaya Info Tech",
-    html,
-  );
+  await sendEmail(user.email, "Password Reset OTP - Sipalaya Info Tech", html);
 
   return {
     success: true,
@@ -497,18 +435,13 @@ export const forgotPassword = async (email) => {
   };
 };
 
-/* ----------------------------------------
-   VERIFY RESET OTP
------------------------------------------ */
-
+// VERIFY RESET OTP
 export const verifyOtp = async (email, otp) => {
   const normalizedEmail = email?.toLowerCase().trim();
 
   const user = await User.findOne({
     email: normalizedEmail,
-  }).select(
-    "+resetOtp +resetOtpExpire",
-  );
+  }).select("+resetOtp +resetOtpExpire");
 
   if (!user) {
     const error = new Error("User not found");
@@ -528,10 +461,7 @@ export const verifyOtp = async (email, otp) => {
     throw error;
   }
 
-  if (
-    !user.resetOtpExpire ||
-    user.resetOtpExpire < new Date()
-  ) {
+  if (!user.resetOtpExpire || user.resetOtpExpire < new Date()) {
     const error = new Error("OTP expired");
     error.statusCode = 400;
     throw error;
@@ -543,22 +473,13 @@ export const verifyOtp = async (email, otp) => {
   };
 };
 
-/* ----------------------------------------
-   RESET PASSWORD
------------------------------------------ */
-
-export const resetPassword = async (
-  email,
-  otp,
-  password,
-) => {
+// RESET PASSWORD
+export const resetPassword = async (email, otp, password) => {
   const normalizedEmail = email?.toLowerCase().trim();
 
   const user = await User.findOne({
     email: normalizedEmail,
-  }).select(
-    "+password +resetOtp +resetOtpExpire +refreshToken",
-  );
+  }).select("+password +resetOtp +resetOtpExpire +refreshToken");
 
   if (!user) {
     const error = new Error("User not found");
@@ -572,10 +493,7 @@ export const resetPassword = async (
     throw error;
   }
 
-  if (
-    !user.resetOtpExpire ||
-    user.resetOtpExpire < new Date()
-  ) {
+  if (!user.resetOtpExpire || user.resetOtpExpire < new Date()) {
     const error = new Error("OTP expired");
     error.statusCode = 400;
     throw error;

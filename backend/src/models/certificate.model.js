@@ -70,4 +70,4 @@ const certificateSchema = new mongoose.Schema(
 certificateSchema.index({ student: 1 });
 certificateSchema.index({ course: 1 });
 
-export default mongoose.model("Certificate", certificateSchema); 
+export default mongoose.model("Certificate", certificateSchema);

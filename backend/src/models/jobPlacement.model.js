@@ -44,24 +44,13 @@ const jobPlacementSchema = new mongoose.Schema(
 
         employmentType: {
             type: String,
-            enum: [
-                "Full-time",
-                "Part-time",
-                "Internship",
-                "Contract",
-                "Remote",
-            ],
+            enum: ["Full-time", "Part-time", "Internship", "Contract", "Remote"],
             default: "Full-time",
         },
 
         status: {
             type: String,
-            enum: [
-                "Placed",
-                "Joined",
-                "Resigned",
-                "Pending",
-            ],
+            enum: ["Placed", "Joined", "Resigned", "Pending"],
             default: "Placed",
         },
 
@@ -96,7 +85,4 @@ jobPlacementSchema.index({ companyName: 1 });
 jobPlacementSchema.index({ status: 1 });
 jobPlacementSchema.index({ placementDate: -1 });
 
-export default mongoose.model(
-    "JobPlacement",
-    jobPlacementSchema,
-);
+export default mongoose.model("JobPlacement", jobPlacementSchema);

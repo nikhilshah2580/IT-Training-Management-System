@@ -2,17 +2,8 @@ import Assignment from "../models/assignment.model.js";
 import Course from "../models/course.model.js";
 
 // Create assignment
-export const createAssignmentService = async (
-    instructorId,
-    data,
-) => {
-    const {
-        course,
-        title,
-        description,
-        dueDate,
-        attachment,
-    } = data;
+export const createAssignmentService = async (instructorId, data) => {
+    const { course, title, description, dueDate, attachment } = data;
 
     const courseData = await Course.findById(course);
 
@@ -23,10 +14,7 @@ export const createAssignmentService = async (
     }
 
     // Only course instructor can create assignment
-    if (
-        courseData.instructor.toString() !==
-        instructorId.toString()
-    ) {
+    if (courseData.instructor.toString() !== instructorId.toString()) {
         const error = new Error(
             "You can only create assignments for your own courses.",
         );
@@ -36,9 +24,7 @@ export const createAssignmentService = async (
     }
 
     if (new Date(dueDate) <= new Date()) {
-        const error = new Error(
-            "Due date must be in the future.",
-        );
+        const error = new Error("Due date must be in the future.");
 
         error.statusCode = 400;
         throw error;
@@ -70,32 +56,21 @@ export const getAssignmentsService = async ({
         query.status = status;
     }
 
-    const pageNumber = Math.max(
-        Number(page) || 1,
-        1,
-    );
+    const pageNumber = Math.max(Number(page) || 1, 1);
 
-    const limitNumber = Math.min(
-        Math.max(Number(limit) || 10, 1),
-        100,
-    );
+    const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 100);
 
-    const skip =
-        (pageNumber - 1) * limitNumber;
+    const skip = (pageNumber - 1) * limitNumber;
 
-    const [assignments, total] =
-        await Promise.all([
-            Assignment.find(query)
-                .populate(
-                    "course",
-                    "title instructor duration",
-                )
-                .sort({ dueDate: 1 })
-                .skip(skip)
-                .limit(limitNumber),
+    const [assignments, total] = await Promise.all([
+        Assignment.find(query)
+            .populate("course", "title instructor duration")
+            .sort({ dueDate: 1 })
+            .skip(skip)
+            .limit(limitNumber),
 
-            Assignment.countDocuments(query),
-        ]);
+        Assignment.countDocuments(query),
+    ]);
 
     return {
         assignments,
@@ -103,17 +78,13 @@ export const getAssignmentsService = async ({
             total,
             page: pageNumber,
             limit: limitNumber,
-            totalPages: Math.ceil(
-                total / limitNumber,
-            ),
+            totalPages: Math.ceil(total / limitNumber),
         },
     };
 };
 
 // Get single assignment
-export const getAssignmentService = async (
-    id,
-) => {
+export const getAssignmentService = async (id) => {
     return await Assignment.findById(id).populate(
         "course",
         "title instructor duration",
@@ -121,24 +92,14 @@ export const getAssignmentService = async (
 };
 
 // Update assignment
-export const updateAssignmentService = async (
-    id,
-    instructorId,
-    data,
-) => {
-    const assignment =
-        await Assignment.findById(id).populate(
-            "course",
-        );
+export const updateAssignmentService = async (id, instructorId, data) => {
+    const assignment = await Assignment.findById(id).populate("course");
 
     if (!assignment) {
         return null;
     }
 
-    if (
-        assignment.course.instructor.toString() !==
-        instructorId.toString()
-    ) {
+    if (assignment.course.instructor.toString() !== instructorId.toString()) {
         const error = new Error(
             "You can only update assignments for your own courses.",
         );
@@ -148,12 +109,8 @@ export const updateAssignmentService = async (
     }
 
     if (data.dueDate) {
-        if (
-            new Date(data.dueDate) <= new Date()
-        ) {
-            const error = new Error(
-                "Due date must be in the future.",
-            );
+        if (new Date(data.dueDate) <= new Date()) {
+            const error = new Error("Due date must be in the future.");
 
             error.statusCode = 400;
             throw error;
@@ -167,8 +124,7 @@ export const updateAssignmentService = async (
     }
 
     if (data.description !== undefined) {
-        allowedUpdates.description =
-            data.description;
+        allowedUpdates.description = data.description;
     }
 
     if (data.dueDate !== undefined) {
@@ -176,73 +132,50 @@ export const updateAssignmentService = async (
     }
 
     if (data.attachment !== undefined) {
-        allowedUpdates.attachment =
-            data.attachment;
+        allowedUpdates.attachment = data.attachment;
     }
 
     if (data.status !== undefined) {
         allowedUpdates.status = data.status;
     }
 
-    return await Assignment.findByIdAndUpdate(
-        id,
-        allowedUpdates,
-        {
-            returnDocument: "after",
-            runValidators: true,
-        },
-    ).populate(
-        "course",
-        "title instructor duration",
-    );
+    return await Assignment.findByIdAndUpdate(id, allowedUpdates, {
+        returnDocument: "after",
+        runValidators: true,
+    }).populate("course", "title instructor duration");
 };
 
 // Delete assignment
-export const deleteAssignmentService =
-    async (id, instructorId) => {
-        const assignment =
-            await Assignment.findById(id).populate(
-                "course",
-            );
+export const deleteAssignmentService = async (id, instructorId) => {
+    const assignment = await Assignment.findById(id).populate("course");
 
-        if (!assignment) {
-            return null;
-        }
+    if (!assignment) {
+        return null;
+    }
 
-        if (
-            assignment.course.instructor.toString() !==
-            instructorId.toString()
-        ) {
-            const error = new Error(
-                "You can only delete assignments for your own courses.",
-            );
-
-            error.statusCode = 403;
-            throw error;
-        }
-
-        return await Assignment.findByIdAndDelete(
-            id,
+    if (assignment.course.instructor.toString() !== instructorId.toString()) {
+        const error = new Error(
+            "You can only delete assignments for your own courses.",
         );
-    };
+
+        error.statusCode = 403;
+        throw error;
+    }
+
+    return await Assignment.findByIdAndDelete(id);
+};
 
 // Get assignments for instructor's course
-export const getInstructorAssignmentsService =
-    async (instructorId) => {
-        const courses = await Course.find({
-            instructor: instructorId,
-        }).select("_id");
+export const getInstructorAssignmentsService = async (instructorId) => {
+    const courses = await Course.find({
+        instructor: instructorId,
+    }).select("_id");
 
-        const courseIds = courses.map(
-            (course) => course._id,
-        );
+    const courseIds = courses.map((course) => course._id);
 
-        return await Assignment.find({
-            course: { $in: courseIds },
-        })
-            .populate(
-                "course",
-                "title duration",
-            )
-            .sort({ dueDate: 1 });
-    };
+    return await Assignment.find({
+        course: { $in: courseIds },
+    })
+        .populate("course", "title duration")
+        .sort({ dueDate: 1 });
+};

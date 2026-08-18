@@ -8,10 +8,7 @@ import {
   deleteJobPlacementService,
 } from "../services/jobPlacement.service.js";
 
-/* ----------------------------------------
-   ADMIN CREATE PLACEMENT
------------------------------------------ */
-
+// ADMIN CREATE PLACEMENT
 export const createJobPlacement = async (req, res) => {
   const placement = await createJobPlacementService(req.body);
 
@@ -22,10 +19,7 @@ export const createJobPlacement = async (req, res) => {
   });
 };
 
-/* ----------------------------------------
-   ADMIN GET ALL PLACEMENTS
------------------------------------------ */
-
+// ADMIN GET ALL PLACEMENTS
 export const getJobPlacements = async (req, res) => {
   const { status, search, page, limit } = req.query;
 
@@ -42,10 +36,7 @@ export const getJobPlacements = async (req, res) => {
   });
 };
 
-/* ----------------------------------------
-   GET SINGLE PLACEMENT
------------------------------------------ */
-
+// GET SINGLE PLACEMENT
 export const getJobPlacement = async (req, res) => {
   const placement = await getJobPlacementService(req.params.id);
 
@@ -61,10 +52,7 @@ export const getJobPlacement = async (req, res) => {
   });
 };
 
-/* ----------------------------------------
-   STUDENT GET OWN PLACEMENTS
------------------------------------------ */
-
+// STUDENT GET OWN PLACEMENTS
 export const getMyPlacements = async (req, res) => {
   const placements = await getStudentPlacementsService(req.user._id);
 
@@ -74,10 +62,7 @@ export const getMyPlacements = async (req, res) => {
   });
 };
 
-/* ----------------------------------------
-   ADMIN UPDATE PLACEMENT
------------------------------------------ */
-
+// ADMIN UPDATE PLACEMENT
 export const updateJobPlacement = async (req, res) => {
   const placement = await updateJobPlacementService(req.params.id, req.body);
 
@@ -88,10 +73,7 @@ export const updateJobPlacement = async (req, res) => {
   });
 };
 
-/* ----------------------------------------
-   ADMIN UPDATE STATUS
------------------------------------------ */
-
+// ADMIN UPDATE STATUS
 export const updateJobPlacementStatus = async (req, res) => {
   const { status } = req.body;
 
@@ -101,7 +83,10 @@ export const updateJobPlacementStatus = async (req, res) => {
     throw error;
   }
 
-  const placement = await updateJobPlacementStatusService(req.params.id, status);
+  const placement = await updateJobPlacementStatusService(
+    req.params.id,
+    status,
+  );
 
   if (!placement) {
     const error = new Error("Job placement not found");
@@ -116,10 +101,7 @@ export const updateJobPlacementStatus = async (req, res) => {
   });
 };
 
-/* ----------------------------------------
-   ADMIN DELETE PLACEMENT
------------------------------------------ */
-
+// ADMIN DELETE PLACEMENT
 export const deleteJobPlacement = async (req, res) => {
   const placement = await deleteJobPlacementService(req.params.id);
 

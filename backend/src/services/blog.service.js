@@ -3,7 +3,17 @@ import mongoose from "mongoose";
 
 // Create blog
 export const createBlogService = async (data, authorId) => {
-    const { title, slug, excerpt, content, featuredImage, category, tags, status, isFeatured } = data;
+    const {
+        title,
+        slug,
+        excerpt,
+        content,
+        featuredImage,
+        category,
+        tags,
+        status,
+        isFeatured,
+    } = data;
 
     const existingBlog = await Blog.findOne({ slug });
 
@@ -31,7 +41,13 @@ export const createBlogService = async (data, authorId) => {
 };
 
 // Get published blogs
-export const getBlogsService = async ({ page = 1, limit = 10, category, search, featured } = {}) => {
+export const getBlogsService = async ({
+    page = 1,
+    limit = 10,
+    category,
+    search,
+    featured,
+} = {}) => {
     page = Number(page);
     limit = Number(limit);
 
@@ -56,7 +72,11 @@ export const getBlogsService = async ({ page = 1, limit = 10, category, search, 
     }
 
     const [blogs, total] = await Promise.all([
-        Blog.find(filter).populate("author", "fullName email photo role").sort({ publishedAt: -1 }).skip(skip).limit(limit),
+        Blog.find(filter)
+            .populate("author", "fullName email photo role")
+            .sort({ publishedAt: -1 })
+            .skip(skip)
+            .limit(limit),
 
         Blog.countDocuments(filter),
     ]);
@@ -117,7 +137,13 @@ export const incrementBlogViewsService = async (id) => {
 };
 
 // Admin/Instructor get all blogs
-export const getAllBlogsAdminService = async ({ page = 1, limit = 10, status, category, search } = {}) => {
+export const getAllBlogsAdminService = async ({
+    page = 1,
+    limit = 10,
+    status,
+    category,
+    search,
+} = {}) => {
     page = Number(page);
     limit = Number(limit);
 
@@ -140,7 +166,11 @@ export const getAllBlogsAdminService = async ({ page = 1, limit = 10, status, ca
     }
 
     const [blogs, total] = await Promise.all([
-        Blog.find(filter).populate("author", "fullName email photo role").sort({ createdAt: -1 }).skip(skip).limit(limit),
+        Blog.find(filter)
+            .populate("author", "fullName email photo role")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit),
 
         Blog.countDocuments(filter),
     ]);
@@ -164,7 +194,10 @@ export const getBlogAdminService = async (id) => {
         throw error;
     }
 
-    return await Blog.findById(id).populate("author", "fullName email photo role");
+    return await Blog.findById(id).populate(
+        "author",
+        "fullName email photo role",
+    );
 };
 
 // Update blog
@@ -184,7 +217,10 @@ export const updateBlogService = async (id, data, userId, userRole) => {
     }
 
     // Instructor can update only own blog
-    if (userRole === "instructor" && blog.author.toString() !== userId.toString()) {
+    if (
+        userRole === "instructor" &&
+        blog.author.toString() !== userId.toString()
+    ) {
         const error = new Error("You can only update your own blogs.");
 
         error.statusCode = 403;
@@ -232,7 +268,10 @@ export const deleteBlogService = async (id, userId, userRole) => {
     }
 
     // Instructor can delete only own blog
-    if (userRole === "instructor" && blog.author.toString() !== userId.toString()) {
+    if (
+        userRole === "instructor" &&
+        blog.author.toString() !== userId.toString()
+    ) {
         const error = new Error("You can only delete your own blogs.");
 
         error.statusCode = 403;

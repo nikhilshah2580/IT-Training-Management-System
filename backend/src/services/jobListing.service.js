@@ -1,21 +1,24 @@
 import JobListing from "../models/jobListing.model.js";
 import mongoose from "mongoose";
 
-/* ----------------------------------------
-   CREATE JOB LISTING
------------------------------------------ */
-
+// CREATE JOB LISTING
 export const createJobListingService = async (data) => {
     const job = await JobListing.create(data);
 
-    return await JobListing.findById(job._id).populate("postedBy", "fullName email role photo");
+    return await JobListing.findById(job._id).populate(
+        "postedBy",
+        "fullName email role photo",
+    );
 };
 
-/* ----------------------------------------
-   GET ALL JOB LISTINGS
------------------------------------------ */
-
-export const getJobListingsService = async ({ status, search, employmentType, page = 1, limit = 10 }) => {
+// GET ALL JOB LISTINGS
+export const getJobListingsService = async ({
+    status,
+    search,
+    employmentType,
+    page = 1,
+    limit = 10,
+}) => {
     const currentPage = Math.max(Number(page) || 1, 1);
     const perPage = Math.min(Math.max(Number(limit) || 10, 1), 100);
 
@@ -38,7 +41,11 @@ export const getJobListingsService = async ({ status, search, employmentType, pa
     const skip = (currentPage - 1) * perPage;
 
     const [jobs, total] = await Promise.all([
-        JobListing.find(filter).populate("postedBy", "fullName email role photo").sort({ createdAt: -1 }).skip(skip).limit(perPage),
+        JobListing.find(filter)
+            .populate("postedBy", "fullName email role photo")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(perPage),
 
         JobListing.countDocuments(filter),
     ]);
@@ -54,10 +61,7 @@ export const getJobListingsService = async ({ status, search, employmentType, pa
     };
 };
 
-/* ----------------------------------------
-   GET SINGLE JOB
------------------------------------------ */
-
+// GET SINGLE JOB
 export const getJobListingService = async (id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error("Invalid job listing ID");
@@ -65,15 +69,15 @@ export const getJobListingService = async (id) => {
         throw error;
     }
 
-    const job = await JobListing.findById(id).populate("postedBy", "fullName email role photo");
+    const job = await JobListing.findById(id).populate(
+        "postedBy",
+        "fullName email role photo",
+    );
 
     return job;
 };
 
-/* ----------------------------------------
-   UPDATE JOB LISTING
------------------------------------------ */
-
+// UPDATE JOB LISTING
 export const updateJobListingService = async (id, data, user) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error("Invalid job listing ID");
@@ -90,7 +94,10 @@ export const updateJobListingService = async (id, data, user) => {
     }
 
     // Instructor can only update their own listing.
-    if (user.role === "instructor" && job.postedBy.toString() !== user._id.toString()) {
+    if (
+        user.role === "instructor" &&
+        job.postedBy.toString() !== user._id.toString()
+    ) {
         const error = new Error("You can only update your own job listings");
 
         error.statusCode = 403;
@@ -124,13 +131,13 @@ export const updateJobListingService = async (id, data, user) => {
 
     await job.save();
 
-    return await JobListing.findById(job._id).populate("postedBy", "fullName email role photo");
+    return await JobListing.findById(job._id).populate(
+        "postedBy",
+        "fullName email role photo",
+    );
 };
 
-/* ----------------------------------------
-   DELETE JOB LISTING
------------------------------------------ */
-
+// DELETE JOB LISTING
 export const deleteJobListingService = async (id, user) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error("Invalid job listing ID");
@@ -146,7 +153,10 @@ export const deleteJobListingService = async (id, user) => {
         throw error;
     }
 
-    if (user.role === "instructor" && job.postedBy.toString() !== user._id.toString()) {
+    if (
+        user.role === "instructor" &&
+        job.postedBy.toString() !== user._id.toString()
+    ) {
         const error = new Error("You can only delete your own job listings");
 
         error.statusCode = 403;
@@ -158,10 +168,7 @@ export const deleteJobListingService = async (id, user) => {
     return true;
 };
 
-/* ----------------------------------------
-   PUBLISH JOB
------------------------------------------ */
-
+// PUBLISH JOB
 export const publishJobListingService = async (id) => {
     const job = await JobListing.findByIdAndUpdate(
         id,
@@ -183,10 +190,7 @@ export const publishJobListingService = async (id) => {
     return job;
 };
 
-/* ----------------------------------------
-   CLOSE JOB
------------------------------------------ */
-
+// CLOSE JOB
 export const closeJobListingService = async (id) => {
     const job = await JobListing.findByIdAndUpdate(
         id,
@@ -208,10 +212,7 @@ export const closeJobListingService = async (id) => {
     return job;
 };
 
-/* ----------------------------------------
-   INCREMENT VIEWS
------------------------------------------ */
-
+// INCREMENT VIEWS
 export const incrementJobViewService = async (id) => {
     const job = await JobListing.findByIdAndUpdate(
         id,

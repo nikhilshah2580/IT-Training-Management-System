@@ -3,12 +3,7 @@ import Course from "../models/course.model.js";
 import Enrollment from "../models/enrollment.model.js";
 import mongoose from "mongoose";
 
-/*
-|--------------------------------------------------------------------------
-| CREATE REVIEW
-|--------------------------------------------------------------------------
-*/
-
+// CREATE REVIEW
 export const createReviewService = async (studentId, data) => {
     const { course, rating, comment } = data;
 
@@ -33,7 +28,9 @@ export const createReviewService = async (studentId, data) => {
     });
 
     if (!enrollment) {
-        const error = new Error("You must be enrolled in this course to submit a review.");
+        const error = new Error(
+            "You must be enrolled in this course to submit a review.",
+        );
 
         error.statusCode = 403;
         throw error;
@@ -58,15 +55,12 @@ export const createReviewService = async (studentId, data) => {
         comment,
     });
 
-    return await Review.findById(review._id).populate("student", "fullName email photo").populate("course", "title");
+    return await Review.findById(review._id)
+        .populate("student", "fullName email photo")
+        .populate("course", "title");
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET COURSE REVIEWS
-|--------------------------------------------------------------------------
-*/
-
+// GET COURSE REVIEWS
 export const getCourseReviewsService = async (courseId) => {
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
         const error = new Error("Invalid course ID");
@@ -83,13 +77,12 @@ export const getCourseReviewsService = async (courseId) => {
         .sort({ createdAt: -1 });
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET ALL REVIEWS - ADMIN
-|--------------------------------------------------------------------------
-*/
-
-export const getAllReviewsService = async ({ status, page = 1, limit = 10 } = {}) => {
+// GET ALL REVIEWS - ADMIN
+export const getAllReviewsService = async ({
+    status,
+    page = 1,
+    limit = 10,
+} = {}) => {
     page = Math.max(Number(page) || 1, 1);
     limit = Math.min(Math.max(Number(limit) || 10, 1), 100);
 
@@ -123,12 +116,7 @@ export const getAllReviewsService = async ({ status, page = 1, limit = 10 } = {}
     };
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET SINGLE REVIEW
-|--------------------------------------------------------------------------
-*/
-
+// GET SINGLE REVIEW
 export const getReviewService = async (id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error("Invalid review ID");
@@ -136,15 +124,12 @@ export const getReviewService = async (id) => {
         throw error;
     }
 
-    return await Review.findById(id).populate("student", "fullName email photo").populate("course", "title");
+    return await Review.findById(id)
+        .populate("student", "fullName email photo")
+        .populate("course", "title");
 };
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE OWN REVIEW
-|--------------------------------------------------------------------------
-*/
-
+// UPDATE OWN REVIEW
 export const updateReviewService = async (reviewId, studentId, data) => {
     if (!mongoose.Types.ObjectId.isValid(reviewId)) {
         const error = new Error("Invalid review ID");
@@ -176,15 +161,12 @@ export const updateReviewService = async (reviewId, studentId, data) => {
 
     await review.save();
 
-    return await Review.findById(review._id).populate("student", "fullName email photo").populate("course", "title");
+    return await Review.findById(review._id)
+        .populate("student", "fullName email photo")
+        .populate("course", "title");
 };
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN UPDATE REVIEW STATUS
-|--------------------------------------------------------------------------
-*/
-
+// ADMIN UPDATE REVIEW STATUS
 export const updateReviewStatusService = async (reviewId, status) => {
     if (!mongoose.Types.ObjectId.isValid(reviewId)) {
         const error = new Error("Invalid review ID");
@@ -212,13 +194,12 @@ export const updateReviewStatusService = async (reviewId, status) => {
     return review;
 };
 
-/*
-|--------------------------------------------------------------------------
-| DELETE REVIEW
-|--------------------------------------------------------------------------
-*/
-
-export const deleteReviewService = async (reviewId, studentId = null, isAdmin = false) => {
+// DELETE REVIEW
+export const deleteReviewService = async (
+    reviewId,
+    studentId = null,
+    isAdmin = false,
+) => {
     if (!mongoose.Types.ObjectId.isValid(reviewId)) {
         const error = new Error("Invalid review ID");
         error.statusCode = 400;
@@ -244,12 +225,7 @@ export const deleteReviewService = async (reviewId, studentId = null, isAdmin = 
     return review;
 };
 
-/*
-|--------------------------------------------------------------------------
-| COURSE RATING SUMMARY
-|--------------------------------------------------------------------------
-*/
-
+// COURSE RATING SUMMARY
 export const getCourseRatingService = async (courseId) => {
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
         const error = new Error("Invalid course ID");

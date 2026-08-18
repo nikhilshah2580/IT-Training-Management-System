@@ -9,11 +9,7 @@ import {
     adminDeleteResourceService,
 } from "../services/resource.service.js";
 
-/* ----------------------------------------
-   CREATE RESOURCE
-   Instructor
------------------------------------------ */
-
+// CREATE RESOURCE Instructor
 export const createResource = async (req, res) => {
     const resource = await createResourceService({
         ...req.body,
@@ -27,11 +23,7 @@ export const createResource = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET ALL RESOURCES
-   Admin / Instructor
------------------------------------------ */
-
+// GET ALL RESOURCES Admin / Instructor
 export const getResources = async (req, res) => {
     const resources = await getResourcesService(req.query);
 
@@ -41,10 +33,7 @@ export const getResources = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET SINGLE RESOURCE
------------------------------------------ */
-
+// GET SINGLE RESOURCE
 export const getResource = async (req, res) => {
     const resource = await getResourceService(req.params.id);
 
@@ -60,11 +49,7 @@ export const getResource = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET COURSE RESOURCES
-   Student / Instructor / Admin
------------------------------------------ */
-
+// GET COURSE RESOURCES Student / Instructor / Admin
 export const getCourseResources = async (req, res) => {
     const resources = await getCourseResourcesService(req.params.courseId);
 
@@ -74,13 +59,13 @@ export const getCourseResources = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   UPDATE RESOURCE
-   Instructor
------------------------------------------ */
-
+// UPDATE RESOURCE Instructor
 export const updateResource = async (req, res) => {
-    const resource = await updateResourceService(req.params.id, req.user._id, req.body);
+    const resource = await updateResourceService(
+        req.params.id,
+        req.user._id,
+        req.body,
+    );
 
     return res.status(200).json({
         success: true,
@@ -89,10 +74,7 @@ export const updateResource = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   ADMIN UPDATE
------------------------------------------ */
-
+// ADMIN UPDATE
 export const adminUpdateResource = async (req, res) => {
     const resource = await adminUpdateResourceService(req.params.id, req.body);
 
@@ -103,11 +85,7 @@ export const adminUpdateResource = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   DELETE RESOURCE
-   Instructor
------------------------------------------ */
-
+// DELETE RESOURCE Instructor
 export const deleteResource = async (req, res) => {
     await deleteResourceService(req.params.id, req.user._id);
 
@@ -117,10 +95,7 @@ export const deleteResource = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   ADMIN DELETE
------------------------------------------ */
-
+// ADMIN DELETE
 export const adminDeleteResource = async (req, res) => {
     await adminDeleteResourceService(req.params.id);
 

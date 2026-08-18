@@ -11,11 +11,7 @@ import {
     getMyDemoBookingsService,
 } from "../services/demoClass.service.js";
 
-/* ----------------------------------------
-   CREATE
-   Instructor
------------------------------------------ */
-
+// CREATE Instructor
 export const createDemoClass = async (req, res) => {
     const demoClass = await createDemoClassService({
         ...req.body,
@@ -29,10 +25,7 @@ export const createDemoClass = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET ALL
------------------------------------------ */
-
+// GET ALL
 export const getDemoClasses = async (req, res) => {
     const demoClasses = await getDemoClassesService(req.query);
 
@@ -42,10 +35,7 @@ export const getDemoClasses = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET SINGLE
------------------------------------------ */
-
+// GET SINGLE
 export const getDemoClass = async (req, res) => {
     const demoClass = await getDemoClassService(req.params.id);
 
@@ -62,13 +52,13 @@ export const getDemoClass = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   UPDATE
-   Instructor
------------------------------------------ */
-
+// UPDATE Instructor
 export const updateDemoClass = async (req, res) => {
-    const demoClass = await updateDemoClassService(req.params.id, req.user._id, req.body);
+    const demoClass = await updateDemoClassService(
+        req.params.id,
+        req.user._id,
+        req.body,
+    );
 
     return res.status(200).json({
         success: true,
@@ -77,10 +67,7 @@ export const updateDemoClass = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   ADMIN UPDATE
------------------------------------------ */
-
+// ADMIN UPDATE
 export const adminUpdateDemoClass = async (req, res) => {
     const demoClass = await adminUpdateDemoClassService(req.params.id, req.body);
 
@@ -91,11 +78,7 @@ export const adminUpdateDemoClass = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   DELETE
-   Instructor
------------------------------------------ */
-
+// DELETE Instructor
 export const deleteDemoClass = async (req, res) => {
     await deleteDemoClassService(req.params.id, req.user._id);
 
@@ -105,10 +88,7 @@ export const deleteDemoClass = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   ADMIN DELETE
------------------------------------------ */
-
+// ADMIN DELETE
 export const adminDeleteDemoClass = async (req, res) => {
     await adminDeleteDemoClassService(req.params.id);
 
@@ -118,11 +98,7 @@ export const adminDeleteDemoClass = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   BOOK
-   Student
------------------------------------------ */
-
+// BOOK Student
 export const bookDemoClass = async (req, res) => {
     const demoClass = await bookDemoClassService(req.params.id, req.user._id);
 
@@ -133,11 +109,7 @@ export const bookDemoClass = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   CANCEL BOOKING
-   Student
------------------------------------------ */
-
+// CANCEL BOOKING Student
 export const cancelDemoBooking = async (req, res) => {
     await cancelDemoBookingService(req.params.id, req.user._id);
 
@@ -147,11 +119,7 @@ export const cancelDemoBooking = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   MY BOOKINGS
-   Student
------------------------------------------ */
-
+// MY BOOKINGS Student
 export const getMyDemoBookings = async (req, res) => {
     const demoClasses = await getMyDemoBookingsService(req.user._id);
 

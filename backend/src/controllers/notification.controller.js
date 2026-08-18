@@ -9,12 +9,7 @@ import {
     createAdminNotificationService,
 } from "../services/notification.service.js";
 
-/*
-|--------------------------------------------------------------------------
-| GET MY NOTIFICATIONS
-|--------------------------------------------------------------------------
-*/
-
+// GET MY NOTIFICATIONS
 export const getMyNotifications = async (req, res) => {
     const result = await getMyNotificationsService(req.user._id, req.query);
 
@@ -24,14 +19,12 @@ export const getMyNotifications = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET SINGLE NOTIFICATION
-|--------------------------------------------------------------------------
-*/
-
+// GET SINGLE NOTIFICATION
 export const getNotification = async (req, res) => {
-    const notification = await getNotificationService(req.params.id, req.user._id);
+    const notification = await getNotificationService(
+        req.params.id,
+        req.user._id,
+    );
 
     return res.status(200).json({
         success: true,
@@ -39,14 +32,12 @@ export const getNotification = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| MARK ONE AS READ
-|--------------------------------------------------------------------------
-*/
-
+// MARK ONE AS READ
 export const markNotificationAsRead = async (req, res) => {
-    const notification = await markNotificationAsReadService(req.params.id, req.user._id);
+    const notification = await markNotificationAsReadService(
+        req.params.id,
+        req.user._id,
+    );
 
     return res.status(200).json({
         success: true,
@@ -55,12 +46,7 @@ export const markNotificationAsRead = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| MARK ALL AS READ
-|--------------------------------------------------------------------------
-*/
-
+// MARK ALL AS READ
 export const markAllNotificationsAsRead = async (req, res) => {
     await markAllNotificationsAsReadService(req.user._id);
 
@@ -70,12 +56,7 @@ export const markAllNotificationsAsRead = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| DELETE ONE
-|--------------------------------------------------------------------------
-*/
-
+// DELETE ONE
 export const deleteNotification = async (req, res) => {
     await deleteNotificationService(req.params.id, req.user._id);
 
@@ -85,12 +66,7 @@ export const deleteNotification = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| DELETE ALL
-|--------------------------------------------------------------------------
-*/
-
+// DELETE ALL
 export const deleteAllNotifications = async (req, res) => {
     await deleteAllNotificationsService(req.user._id);
 
@@ -100,12 +76,7 @@ export const deleteAllNotifications = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN CREATE NOTIFICATION
-|--------------------------------------------------------------------------
-*/
-
+// ADMIN CREATE NOTIFICATION
 export const createAdminNotification = async (req, res) => {
     const notification = await createAdminNotificationService({
         ...req.body,

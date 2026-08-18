@@ -54,11 +54,16 @@ export const createTestimonialService = async (studentId, data) => {
         rating: rating || 5,
     });
 
-    return await Testimonial.findById(testimonial._id).populate("student", "fullName email photo").populate("course", "title");
+    return await Testimonial.findById(testimonial._id)
+        .populate("student", "fullName email photo")
+        .populate("course", "title");
 };
 
 // Public approved testimonials
-export const getApprovedTestimonialsService = async ({ page = 1, limit = 10 } = {}) => {
+export const getApprovedTestimonialsService = async ({
+    page = 1,
+    limit = 10,
+} = {}) => {
     page = Math.max(Number(page), 1);
     limit = Math.min(Math.max(Number(limit), 1), 50);
 
@@ -108,11 +113,17 @@ export const getMyTestimonialsService = async (studentId) => {
 export const getTestimonialService = async (id) => {
     validateObjectId(id, "testimonial ID");
 
-    return await Testimonial.findById(id).populate("student", "fullName email photo").populate("course", "title");
+    return await Testimonial.findById(id)
+        .populate("student", "fullName email photo")
+        .populate("course", "title");
 };
 
 // Update student's testimonial
-export const updateMyTestimonialService = async (testimonialId, studentId, data) => {
+export const updateMyTestimonialService = async (
+    testimonialId,
+    studentId,
+    data,
+) => {
     validateObjectId(testimonialId, "testimonial ID");
 
     const testimonial = await Testimonial.findById(testimonialId);
@@ -180,7 +191,11 @@ export const updateMyTestimonialService = async (testimonialId, studentId, data)
 };
 
 // Admin get all testimonials
-export const getAllTestimonialsService = async ({ status, page = 1, limit = 10 } = {}) => {
+export const getAllTestimonialsService = async ({
+    status,
+    page = 1,
+    limit = 10,
+} = {}) => {
     page = Math.max(Number(page), 1);
     limit = Math.min(Math.max(Number(limit), 1), 50);
 
@@ -293,7 +308,9 @@ export const toggleFeaturedTestimonialService = async (id) => {
 
     await testimonial.save();
 
-    return await Testimonial.findById(id).populate("student", "fullName email photo").populate("course", "title");
+    return await Testimonial.findById(id)
+        .populate("student", "fullName email photo")
+        .populate("course", "title");
 };
 
 // Delete student's own testimonial

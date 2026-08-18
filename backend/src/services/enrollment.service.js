@@ -2,11 +2,8 @@ import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
 
-/*
-|--------------------------------------------------------------------------
-| CREATE ENROLLMENT
-|--------------------------------------------------------------------------
-*/
+//CREATE ENROLLMENT
+
 export const createEnrollmentService = async (studentId, courseId) => {
     const student = await User.findById(studentId);
 
@@ -36,7 +33,10 @@ export const createEnrollmentService = async (studentId, courseId) => {
         throw error;
     }
 
-    if (course.enrollmentDeadline && new Date() > new Date(course.enrollmentDeadline)) {
+    if (
+        course.enrollmentDeadline &&
+        new Date() > new Date(course.enrollmentDeadline)
+    ) {
         const error = new Error("Enrollment deadline has passed");
         error.statusCode = 400;
         throw error;
@@ -58,17 +58,29 @@ export const createEnrollmentService = async (studentId, courseId) => {
         course: courseId,
     });
 
+    // Keep the course enrollment summary in sync.
+    const alreadyListed = course.enrolledStudents.some(
+        (id) => id.toString() === studentId.toString(),
+    );
+
+    if (!alreadyListed) {
+        course.enrolledStudents.push(studentId);
+        course.totalStudents = course.enrolledStudents.length;
+        await course.save();
+    }
+
     return await Enrollment.findById(enrollment._id)
         .populate("student", "fullName email phone photo")
         .populate("course", "title description duration fee instructor");
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET ALL ENROLLMENTS
-|--------------------------------------------------------------------------
-*/
-export const getEnrollmentsService = async ({ status, page = 1, limit = 10 }) => {
+//GET ALL ENROLLMENTS
+
+export const getEnrollmentsService = async ({
+    status,
+    page = 1,
+    limit = 10,
+}) => {
     const currentPage = Math.max(Number(page) || 1, 1);
     const currentLimit = Math.min(Math.max(Number(limit) || 10, 1), 100);
 
@@ -102,11 +114,8 @@ export const getEnrollmentsService = async ({ status, page = 1, limit = 10 }) =>
     };
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET SINGLE ENROLLMENT
-|--------------------------------------------------------------------------
-*/
+//GET SINGLE ENROLLMENT
+
 export const getEnrollmentService = async (id) => {
     const enrollment = await Enrollment.findById(id)
         .populate("student", "fullName email phone photo")
@@ -121,26 +130,88 @@ export const getEnrollmentService = async (id) => {
     return enrollment;
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET MY ENROLLMENTS
-|--------------------------------------------------------------------------
-*/
+//GET MY ENROLLMENTS
+
 export const getMyEnrollmentsService = async (studentId) => {
     return await Enrollment.find({
         student: studentId,
     })
-        .populate("course", "title description duration fee instructor")
+        .populate("course", "title description duration fee instructor courseImage")
         .sort({ createdAt: -1 });
 };
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE ENROLLMENT STATUS
-|--------------------------------------------------------------------------
-*/
+// GET INSTRUCTOR ENROLLMENTS
+// Instructor can only see students enrolled in courses created by that instructor.
+export const getInstructorEnrollmentsService = async (
+    instructorId,
+    { courseId, status, page = 1, limit = 10 },
+) => {
+    const currentPage = Math.max(Number(page) || 1, 1);
+
+    const currentLimit = Math.min(Math.max(Number(limit) || 10, 1), 100);
+
+    const skip = (currentPage - 1) * currentLimit;
+
+    // Find only courses belonging to this instructor
+    const courseFilter = {
+        instructor: instructorId,
+    };
+
+    // Optional: filter by one specific course
+    if (courseId) {
+        courseFilter._id = courseId;
+    }
+
+    const instructorCourses = await Course.find(courseFilter).select("_id");
+
+    const courseIds = instructorCourses.map((course) => course._id);
+
+    // Find enrollments for those courses
+    const enrollmentFilter = {
+        course: {
+            $in: courseIds,
+        },
+    };
+
+    if (status) {
+        enrollmentFilter.status = status;
+    }
+
+    const [enrollments, total] = await Promise.all([
+        Enrollment.find(enrollmentFilter)
+            .populate("student", "fullName email phone photo")
+            .populate("course", "title description duration fee instructor")
+            .sort({
+                createdAt: -1,
+            })
+            .skip(skip)
+            .limit(currentLimit),
+
+        Enrollment.countDocuments(enrollmentFilter),
+    ]);
+
+    return {
+        enrollments,
+
+        pagination: {
+            total,
+            page: currentPage,
+            limit: currentLimit,
+            totalPages: Math.ceil(total / currentLimit),
+        },
+    };
+};
+
+//UPDATE ENROLLMENT STATUS
+
 export const updateEnrollmentStatusService = async (id, status) => {
-    const allowedStatuses = ["Pending", "Approved", "Active", "Completed", "Cancelled"];
+    const allowedStatuses = [
+        "Pending",
+        "Approved",
+        "Active",
+        "Completed",
+        "Cancelled",
+    ];
 
     if (!allowedStatuses.includes(status)) {
         const error = new Error("Invalid enrollment status");
@@ -177,12 +248,12 @@ export const updateEnrollmentStatusService = async (id, status) => {
     return enrollment;
 };
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE PAYMENT STATUS
-|--------------------------------------------------------------------------
-*/
-export const updateEnrollmentPaymentStatusService = async (id, paymentStatus) => {
+//UPDATE PAYMENT STATUS
+
+export const updateEnrollmentPaymentStatusService = async (
+    id,
+    paymentStatus,
+) => {
     const allowedStatuses = ["Pending", "Paid", "Failed"];
 
     if (!allowedStatuses.includes(paymentStatus)) {
@@ -219,16 +290,47 @@ export const updateEnrollmentPaymentStatusService = async (id, paymentStatus) =>
     return enrollment;
 };
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE COURSE PROGRESS
-|--------------------------------------------------------------------------
-*/
-export const updateEnrollmentProgressService = async (id, progress) => {
+//UPDATE COURSE PROGRESS
+
+export const updateEnrollmentProgressService = async (id, progress, actor) => {
     const numericProgress = Number(progress);
 
-    if (Number.isNaN(numericProgress) || numericProgress < 0 || numericProgress > 100) {
+    if (
+        Number.isNaN(numericProgress) ||
+        numericProgress < 0 ||
+        numericProgress > 100
+    ) {
         const error = new Error("Progress must be between 0 and 100");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const existingEnrollment = await Enrollment.findById(id).populate(
+        "course",
+        "title instructor",
+    );
+
+    if (!existingEnrollment) {
+        const error = new Error("Enrollment not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    if (actor?.role === "instructor") {
+        if (
+            !existingEnrollment.course?.instructor ||
+            existingEnrollment.course.instructor.toString() !== actor._id.toString()
+        ) {
+            const error = new Error(
+                "You can only update progress for students in your own courses",
+            );
+            error.statusCode = 403;
+            throw error;
+        }
+    }
+
+    if (existingEnrollment.status === "Cancelled") {
+        const error = new Error("Cancelled enrollment cannot be updated");
         error.statusCode = 400;
         throw error;
     }
@@ -247,7 +349,7 @@ export const updateEnrollmentProgressService = async (id, progress) => {
         runValidators: true,
     })
         .populate("student", "fullName email phone photo")
-        .populate("course", "title duration fee instructor");
+        .populate("course", "title duration fee instructor courseImage");
 
     if (!enrollment) {
         const error = new Error("Enrollment not found");
@@ -258,11 +360,8 @@ export const updateEnrollmentProgressService = async (id, progress) => {
     return enrollment;
 };
 
-/*
-|--------------------------------------------------------------------------
-| DELETE / CANCEL ENROLLMENT
-|--------------------------------------------------------------------------
-*/
+//DELETE / CANCEL ENROLLMENT
+
 export const cancelEnrollmentService = async (id) => {
     const enrollment = await Enrollment.findByIdAndUpdate(
         id,

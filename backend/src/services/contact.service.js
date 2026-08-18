@@ -17,7 +17,12 @@ export const createContactService = async (data) => {
 };
 
 // GET ALL CONTACTS - ADMIN
-export const getContactsService = async ({ status, search, page = 1, limit = 10 }) => {
+export const getContactsService = async ({
+    status,
+    search,
+    page = 1,
+    limit = 10,
+}) => {
     const filter = {};
 
     if (status) {
@@ -25,7 +30,11 @@ export const getContactsService = async ({ status, search, page = 1, limit = 10 
     }
 
     if (search) {
-        filter.$or = [{ name: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } }, { subject: { $regex: search, $options: "i" } }];
+        filter.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
+            { subject: { $regex: search, $options: "i" } },
+        ];
     }
 
     const pageNumber = Math.max(Number(page) || 1, 1);
@@ -34,7 +43,12 @@ export const getContactsService = async ({ status, search, page = 1, limit = 10 
     const skip = (pageNumber - 1) * limitNumber;
 
     const [contacts, total] = await Promise.all([
-        Contact.find(filter).populate("user", "fullName email role").populate("repliedBy", "fullName email role").sort({ createdAt: -1 }).skip(skip).limit(limitNumber),
+        Contact.find(filter)
+            .populate("user", "fullName email role")
+            .populate("repliedBy", "fullName email role")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNumber),
 
         Contact.countDocuments(filter),
     ]);
@@ -52,7 +66,9 @@ export const getContactsService = async ({ status, search, page = 1, limit = 10 
 
 // GET SINGLE CONTACT
 export const getContactService = async (id) => {
-    const contact = await Contact.findById(id).populate("user", "fullName email role").populate("repliedBy", "fullName email role");
+    const contact = await Contact.findById(id)
+        .populate("user", "fullName email role")
+        .populate("repliedBy", "fullName email role");
 
     if (!contact) {
         const error = new Error("Contact inquiry not found");
@@ -65,7 +81,9 @@ export const getContactService = async (id) => {
 
 // GET MY CONTACTS
 export const getMyContactsService = async (userId) => {
-    return await Contact.find({ user: userId }).sort({ createdAt: -1 }).populate("repliedBy", "fullName email");
+    return await Contact.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .populate("repliedBy", "fullName email");
 };
 
 // UPDATE CONTACT - ADMIN
@@ -103,7 +121,9 @@ export const updateContactService = async (id, data, adminId) => {
 
     await contact.save();
 
-    return await Contact.findById(contact._id).populate("user", "fullName email role").populate("repliedBy", "fullName email role");
+    return await Contact.findById(contact._id)
+        .populate("user", "fullName email role")
+        .populate("repliedBy", "fullName email role");
 };
 
 // DELETE CONTACT

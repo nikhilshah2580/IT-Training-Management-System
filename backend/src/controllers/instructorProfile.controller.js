@@ -10,11 +10,7 @@ import {
     deleteInstructorProfileService,
 } from "../services/instructorProfile.service.js";
 
-/* ----------------------------------------
-   CREATE PROFILE
-   Instructor only
------------------------------------------ */
-
+// CREATE PROFILE Instructor only
 export const createInstructorProfile = async (req, res) => {
     const profile = await createInstructorProfileService(req.user._id, req.body);
 
@@ -25,10 +21,7 @@ export const createInstructorProfile = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET MY PROFILE
------------------------------------------ */
-
+// GET MY PROFILE
 export const getMyInstructorProfile = async (req, res) => {
     const profile = await getMyInstructorProfileService(req.user._id);
 
@@ -44,10 +37,7 @@ export const getMyInstructorProfile = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET PUBLIC PROFILE
------------------------------------------ */
-
+// GET PUBLIC PROFILE
 export const getInstructorProfile = async (req, res) => {
     const profile = await getInstructorProfileService(req.params.id);
 
@@ -69,10 +59,7 @@ export const getInstructorProfile = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET APPROVED INSTRUCTORS
------------------------------------------ */
-
+// GET APPROVED INSTRUCTORS
 export const getApprovedInstructors = async (req, res) => {
     const profiles = await getApprovedInstructorProfilesService();
 
@@ -83,10 +70,7 @@ export const getApprovedInstructors = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   ADMIN GET ALL
------------------------------------------ */
-
+// ADMIN GET ALL
 export const getAllInstructorProfiles = async (req, res) => {
     const profiles = await getAllInstructorProfilesService();
 
@@ -97,26 +81,24 @@ export const getAllInstructorProfiles = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   UPDATE OWN PROFILE
------------------------------------------ */
-
+// UPDATE OWN PROFILE
 export const updateInstructorProfile = async (req, res) => {
     const profile = await updateInstructorProfileService(req.user._id, req.body);
 
     return res.status(200).json({
         success: true,
-        message: "Instructor profile updated successfully. Awaiting admin approval.",
+        message:
+            "Instructor profile updated successfully. Awaiting admin approval.",
         profile,
     });
 };
 
-/* ----------------------------------------
-   ADMIN APPROVE
------------------------------------------ */
-
+// ADMIN APPROVE
 export const approveInstructorProfile = async (req, res) => {
-    const profile = await approveInstructorProfileService(req.params.id, req.user._id);
+    const profile = await approveInstructorProfileService(
+        req.params.id,
+        req.user._id,
+    );
 
     return res.status(200).json({
         success: true,
@@ -125,12 +107,12 @@ export const approveInstructorProfile = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   ADMIN REJECT
------------------------------------------ */
-
+// ADMIN REJECT
 export const rejectInstructorProfile = async (req, res) => {
-    const profile = await rejectInstructorProfileService(req.params.id, req.user._id);
+    const profile = await rejectInstructorProfileService(
+        req.params.id,
+        req.user._id,
+    );
 
     return res.status(200).json({
         success: true,
@@ -139,10 +121,7 @@ export const rejectInstructorProfile = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   ADMIN DELETE
------------------------------------------ */
-
+// ADMIN DELETE
 export const deleteInstructorProfile = async (req, res) => {
     await deleteInstructorProfileService(req.params.id);
 

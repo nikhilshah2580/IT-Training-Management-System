@@ -120,7 +120,12 @@ export const getBlogAdmin = async (req, res) => {
 
 // UPDATE BLOG
 export const updateBlog = async (req, res) => {
-    const blog = await updateBlogService(req.params.id, req.body, req.user._id, req.user.role);
+    const blog = await updateBlogService(
+        req.params.id,
+        req.body,
+        req.user._id,
+        req.user.role,
+    );
 
     return res.status(200).json({
         success: true,

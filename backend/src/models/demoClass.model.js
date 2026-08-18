@@ -83,11 +83,7 @@ const demoClassSchema = new mongoose.Schema(
 
         status: {
             type: String,
-            enum: [
-                "Scheduled",
-                "Completed",
-                "Cancelled",
-            ],
+            enum: ["Scheduled", "Completed", "Cancelled"],
             default: "Scheduled",
         },
 
@@ -105,12 +101,7 @@ const demoClassSchema = new mongoose.Schema(
 
                 status: {
                     type: String,
-                    enum: [
-                        "Booked",
-                        "Cancelled",
-                        "Attended",
-                        "Absent",
-                    ],
+                    enum: ["Booked", "Cancelled", "Attended", "Absent"],
                     default: "Booked",
                 },
             },
@@ -136,7 +127,4 @@ demoClassSchema.index(
     },
 );
 
-export default mongoose.model(
-    "DemoClass",
-    demoClassSchema,
-);
+export default mongoose.model("DemoClass", demoClassSchema);

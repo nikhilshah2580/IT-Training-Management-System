@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minlength: 2,
+      maxlength: 100,
     },
 
     email: {
@@ -16,14 +18,25 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.authProvider !== "google";
+      },
+      select: false,
     },
 
     phone: {
       type: String,
       default: "",
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      default: "",
+      trim: true,
     },
 
     photo: {
@@ -37,9 +50,16 @@ const userSchema = new mongoose.Schema(
       default: "student",
     },
 
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+
     googleId: {
       type: String,
       default: "",
+      unique: true,
       sparse: true,
     },
 
@@ -48,7 +68,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-      verificationOtp: {
+    verificationOtp: {
       type: String,
       default: "",
       select: false,
@@ -75,6 +95,7 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
       default: "",
+      select: false,
     },
   },
   {

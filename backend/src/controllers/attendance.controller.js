@@ -8,12 +8,7 @@ import {
     getAttendancePercentageService,
 } from "../services/attendance.service.js";
 
-/*
-|--------------------------------------------------------------------------
-| Create Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Create Attendance
 export const createAttendance = async (req, res) => {
     const { course, student, date, status, remarks } = req.body;
 
@@ -31,6 +26,7 @@ export const createAttendance = async (req, res) => {
         status,
         markedBy: req.user._id,
         remarks,
+        actor: req.user,
     });
 
     res.status(201).json({
@@ -40,21 +36,19 @@ export const createAttendance = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get All Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Get All Attendance
 export const getAttendances = async (req, res) => {
     const { course, student, status, date } = req.query;
 
-    const attendances = await getAttendancesService({
-        course,
-        student,
-        status,
-        date,
-    });
+    const attendances = await getAttendancesService(
+        {
+            course,
+            student,
+            status,
+            date,
+        },
+        req.user,
+    );
 
     res.status(200).json({
         success: true,
@@ -63,14 +57,9 @@ export const getAttendances = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get Single Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Get Single Attendance
 export const getAttendance = async (req, res) => {
-    const attendance = await getAttendanceService(req.params.id);
+    const attendance = await getAttendanceService(req.params.id, req.user);
 
     if (!attendance) {
         const error = new Error("Attendance not found");
@@ -84,14 +73,13 @@ export const getAttendance = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Update Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Update Attendance
 export const updateAttendance = async (req, res) => {
-    const attendance = await updateAttendanceService(req.params.id, req.body);
+    const attendance = await updateAttendanceService(
+        req.params.id,
+        req.body,
+        req.user,
+    );
 
     res.status(200).json({
         success: true,
@@ -100,12 +88,7 @@ export const updateAttendance = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Delete Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Delete Attendance
 export const deleteAttendance = async (req, res) => {
     await deleteAttendanceService(req.params.id);
 
@@ -115,12 +98,7 @@ export const deleteAttendance = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get My Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Get My Attendance
 export const getMyAttendance = async (req, res) => {
     const { course } = req.query;
 
@@ -133,12 +111,7 @@ export const getMyAttendance = async (req, res) => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get My Attendance Percentage
-|--------------------------------------------------------------------------
-*/
-
+// Get My Attendance Percentage
 export const getMyAttendancePercentage = async (req, res) => {
     const { course } = req.query;
 

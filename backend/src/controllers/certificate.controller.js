@@ -39,7 +39,7 @@ export const getCertificates = async (req, res) => {
 
 // Get single certificate
 export const getCertificate = async (req, res) => {
-    const certificate = await getCertificateService(req.params.id);
+    const certificate = await getCertificateService(req.params.id, req.user);
 
     if (!certificate) {
         const error = new Error("Certificate not found");
@@ -65,7 +65,9 @@ export const getMyCertificates = async (req, res) => {
 
 // Public certificate verification
 export const verifyCertificate = async (req, res) => {
-    const certificate = await verifyCertificateService(req.params.verificationCode);
+    const certificate = await verifyCertificateService(
+        req.params.verificationCode,
+    );
 
     if (!certificate) {
         const error = new Error("Invalid or revoked certificate");
@@ -82,7 +84,11 @@ export const verifyCertificate = async (req, res) => {
 
 // Update certificate
 export const updateCertificate = async (req, res) => {
-    const certificate = await updateCertificateService(req.params.id, req.body);
+    const certificate = await updateCertificateService(
+        req.params.id,
+        req.body,
+        req.user,
+    );
 
     if (!certificate) {
         const error = new Error("Certificate not found");

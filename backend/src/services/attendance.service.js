@@ -2,19 +2,33 @@ import Attendance from "../models/attendance.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
 
-/*
-|--------------------------------------------------------------------------
-| Create Attendance
-|--------------------------------------------------------------------------
-*/
-
-export const createAttendanceService = async ({ course, student, date, status, markedBy, remarks }) => {
+// Create Attendance
+export const createAttendanceService = async ({
+    course,
+    student,
+    date,
+    status,
+    markedBy,
+    remarks,
+    actor,
+}) => {
     // Check course
     const courseExists = await Course.findById(course);
 
     if (!courseExists) {
         const error = new Error("Course not found");
         error.statusCode = 404;
+        throw error;
+    }
+
+    if (
+        actor?.role === "instructor" &&
+        courseExists.instructor.toString() !== actor._id.toString()
+    ) {
+        const error = new Error(
+            "You can only mark attendance for your own courses",
+        );
+        error.statusCode = 403;
         throw error;
     }
 
@@ -41,7 +55,9 @@ export const createAttendanceService = async ({ course, student, date, status, m
     });
 
     if (existingAttendance) {
-        const error = new Error("Attendance already marked for this student on this date");
+        const error = new Error(
+            "Attendance already marked for this student on this date",
+        );
 
         error.statusCode = 409;
         throw error;
@@ -62,14 +78,16 @@ export const createAttendanceService = async ({ course, student, date, status, m
         .populate("markedBy", "fullName email");
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get All Attendance
-|--------------------------------------------------------------------------
-*/
-
-export const getAttendancesService = async (filters = {}) => {
+// Get All Attendance
+export const getAttendancesService = async (filters = {}, actor) => {
     const query = {};
+
+    if (actor?.role === "instructor") {
+        const instructorCourses = await Course.find({
+            instructor: actor._id,
+        }).select("_id");
+        query.course = { $in: instructorCourses.map((item) => item._id) };
+    }
 
     if (filters.course) {
         query.course = filters.course;
@@ -103,32 +121,54 @@ export const getAttendancesService = async (filters = {}) => {
         .sort({ date: -1 });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get Single Attendance
-|--------------------------------------------------------------------------
-*/
+// Get Single Attendance
+export const getAttendanceService = async (id, actor) => {
+    const attendance = await Attendance.findById(id);
 
-export const getAttendanceService = async (id) => {
-    return await Attendance.findById(id)
+    if (!attendance) {
+        return null;
+    }
+
+    if (actor?.role === "instructor") {
+        const course = await Course.findById(attendance.course).select(
+            "instructor",
+        );
+        if (!course || course.instructor.toString() !== actor._id.toString()) {
+            const error = new Error(
+                "You can only view attendance for your own courses",
+            );
+            error.statusCode = 403;
+            throw error;
+        }
+    }
+
+    return Attendance.findById(id)
         .populate("course", "title instructor")
         .populate("student", "fullName email photo")
         .populate("markedBy", "fullName email");
 };
 
-/*
-|--------------------------------------------------------------------------
-| Update Attendance
-|--------------------------------------------------------------------------
-*/
-
-export const updateAttendanceService = async (id, data) => {
+// Update Attendance
+export const updateAttendanceService = async (id, data, actor) => {
     const attendance = await Attendance.findById(id);
 
     if (!attendance) {
         const error = new Error("Attendance not found");
         error.statusCode = 404;
         throw error;
+    }
+
+    if (actor?.role === "instructor") {
+        const course = await Course.findById(attendance.course).select(
+            "instructor",
+        );
+        if (!course || course.instructor.toString() !== actor._id.toString()) {
+            const error = new Error(
+                "You can only update attendance for your own courses",
+            );
+            error.statusCode = 403;
+            throw error;
+        }
     }
 
     if (data.status !== undefined) {
@@ -147,12 +187,7 @@ export const updateAttendanceService = async (id, data) => {
         .populate("markedBy", "fullName email");
 };
 
-/*
-|--------------------------------------------------------------------------
-| Delete Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Delete Attendance
 export const deleteAttendanceService = async (id) => {
     const attendance = await Attendance.findByIdAndDelete(id);
 
@@ -165,12 +200,7 @@ export const deleteAttendanceService = async (id) => {
     return attendance;
 };
 
-/*
-|--------------------------------------------------------------------------
-| Student Attendance
-|--------------------------------------------------------------------------
-*/
-
+// Student Attendance
 export const getStudentAttendanceService = async (studentId, courseId) => {
     const query = {
         student: studentId,
@@ -180,15 +210,13 @@ export const getStudentAttendanceService = async (studentId, courseId) => {
         query.course = courseId;
     }
 
-    return await Attendance.find(query).populate("course", "title").populate("markedBy", "fullName").sort({ date: -1 });
+    return await Attendance.find(query)
+        .populate("course", "title")
+        .populate("markedBy", "fullName")
+        .sort({ date: -1 });
 };
 
-/*
-|--------------------------------------------------------------------------
-| Attendance Percentage
-|--------------------------------------------------------------------------
-*/
-
+// Attendance Percentage
 export const getAttendancePercentageService = async (studentId, courseId) => {
     const records = await Attendance.find({
         student: studentId,
@@ -205,10 +233,12 @@ export const getAttendancePercentageService = async (studentId, courseId) => {
         };
     }
 
-    const present = records.filter((record) => record.status === "Present").length;
+    const present = records.filter(
+        (record) => record.status === "Present",
+    ).length;
 
     const late = records.filter((record) => record.status === "Late").length;
-    
+
     const absent = records.filter((record) => record.status === "Absent").length;
 
     // Present + Late counted as attended

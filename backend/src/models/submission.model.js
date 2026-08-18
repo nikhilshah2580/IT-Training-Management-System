@@ -63,13 +63,6 @@ const submissionSchema = new mongoose.Schema(
 );
 
 // Prevent accidental duplicate submission records
-submissionSchema.index(
-    { assignment: 1, student: 1 },
-    { unique: true },
-);
+submissionSchema.index({ assignment: 1, student: 1 }, { unique: true });
 
-export default mongoose.model(
-    "Submission",
-    submissionSchema,
-);
-
+export default mongoose.model("Submission", submissionSchema);

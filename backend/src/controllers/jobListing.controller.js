@@ -9,11 +9,7 @@ import {
     incrementJobViewService,
 } from "../services/jobListing.service.js";
 
-/* ----------------------------------------
-   CREATE JOB LISTING
-   ADMIN / INSTRUCTOR
------------------------------------------ */
-
+// CREATE JOB LISTING ADMIN / INSTRUCTOR
 export const createJobListing = async (req, res) => {
     const job = await createJobListingService({
         ...req.body,
@@ -27,11 +23,7 @@ export const createJobListing = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET ALL JOB LISTINGS
-   PUBLIC
------------------------------------------ */
-
+// GET ALL JOB LISTINGS PUBLIC
 export const getJobListings = async (req, res) => {
     const { status, search, employmentType, page, limit } = req.query;
 
@@ -49,11 +41,7 @@ export const getJobListings = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   GET SINGLE JOB
-   PUBLIC
------------------------------------------ */
-
+// GET SINGLE JOB PUBLIC
 export const getJobListing = async (req, res) => {
     const job = await getJobListingService(req.params.id);
 
@@ -69,11 +57,7 @@ export const getJobListing = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   UPDATE JOB
-   ADMIN / INSTRUCTOR
------------------------------------------ */
-
+// UPDATE JOB ADMIN / INSTRUCTOR
 export const updateJobListing = async (req, res) => {
     const job = await updateJobListingService(req.params.id, req.body, req.user);
 
@@ -84,11 +68,7 @@ export const updateJobListing = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   DELETE JOB
-   ADMIN / INSTRUCTOR
------------------------------------------ */
-
+// DELETE JOB ADMIN / INSTRUCTOR
 export const deleteJobListing = async (req, res) => {
     await deleteJobListingService(req.params.id, req.user);
 
@@ -98,11 +78,7 @@ export const deleteJobListing = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   PUBLISH JOB
-   ADMIN
------------------------------------------ */
-
+// PUBLISH JOB ADMIN
 export const publishJobListing = async (req, res) => {
     const job = await publishJobListingService(req.params.id);
 
@@ -113,11 +89,7 @@ export const publishJobListing = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   CLOSE JOB
-   ADMIN
------------------------------------------ */
-
+// CLOSE JOB ADMIN
 export const closeJobListing = async (req, res) => {
     const job = await closeJobListingService(req.params.id);
 
@@ -128,10 +100,7 @@ export const closeJobListing = async (req, res) => {
     });
 };
 
-/* ----------------------------------------
-   INCREMENT VIEW
------------------------------------------ */
-
+// INCREMENT VIEW
 export const incrementJobView = async (req, res) => {
     const job = await incrementJobViewService(req.params.id);
 

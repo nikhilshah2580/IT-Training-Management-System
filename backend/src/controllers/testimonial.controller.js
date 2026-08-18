@@ -64,7 +64,11 @@ export const getTestimonial = async (req, res) => {
 
 // Student update own testimonial
 export const updateMyTestimonial = async (req, res) => {
-    const testimonial = await updateMyTestimonialService(req.params.id, req.user._id, req.body);
+    const testimonial = await updateMyTestimonialService(
+        req.params.id,
+        req.user._id,
+        req.body,
+    );
 
     return res.status(200).json({
         success: true,
@@ -100,7 +104,10 @@ export const approveTestimonial = async (req, res) => {
 
 // Admin reject
 export const rejectTestimonial = async (req, res) => {
-    const testimonial = await rejectTestimonialService(req.params.id, req.body.adminNote || "");
+    const testimonial = await rejectTestimonialService(
+        req.params.id,
+        req.body.adminNote || "",
+    );
 
     return res.status(200).json({
         success: true,

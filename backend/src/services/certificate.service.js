@@ -2,6 +2,7 @@ import crypto from "crypto";
 import Certificate from "../models/certificate.model.js";
 import User from "../models/user.model.js";
 import Course from "../models/course.model.js";
+import Enrollment from "../models/enrollment.model.js";
 
 const generateCertificateNumber = () => {
     const year = new Date().getFullYear();
@@ -41,6 +42,38 @@ export const createCertificateService = async (data, issuedBy) => {
         throw error;
     }
 
+    const enrollment = await Enrollment.findOne({
+        student,
+        course,
+    });
+
+    if (!enrollment || enrollment.status !== "Completed") {
+        const error = new Error(
+            "Certificate can only be issued after course completion",
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (issuedBy) {
+        const issuer = await User.findById(issuedBy).select("role");
+        if (!issuer || !["admin", "instructor"].includes(issuer.role)) {
+            const error = new Error("Invalid certificate issuer");
+            error.statusCode = 403;
+            throw error;
+        }
+        if (
+            issuer.role === "instructor" &&
+            courseExists.instructor.toString() !== issuedBy.toString()
+        ) {
+            const error = new Error(
+                "You can only issue certificates for your own courses",
+            );
+            error.statusCode = 403;
+            throw error;
+        }
+    }
+
     const existingCertificate = await Certificate.findOne({
         student,
         course,
@@ -71,7 +104,12 @@ export const createCertificateService = async (data, issuedBy) => {
 };
 
 // Get all certificates
-export const getCertificatesService = async ({ page = 1, limit = 10, search = "", status } = {}) => {
+export const getCertificatesService = async ({
+    page = 1,
+    limit = 10,
+    search = "",
+    status,
+} = {}) => {
     page = Number(page);
     limit = Number(limit);
 
@@ -114,8 +152,23 @@ export const getCertificatesService = async ({ page = 1, limit = 10, search = ""
 };
 
 // Get single certificate
-export const getCertificateService = async (id) => {
-    return await Certificate.findById(id)
+export const getCertificateService = async (id, actor) => {
+    const certificate = await Certificate.findById(id);
+
+    if (!certificate) {
+        return null;
+    }
+
+    if (
+        actor?.role === "student" &&
+        certificate.student.toString() !== actor._id.toString()
+    ) {
+        const error = new Error("You can only view your own certificates");
+        error.statusCode = 403;
+        throw error;
+    }
+
+    return Certificate.findById(id)
         .populate("student", "fullName email phone photo")
         .populate("course", "title description duration fee")
         .populate("issuedBy", "fullName email role");
@@ -145,7 +198,27 @@ export const verifyCertificateService = async (verificationCode) => {
 };
 
 // Update certificate
-export const updateCertificateService = async (id, data) => {
+export const updateCertificateService = async (id, data, actor) => {
+    const existingCertificate = await Certificate.findById(id).populate(
+        "course",
+        "instructor",
+    );
+
+    if (!existingCertificate) {
+        return null;
+    }
+
+    if (
+        actor?.role === "instructor" &&
+        existingCertificate.course.instructor.toString() !== actor._id.toString()
+    ) {
+        const error = new Error(
+            "You can only update certificates for your own courses",
+        );
+        error.statusCode = 403;
+        throw error;
+    }
+
     const allowedUpdates = {};
 
     if (data.grade !== undefined) {

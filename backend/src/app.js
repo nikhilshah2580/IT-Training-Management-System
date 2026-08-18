@@ -22,17 +22,26 @@ import notificationRoutes from "./routes/notification.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 
-
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173"
-    ],
+    origin(origin, callback) {
+      // Allow non-browser requests such as Postman.
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS origin not allowed"));
+    },
     credentials: true,
-  })
+  }),
 );
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
@@ -53,7 +62,6 @@ app.use("/api/instructor-profiles", instructorProfileRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-
 
 app.use(globalErrorMiddleware);
 

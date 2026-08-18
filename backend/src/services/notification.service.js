@@ -8,9 +8,7 @@ const throwError = (message, statusCode) => {
     throw error;
 };
 
-
 // CREATE NOTIFICATION
-
 export const createNotificationService = async ({
     recipient,
     sender = null,
@@ -57,10 +55,11 @@ export const createNotificationService = async ({
         .populate("sender", "fullName email photo role");
 };
 
-
 // GET MY NOTIFICATIONS
-
-export const getMyNotificationsService = async (userId, { page = 1, limit = 20, unreadOnly = false } = {}) => {
+export const getMyNotificationsService = async (
+    userId,
+    { page = 1, limit = 20, unreadOnly = false } = {},
+) => {
     page = Math.max(Number(page) || 1, 1);
     limit = Math.min(Math.max(Number(limit) || 20, 1), 100);
 
@@ -75,7 +74,12 @@ export const getMyNotificationsService = async (userId, { page = 1, limit = 20, 
     }
 
     const [notifications, total] = await Promise.all([
-        Notification.find(filter).populate("sender", "fullName email photo role").sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+        Notification.find(filter)
+            .populate("sender", "fullName email photo role")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
 
         Notification.countDocuments(filter),
     ]);
@@ -97,9 +101,7 @@ export const getMyNotificationsService = async (userId, { page = 1, limit = 20, 
     };
 };
 
-
 // GET SINGLE NOTIFICATION
-
 export const getNotificationService = async (notificationId, userId) => {
     const notification = await Notification.findOne({
         _id: notificationId,
@@ -114,7 +116,6 @@ export const getNotificationService = async (notificationId, userId) => {
 
     return notification;
 };
-
 
 //MARK ONE AS READ
 
@@ -138,9 +139,7 @@ export const markNotificationAsReadService = async (notificationId, userId) => {
     return notification;
 };
 
-
 // MARK ALL AS READ
-
 export const markAllNotificationsAsReadService = async (userId) => {
     await Notification.updateMany(
         {
@@ -158,7 +157,6 @@ export const markAllNotificationsAsReadService = async (userId) => {
     return true;
 };
 
-
 //DELETE NOTIFICATION
 
 export const deleteNotificationService = async (notificationId, userId) => {
@@ -174,7 +172,6 @@ export const deleteNotificationService = async (notificationId, userId) => {
     return notification;
 };
 
-
 //DELETE ALL MY NOTIFICATIONS
 
 export const deleteAllNotificationsService = async (userId) => {
@@ -186,8 +183,15 @@ export const deleteAllNotificationsService = async (userId) => {
 };
 
 //  ADMIN CREATE NOTIFICATION
-
-export const createAdminNotificationService = async ({ recipient, title, message, type, referenceId, referenceModel, sender }) => {
+export const createAdminNotificationService = async ({
+    recipient,
+    title,
+    message,
+    type,
+    referenceId,
+    referenceModel,
+    sender,
+}) => {
     return await createNotificationService({
         recipient,
         sender,

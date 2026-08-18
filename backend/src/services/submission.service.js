@@ -1,13 +1,9 @@
 import Submission from "../models/submission.model.js";
 import Assignment from "../models/assignment.model.js";
+import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
 
-/*
-|--------------------------------------------------------------------------
-| Create Submission
-|--------------------------------------------------------------------------
-*/
-
+// Create Submission
 export const createSubmissionService = async ({
     assignmentId,
     studentId,
@@ -27,13 +23,31 @@ export const createSubmissionService = async ({
         throw error;
     }
 
+    const enrollment = await Enrollment.findOne({
+        student: studentId,
+        course: assignment.course,
+        status: { $in: ["Active", "Completed"] },
+    });
+
+    if (!enrollment) {
+        const error = new Error(
+            "You must be enrolled in this course to submit the assignment.",
+        );
+        error.statusCode = 403;
+        throw error;
+    }
+
+    if (assignment.status === "Closed") {
+        const error = new Error("This assignment is closed.");
+        error.statusCode = 400;
+        throw error;
+    }
+
     // Check deadline
     const now = new Date();
 
     const status =
-        assignment.dueDate && now > assignment.dueDate
-            ? "Late"
-            : "Submitted";
+        assignment.dueDate && now > assignment.dueDate ? "Late" : "Submitted";
 
     // Check existing submission
     const existingSubmission = await Submission.findOne({
@@ -42,9 +56,7 @@ export const createSubmissionService = async ({
     });
 
     if (existingSubmission) {
-        const error = new Error(
-            "You have already submitted this assignment.",
-        );
+        const error = new Error("You have already submitted this assignment.");
 
         error.statusCode = 400;
         throw error;
@@ -60,72 +72,61 @@ export const createSubmissionService = async ({
 
     return await Submission.findById(submission._id)
         .populate("student", "fullName email photo")
-        .populate(
-            "assignment",
-            "title description dueDate course",
-        );
+        .populate("assignment", "title description dueDate course");
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Get Student's Submissions
-|--------------------------------------------------------------------------
-*/
-
-export const getMySubmissionsService = async (
-    studentId,
-) => {
+// Get Student's Submissions
+export const getMySubmissionsService = async (studentId) => {
     return await Submission.find({
         student: studentId,
     })
-        .populate(
-            "assignment",
-            "title description dueDate course",
-        )
-        .populate(
-            "gradedBy",
-            "fullName email",
-        )
+        .populate("assignment", "title description dueDate course")
+        .populate("gradedBy", "fullName email")
         .sort({ createdAt: -1 });
 };
 
+// Get Single Submission
+export const getSubmissionService = async (id, actor) => {
+    const submission = await Submission.findById(id).populate(
+        "assignment",
+        "title description dueDate course",
+    );
 
-/*
-|--------------------------------------------------------------------------
-| Get Single Submission
-|--------------------------------------------------------------------------
-*/
+    if (!submission) {
+        return null;
+    }
 
-export const getSubmissionService = async (id) => {
-    return await Submission.findById(id)
-        .populate(
-            "student",
-            "fullName email phone photo",
-        )
-        .populate(
-            "assignment",
-            "title description dueDate course",
-        )
-        .populate(
-            "gradedBy",
-            "fullName email",
+    if (actor?.role === "student") {
+        if (submission.student.toString() !== actor._id.toString()) {
+            const error = new Error("You can only view your own submission.");
+            error.statusCode = 403;
+            throw error;
+        }
+    } else if (actor?.role === "instructor") {
+        const course = await Course.findById(submission.assignment.course).select(
+            "instructor",
         );
+        if (!course || course.instructor.toString() !== actor._id.toString()) {
+            const error = new Error(
+                "You can only view submissions for your own courses.",
+            );
+            error.statusCode = 403;
+            throw error;
+        }
+    }
+
+    return Submission.findById(id)
+        .populate("student", "fullName email phone photo")
+        .populate("assignment", "title description dueDate course")
+        .populate("gradedBy", "fullName email");
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Get Submissions By Assignment
-|--------------------------------------------------------------------------
-*/
-
+// Get Submissions By Assignment
 export const getSubmissionsByAssignmentService = async (
     assignmentId,
+    actor,
 ) => {
-    const assignment = await Assignment.findById(
-        assignmentId,
-    );
+    const assignment = await Assignment.findById(assignmentId);
 
     if (!assignment) {
         const error = new Error("Assignment not found.");
@@ -133,38 +134,35 @@ export const getSubmissionsByAssignmentService = async (
         throw error;
     }
 
+    if (actor?.role === "instructor") {
+        const course = await Course.findById(assignment.course).select(
+            "instructor",
+        );
+        if (!course || course.instructor.toString() !== actor._id.toString()) {
+            const error = new Error(
+                "You can only view submissions for your own courses.",
+            );
+            error.statusCode = 403;
+            throw error;
+        }
+    }
+
     return await Submission.find({
         assignment: assignmentId,
     })
-        .populate(
-            "student",
-            "fullName email phone photo",
-        )
-        .populate(
-            "gradedBy",
-            "fullName email",
-        )
+        .populate("student", "fullName email phone photo")
+        .populate("gradedBy", "fullName email")
         .sort({ createdAt: -1 });
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Grade Submission
-|--------------------------------------------------------------------------
-*/
-
+// Grade Submission
 export const gradeSubmissionService = async (
     id,
     grade,
     feedback,
     instructorId,
 ) => {
-    if (
-        grade === undefined ||
-        grade === null ||
-        grade === ""
-    ) {
+    if (grade === undefined || grade === null || grade === "") {
         const error = new Error("Grade is required.");
         error.statusCode = 400;
         throw error;
@@ -172,14 +170,8 @@ export const gradeSubmissionService = async (
 
     const numericGrade = Number(grade);
 
-    if (
-        Number.isNaN(numericGrade) ||
-        numericGrade < 0 ||
-        numericGrade > 100
-    ) {
-        const error = new Error(
-            "Grade must be between 0 and 100.",
-        );
+    if (Number.isNaN(numericGrade) || numericGrade < 0 || numericGrade > 100) {
+        const error = new Error("Grade must be between 0 and 100.");
 
         error.statusCode = 400;
         throw error;
@@ -188,11 +180,30 @@ export const gradeSubmissionService = async (
     const submission = await Submission.findById(id);
 
     if (!submission) {
-        const error = new Error(
-            "Submission not found.",
-        );
+        const error = new Error("Submission not found.");
 
         error.statusCode = 404;
+        throw error;
+    }
+
+    const assignment = await Assignment.findById(submission.assignment).select(
+        "course",
+    );
+    const course = assignment
+        ? await Course.findById(assignment.course).select("instructor")
+        : null;
+
+    if (!course) {
+        const error = new Error("Course not found.");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    if (course.instructor.toString() !== instructorId.toString()) {
+        const error = new Error(
+            "You can only grade submissions for your own courses.",
+        );
+        error.statusCode = 403;
         throw error;
     }
 
@@ -205,50 +216,25 @@ export const gradeSubmissionService = async (
     await submission.save();
 
     return await Submission.findById(id)
-        .populate(
-            "student",
-            "fullName email phone photo",
-        )
-        .populate(
-            "assignment",
-            "title description dueDate course",
-        )
-        .populate(
-            "gradedBy",
-            "fullName email",
-        );
+        .populate("student", "fullName email phone photo")
+        .populate("assignment", "title description dueDate course")
+        .populate("gradedBy", "fullName email");
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Delete Submission
-|--------------------------------------------------------------------------
-*/
-
-export const deleteSubmissionService = async (
-    id,
-    studentId,
-) => {
+// Delete Submission
+export const deleteSubmissionService = async (id, studentId) => {
     const submission = await Submission.findById(id);
 
     if (!submission) {
-        const error = new Error(
-            "Submission not found.",
-        );
+        const error = new Error("Submission not found.");
 
         error.statusCode = 404;
         throw error;
     }
 
     // Student can delete only their own submission
-    if (
-        submission.student.toString() !==
-        studentId.toString()
-    ) {
-        const error = new Error(
-            "You can only delete your own submission.",
-        );
+    if (submission.student.toString() !== studentId.toString()) {
+        const error = new Error("You can only delete your own submission.");
 
         error.statusCode = 403;
         throw error;
@@ -259,13 +245,7 @@ export const deleteSubmissionService = async (
     return submission;
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Get All Submissions - Admin
-|--------------------------------------------------------------------------
-*/
-
+// Get All Submissions - Admin
 export const getAllSubmissionsService = async ({
     page = 1,
     limit = 10,
@@ -282,27 +262,17 @@ export const getAllSubmissionsService = async ({
 
     const skip = (page - 1) * limit;
 
-    const [submissions, total] =
-        await Promise.all([
-            Submission.find(filter)
-                .populate(
-                    "student",
-                    "fullName email phone photo",
-                )
-                .populate(
-                    "assignment",
-                    "title dueDate course",
-                )
-                .populate(
-                    "gradedBy",
-                    "fullName email",
-                )
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit),
+    const [submissions, total] = await Promise.all([
+        Submission.find(filter)
+            .populate("student", "fullName email phone photo")
+            .populate("assignment", "title dueDate course")
+            .populate("gradedBy", "fullName email")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit),
 
-            Submission.countDocuments(filter),
-        ]);
+        Submission.countDocuments(filter),
+    ]);
 
     return {
         submissions,
@@ -314,4 +284,3 @@ export const getAllSubmissionsService = async ({
         },
     };
 };
-

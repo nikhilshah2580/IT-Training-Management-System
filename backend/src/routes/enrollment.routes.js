@@ -5,6 +5,7 @@ import {
   getEnrollments,
   getEnrollment,
   getMyEnrollments,
+  getInstructorEnrollments,
   updateEnrollmentStatus,
   updateEnrollmentPaymentStatus,
   updateEnrollmentProgress,
@@ -22,8 +23,12 @@ enrollmentRoutes.post("/", verifyToken, authorizeRoles("student"), createEnrollm
 // Student views own enrollments
 enrollmentRoutes.get("/my", verifyToken, authorizeRoles("student"), getMyEnrollments);
 
-//get all enrollments
-enrollmentRoutes.get("/", verifyToken, authorizeRoles("admin"), getEnrollments); 
+// Instructor views students enrolled
+// only in their own courses
+enrollmentRoutes.get("/instructor", verifyToken, authorizeRoles("instructor"), getInstructorEnrollments);
+
+// Admin gets all enrollments
+enrollmentRoutes.get("/", verifyToken, authorizeRoles("admin"), getEnrollments);
 
 // Admin views single enrollment
 enrollmentRoutes.get("/:id", verifyToken, authorizeRoles("admin"), getEnrollment);
@@ -34,10 +39,11 @@ enrollmentRoutes.patch("/:id/status", verifyToken, authorizeRoles("admin"), upda
 // Admin updates payment status
 enrollmentRoutes.patch("/:id/payment-status", verifyToken, authorizeRoles("admin"), updateEnrollmentPaymentStatus);
 
-//update progress
+// Admin + Instructor can update progress
+// Instructor ownership is checked inside the service
 enrollmentRoutes.patch("/:id/progress", verifyToken, authorizeRoles("admin", "instructor"), updateEnrollmentProgress);
 
-//cancel enrollment
+// Only admin can cancel enrollment
 enrollmentRoutes.patch("/:id/cancel", verifyToken, authorizeRoles("admin"), cancelEnrollment);
 
 export default enrollmentRoutes;

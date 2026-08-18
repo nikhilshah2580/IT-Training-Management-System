@@ -1,10 +1,7 @@
 import InstructorProfile from "../models/instructorProfile.model.js";
 import User from "../models/user.model.js";
 
-/* ----------------------------------------
-   CREATE PROFILE
------------------------------------------ */
-
+// CREATE PROFILE
 export const createInstructorProfileService = async (userId, data) => {
     const user = await User.findById(userId);
 
@@ -15,7 +12,9 @@ export const createInstructorProfileService = async (userId, data) => {
     }
 
     if (user.role !== "instructor") {
-        const error = new Error("Only instructors can create an instructor profile");
+        const error = new Error(
+            "Only instructors can create an instructor profile",
+        );
         error.statusCode = 403;
         throw error;
     }
@@ -36,10 +35,7 @@ export const createInstructorProfileService = async (userId, data) => {
     });
 };
 
-/* ----------------------------------------
-   GET OWN PROFILE
------------------------------------------ */
-
+// GET OWN PROFILE
 export const getMyInstructorProfileService = async (userId) => {
     return await InstructorProfile.findOne({
         user: userId,
@@ -48,18 +44,14 @@ export const getMyInstructorProfileService = async (userId) => {
         .populate("approvedBy", "fullName email");
 };
 
-/* ----------------------------------------
-   GET PROFILE BY ID
------------------------------------------ */
-
+// GET PROFILE BY ID
 export const getInstructorProfileService = async (id) => {
-    return await InstructorProfile.findById(id).populate("user", "fullName email phone photo role").populate("approvedBy", "fullName email");
+    return await InstructorProfile.findById(id)
+        .populate("user", "fullName email phone photo role")
+        .populate("approvedBy", "fullName email");
 };
 
-/* ----------------------------------------
-   GET ALL APPROVED INSTRUCTORS
------------------------------------------ */
-
+// GET ALL APPROVED INSTRUCTORS
 export const getApprovedInstructorProfilesService = async () => {
     return await InstructorProfile.find({
         isApproved: true,
@@ -71,20 +63,17 @@ export const getApprovedInstructorProfilesService = async () => {
         });
 };
 
-/* ----------------------------------------
-   ADMIN GET ALL PROFILES
------------------------------------------ */
-
+// ADMIN GET ALL PROFILES
 export const getAllInstructorProfilesService = async () => {
-    return await InstructorProfile.find().populate("user", "fullName email phone photo role").populate("approvedBy", "fullName email").sort({
-        createdAt: -1,
-    });
+    return await InstructorProfile.find()
+        .populate("user", "fullName email phone photo role")
+        .populate("approvedBy", "fullName email")
+        .sort({
+            createdAt: -1,
+        });
 };
 
-/* ----------------------------------------
-   UPDATE OWN PROFILE
------------------------------------------ */
-
+// UPDATE OWN PROFILE
 export const updateInstructorProfileService = async (userId, data) => {
     const profile = await InstructorProfile.findOne({
         user: userId,
@@ -112,10 +101,7 @@ export const updateInstructorProfileService = async (userId, data) => {
     }).populate("user", "fullName email phone photo role");
 };
 
-/* ----------------------------------------
-   ADMIN APPROVE PROFILE
------------------------------------------ */
-
+// ADMIN APPROVE PROFILE
 export const approveInstructorProfileService = async (profileId, adminId) => {
     const profile = await InstructorProfile.findById(profileId);
 
@@ -142,10 +128,7 @@ export const approveInstructorProfileService = async (profileId, adminId) => {
         .populate("approvedBy", "fullName email");
 };
 
-/* ----------------------------------------
-   ADMIN REJECT PROFILE
------------------------------------------ */
-
+// ADMIN REJECT PROFILE
 export const rejectInstructorProfileService = async (profileId, adminId) => {
     const profile = await InstructorProfile.findById(profileId);
 
@@ -172,10 +155,7 @@ export const rejectInstructorProfileService = async (profileId, adminId) => {
         .populate("approvedBy", "fullName email");
 };
 
-/* ----------------------------------------
-   DELETE PROFILE
------------------------------------------ */
-
+// DELETE PROFILE
 export const deleteInstructorProfileService = async (profileId) => {
     const profile = await InstructorProfile.findByIdAndDelete(profileId);
 

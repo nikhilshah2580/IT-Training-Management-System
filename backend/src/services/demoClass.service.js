@@ -2,13 +2,22 @@ import DemoClass from "../models/demoClass.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
 
-/* ----------------------------------------
-   CREATE DEMO CLASS
-   Instructor / Admin
------------------------------------------ */
-
+// CREATE DEMO CLASS Instructor / Admin
 export const createDemoClassService = async (data) => {
-    const { course, instructor, title, description, date, startTime, endTime, duration, mode, meetingLink, location, maxSeats } = data;
+    const {
+        course,
+        instructor,
+        title,
+        description,
+        date,
+        startTime,
+        endTime,
+        duration,
+        mode,
+        meetingLink,
+        location,
+        maxSeats,
+    } = data;
 
     const courseExists = await Course.findById(course);
 
@@ -37,7 +46,9 @@ export const createDemoClassService = async (data) => {
     }
 
     if (mode === "Online" && !meetingLink) {
-        const error = new Error("Meeting link is required for online demo classes.");
+        const error = new Error(
+            "Meeting link is required for online demo classes.",
+        );
 
         error.statusCode = 400;
         throw error;
@@ -65,13 +76,12 @@ export const createDemoClassService = async (data) => {
         maxSeats,
     });
 
-    return await DemoClass.findById(demoClass._id).populate("course", "title").populate("instructor", "fullName email photo");
+    return await DemoClass.findById(demoClass._id)
+        .populate("course", "title")
+        .populate("instructor", "fullName email photo");
 };
 
-/* ----------------------------------------
-   GET ALL DEMO CLASSES
------------------------------------------ */
-
+// GET ALL DEMO CLASSES
 export const getDemoClassesService = async (query = {}) => {
     const { course, instructor, status, mode } = query;
 
@@ -82,13 +92,13 @@ export const getDemoClassesService = async (query = {}) => {
     if (status) filter.status = status;
     if (mode) filter.mode = mode;
 
-    return await DemoClass.find(filter).populate("course", "title").populate("instructor", "fullName email photo").sort({ date: 1 });
+    return await DemoClass.find(filter)
+        .populate("course", "title")
+        .populate("instructor", "fullName email photo")
+        .sort({ date: 1 });
 };
 
-/* ----------------------------------------
-   GET SINGLE DEMO CLASS
------------------------------------------ */
-
+// GET SINGLE DEMO CLASS
 export const getDemoClassService = async (id) => {
     return await DemoClass.findById(id)
         .populate("course", "title description fee")
@@ -96,11 +106,7 @@ export const getDemoClassService = async (id) => {
         .populate("bookings.student", "fullName email phone photo");
 };
 
-/* ----------------------------------------
-   UPDATE DEMO CLASS
-   Instructor
------------------------------------------ */
-
+// UPDATE DEMO CLASS Instructor
 export const updateDemoClassService = async (id, instructorId, data) => {
     const demoClass = await DemoClass.findById(id);
 
@@ -147,13 +153,12 @@ export const updateDemoClassService = async (id, instructorId, data) => {
 
     await demoClass.save();
 
-    return await DemoClass.findById(id).populate("course", "title").populate("instructor", "fullName email photo");
+    return await DemoClass.findById(id)
+        .populate("course", "title")
+        .populate("instructor", "fullName email photo");
 };
 
-/* ----------------------------------------
-   ADMIN UPDATE
------------------------------------------ */
-
+// ADMIN UPDATE
 export const adminUpdateDemoClassService = async (id, data) => {
     const demoClass = await DemoClass.findById(id);
 
@@ -195,14 +200,12 @@ export const adminUpdateDemoClassService = async (id, data) => {
 
     await demoClass.save();
 
-    return await DemoClass.findById(id).populate("course", "title").populate("instructor", "fullName email photo");
+    return await DemoClass.findById(id)
+        .populate("course", "title")
+        .populate("instructor", "fullName email photo");
 };
 
-/* ----------------------------------------
-   DELETE DEMO CLASS
-   Instructor
------------------------------------------ */
-
+// DELETE DEMO CLASS Instructor
 export const deleteDemoClassService = async (id, instructorId) => {
     const demoClass = await DemoClass.findById(id);
 
@@ -223,10 +226,7 @@ export const deleteDemoClassService = async (id, instructorId) => {
     await DemoClass.findByIdAndDelete(id);
 };
 
-/* ----------------------------------------
-   ADMIN DELETE
------------------------------------------ */
-
+// ADMIN DELETE
 export const adminDeleteDemoClassService = async (id) => {
     const demoClass = await DemoClass.findByIdAndDelete(id);
 
@@ -238,11 +238,7 @@ export const adminDeleteDemoClassService = async (id) => {
     }
 };
 
-/* ----------------------------------------
-   BOOK DEMO CLASS
-   Student
------------------------------------------ */
-
+// BOOK DEMO CLASS Student
 export const bookDemoClassService = async (demoClassId, studentId) => {
     const demoClass = await DemoClass.findById(demoClassId);
 
@@ -268,7 +264,9 @@ export const bookDemoClassService = async (demoClassId, studentId) => {
     }
 
     const alreadyBooked = demoClass.bookings.some(
-        (booking) => booking.student.toString() === studentId.toString() && booking.status === "Booked",
+        (booking) =>
+            booking.student.toString() === studentId.toString() &&
+            booking.status === "Booked",
     );
 
     if (alreadyBooked) {
@@ -294,14 +292,12 @@ export const bookDemoClassService = async (demoClassId, studentId) => {
 
     await demoClass.save();
 
-    return await DemoClass.findById(demoClassId).populate("course", "title").populate("instructor", "fullName email photo");
+    return await DemoClass.findById(demoClassId)
+        .populate("course", "title")
+        .populate("instructor", "fullName email photo");
 };
 
-/* ----------------------------------------
-   CANCEL BOOKING
-   Student
------------------------------------------ */
-
+// CANCEL BOOKING Student
 export const cancelDemoBookingService = async (demoClassId, studentId) => {
     const demoClass = await DemoClass.findById(demoClassId);
 
@@ -312,7 +308,11 @@ export const cancelDemoBookingService = async (demoClassId, studentId) => {
         throw error;
     }
 
-    const booking = demoClass.bookings.find((item) => item.student.toString() === studentId.toString() && item.status === "Booked");
+    const booking = demoClass.bookings.find(
+        (item) =>
+            item.student.toString() === studentId.toString() &&
+            item.status === "Booked",
+    );
 
     if (!booking) {
         const error = new Error("Active booking not found.");
@@ -330,11 +330,7 @@ export const cancelDemoBookingService = async (demoClassId, studentId) => {
     return await DemoClass.findById(demoClassId);
 };
 
-/* ----------------------------------------
-   GET MY BOOKINGS
-   Student
------------------------------------------ */
-
+// GET MY BOOKINGS Student
 export const getMyDemoBookingsService = async (studentId) => {
     return await DemoClass.find({
         "bookings.student": studentId,

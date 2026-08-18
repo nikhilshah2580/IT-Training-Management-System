@@ -112,7 +112,4 @@ instructorProfileSchema.index({ specialization: 1 });
 instructorProfileSchema.index({ status: 1 });
 instructorProfileSchema.index({ isApproved: 1 });
 
-export default mongoose.model(
-    "InstructorProfile",
-    instructorProfileSchema,
-);
+export default mongoose.model("InstructorProfile", instructorProfileSchema);

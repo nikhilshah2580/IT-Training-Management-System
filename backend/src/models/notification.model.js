@@ -103,9 +103,6 @@ notificationSchema.index({
     createdAt: -1,
 });
 
-const Notification = mongoose.model(
-    "Notification",
-    notificationSchema,
-);
+const Notification = mongoose.model("Notification", notificationSchema);
 
 export default Notification;

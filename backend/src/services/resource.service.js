@@ -1,12 +1,18 @@
 import Resource from "../models/resource.model.js";
 import Course from "../models/course.model.js";
 
-/* ----------------------------------------
-   CREATE RESOURCE
------------------------------------------ */
-
+// CREATE RESOURCE
 export const createResourceService = async (data) => {
-    const { course, instructor, title, description, type, url, publicId, isPublished } = data;
+    const {
+        course,
+        instructor,
+        title,
+        description,
+        type,
+        url,
+        publicId,
+        isPublished,
+    } = data;
 
     const courseExists = await Course.findById(course);
 
@@ -34,10 +40,7 @@ export const createResourceService = async (data) => {
     });
 };
 
-/* ----------------------------------------
-   GET ALL RESOURCES
------------------------------------------ */
-
+// GET ALL RESOURCES
 export const getResourcesService = async (query = {}) => {
     const { course, type, isPublished } = query;
 
@@ -55,21 +58,20 @@ export const getResourcesService = async (query = {}) => {
         filter.isPublished = isPublished;
     }
 
-    return await Resource.find(filter).populate("course", "title").populate("instructor", "fullName email photo").sort({ createdAt: -1 });
+    return await Resource.find(filter)
+        .populate("course", "title")
+        .populate("instructor", "fullName email photo")
+        .sort({ createdAt: -1 });
 };
 
-/* ----------------------------------------
-   GET SINGLE RESOURCE
------------------------------------------ */
-
+// GET SINGLE RESOURCE
 export const getResourceService = async (id) => {
-    return await Resource.findById(id).populate("course", "title description").populate("instructor", "fullName email photo");
+    return await Resource.findById(id)
+        .populate("course", "title description")
+        .populate("instructor", "fullName email photo");
 };
 
-/* ----------------------------------------
-   GET RESOURCES BY COURSE
------------------------------------------ */
-
+// GET RESOURCES BY COURSE
 export const getCourseResourcesService = async (courseId) => {
     const courseExists = await Course.findById(courseId);
 
@@ -87,10 +89,7 @@ export const getCourseResourcesService = async (courseId) => {
         .sort({ createdAt: -1 });
 };
 
-/* ----------------------------------------
-   UPDATE RESOURCE
------------------------------------------ */
-
+// UPDATE RESOURCE
 export const updateResourceService = async (id, instructorId, data) => {
     const resource = await Resource.findById(id);
 
@@ -106,7 +105,14 @@ export const updateResourceService = async (id, instructorId, data) => {
         throw error;
     }
 
-    const allowedUpdates = ["title", "description", "type", "url", "publicId", "isPublished"];
+    const allowedUpdates = [
+        "title",
+        "description",
+        "type",
+        "url",
+        "publicId",
+        "isPublished",
+    ];
 
     allowedUpdates.forEach((field) => {
         if (data[field] !== undefined) {
@@ -116,13 +122,12 @@ export const updateResourceService = async (id, instructorId, data) => {
 
     await resource.save();
 
-    return await Resource.findById(id).populate("course", "title").populate("instructor", "fullName email photo");
+    return await Resource.findById(id)
+        .populate("course", "title")
+        .populate("instructor", "fullName email photo");
 };
 
-/* ----------------------------------------
-   ADMIN UPDATE RESOURCE
------------------------------------------ */
-
+// ADMIN UPDATE RESOURCE
 export const adminUpdateResourceService = async (id, data) => {
     const resource = await Resource.findByIdAndUpdate(id, data, {
         returnDocument: "after",
@@ -140,10 +145,7 @@ export const adminUpdateResourceService = async (id, data) => {
     return resource;
 };
 
-/* ----------------------------------------
-   DELETE RESOURCE
------------------------------------------ */
-
+// DELETE RESOURCE
 export const deleteResourceService = async (id, instructorId) => {
     const resource = await Resource.findById(id);
 
@@ -164,10 +166,7 @@ export const deleteResourceService = async (id, instructorId) => {
     return resource;
 };
 
-/* ----------------------------------------
-   ADMIN DELETE RESOURCE
------------------------------------------ */
-
+// ADMIN DELETE RESOURCE
 export const adminDeleteResourceService = async (id) => {
     const resource = await Resource.findByIdAndDelete(id);
 

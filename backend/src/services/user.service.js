@@ -3,16 +3,11 @@ import mongoose from "mongoose";
 
 import User from "../models/user.model.js";
 
-/* ----------------------------------------
-   SAFE USER FIELDS
------------------------------------------ */
+// SAFE USER FIELDS
+const safeUserFields =
+  "-password -refreshToken -resetOtp -resetOtpExpire -verificationOtp -verificationOtpExpire";
 
-const safeUserFields = "-password -refreshToken -resetOtp -resetOtpExpire -verificationOtp -verificationOtpExpire";
-
-/* ----------------------------------------
-   CURRENT USER
------------------------------------------ */
-
+// CURRENT USER
 export const getCurrentUserService = async (id) => {
   const user = await User.findById(id).select(safeUserFields);
 
@@ -25,10 +20,7 @@ export const getCurrentUserService = async (id) => {
   return user;
 };
 
-/* ----------------------------------------
-   UPDATE PROFILE
------------------------------------------ */
-
+// UPDATE PROFILE
 export const updateProfileService = async (id, data) => {
   const updates = {};
 
@@ -82,12 +74,13 @@ export const updateProfileService = async (id, data) => {
   return user;
 };
 
-/* ----------------------------------------
-   GET ALL USERS
-   ADMIN
------------------------------------------ */
-
-export const getUsersService = async ({ role, search, page = 1, limit = 20 } = {}) => {
+// GET ALL USERS ADMIN
+export const getUsersService = async ({
+  role,
+  search,
+  page = 1,
+  limit = 20,
+} = {}) => {
   const filter = {};
 
   if (role) {
@@ -124,7 +117,11 @@ export const getUsersService = async ({ role, search, page = 1, limit = 20 } = {
   const skip = (currentPage - 1) * perPage;
 
   const [users, total] = await Promise.all([
-    User.find(filter).select(safeUserFields).sort({ createdAt: -1 }).skip(skip).limit(perPage),
+    User.find(filter)
+      .select(safeUserFields)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(perPage),
 
     User.countDocuments(filter),
   ]);
@@ -140,11 +137,7 @@ export const getUsersService = async ({ role, search, page = 1, limit = 20 } = {
   };
 };
 
-/* ----------------------------------------
-   GET SINGLE USER
-   ADMIN
------------------------------------------ */
-
+// GET SINGLE USER ADMIN
 export const getUserService = async (id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const error = new Error("Invalid user ID");
@@ -163,12 +156,17 @@ export const getUserService = async (id) => {
   return user;
 };
 
-/* ----------------------------------------
-   ADMIN CREATE USER
------------------------------------------ */
-
+// ADMIN CREATE USER
 export const createUserService = async (data) => {
-  const { fullName, email, password, phone = "", address = "", photo = "", role = "student" } = data;
+  const {
+    fullName,
+    email,
+    password,
+    phone = "",
+    address = "",
+    photo = "",
+    role = "student",
+  } = data;
 
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -199,10 +197,7 @@ export const createUserService = async (data) => {
   return await User.findById(user._id).select(safeUserFields);
 };
 
-/* ----------------------------------------
-   ADMIN UPDATE USER
------------------------------------------ */
-
+// ADMIN UPDATE USER
 export const updateUserService = async (id, data) => {
   const updates = {};
 
@@ -276,11 +271,7 @@ export const updateUserService = async (id, data) => {
   return user;
 };
 
-/* ----------------------------------------
-   DELETE USER
-   ADMIN
------------------------------------------ */
-
+// DELETE USER ADMIN
 export const deleteUserService = async (id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const error = new Error("Invalid user ID");
@@ -299,11 +290,12 @@ export const deleteUserService = async (id) => {
   return user;
 };
 
-/* ----------------------------------------
-   CHANGE PASSWORD
------------------------------------------ */
-
-export const changePasswordService = async (userId, currentPassword, newPassword) => {
+// CHANGE PASSWORD
+export const changePasswordService = async (
+  userId,
+  currentPassword,
+  newPassword,
+) => {
   const user = await User.findById(userId).select("+password +refreshToken");
 
   if (!user) {

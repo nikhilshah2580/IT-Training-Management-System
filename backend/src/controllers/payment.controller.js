@@ -9,43 +9,29 @@ import {
 } from "../services/payment.service.js";
 
 // Student creates payment
-export const createPayment = async (
-    req,
-    res,
-) => {
-    const payment =
-        await createPaymentService({
-            studentId: req.user._id,
-            ...req.body,
-        });
+export const createPayment = async (req, res) => {
+    const payment = await createPaymentService({
+        studentId: req.user._id,
+        ...req.body,
+    });
 
     return res.status(201).json({
         success: true,
-        message:
-            "Payment created successfully.",
+        message: "Payment created successfully.",
         payment,
     });
 };
 
 // Admin gets all payments
-export const getPayments = async (
-    req,
-    res,
-) => {
-    const {
+export const getPayments = async (req, res) => {
+    const { status, paymentMethod, page, limit } = req.query;
+
+    const result = await getPaymentsService({
         status,
         paymentMethod,
         page,
         limit,
-    } = req.query;
-
-    const result =
-        await getPaymentsService({
-            status,
-            paymentMethod,
-            page,
-            limit,
-        });
+    });
 
     return res.status(200).json({
         success: true,
@@ -54,19 +40,11 @@ export const getPayments = async (
 };
 
 // Get single payment
-export const getPayment = async (
-    req,
-    res,
-) => {
-    const payment =
-        await getPaymentService(
-            req.params.id,
-        );
+export const getPayment = async (req, res) => {
+    const payment = await getPaymentService(req.params.id);
 
     if (!payment) {
-        const error = new Error(
-            "Payment not found.",
-        );
+        const error = new Error("Payment not found.");
 
         error.statusCode = 404;
         throw error;
@@ -79,14 +57,8 @@ export const getPayment = async (
 };
 
 // Student gets own payments
-export const getMyPayments = async (
-    req,
-    res,
-) => {
-    const payments =
-        await getMyPaymentsService(
-            req.user._id,
-        );
+export const getMyPayments = async (req, res) => {
+    const payments = await getMyPaymentsService(req.user._id);
 
     return res.status(200).json({
         success: true,
@@ -95,67 +67,25 @@ export const getMyPayments = async (
 };
 
 // Admin updates payment status
-export const updatePaymentStatus =
-    async (req, res) => {
-        const { paymentStatus } =
-            req.body;
+export const updatePaymentStatus = async (req, res) => {
+    const { paymentStatus } = req.body;
 
-        const allowedStatuses = [
-            "Pending",
-            "Paid",
-            "Failed",
-        ];
+    const allowedStatuses = ["Pending", "Paid", "Failed"];
 
-        if (
-            !allowedStatuses.includes(
-                paymentStatus,
-            )
-        ) {
-            const error = new Error(
-                "Invalid payment status.",
-            );
+    if (!allowedStatuses.includes(paymentStatus)) {
+        const error = new Error("Invalid payment status.");
 
-            error.statusCode = 400;
-            throw error;
-        }
+        error.statusCode = 400;
+        throw error;
+    }
 
-        const payment =
-            await updatePaymentStatusService(
-                req.params.id,
-                paymentStatus,
-            );
-
-        if (!payment) {
-            const error = new Error(
-                "Payment not found.",
-            );
-
-            error.statusCode = 404;
-            throw error;
-        }
-
-        return res.status(200).json({
-            success: true,
-            message:
-                "Payment status updated successfully.",
-            payment,
-        });
-    };
-
-// Admin deletes payment
-export const deletePayment = async (
-    req,
-    res,
-) => {
-    const payment =
-        await deletePaymentService(
-            req.params.id,
-        );
+    const payment = await updatePaymentStatusService(
+        req.params.id,
+        paymentStatus,
+    );
 
     if (!payment) {
-        const error = new Error(
-            "Payment not found.",
-        );
+        const error = new Error("Payment not found.");
 
         error.statusCode = 404;
         throw error;
@@ -163,19 +93,34 @@ export const deletePayment = async (
 
     return res.status(200).json({
         success: true,
-        message:
-            "Payment deleted successfully.",
+        message: "Payment status updated successfully.",
+        payment,
+    });
+};
+
+// Admin deletes payment
+export const deletePayment = async (req, res) => {
+    const payment = await deletePaymentService(req.params.id);
+
+    if (!payment) {
+        const error = new Error("Payment not found.");
+
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Payment deleted successfully.",
     });
 };
 
 // Admin financial report
-export const getPaymentReport =
-    async (req, res) => {
-        const report =
-            await getPaymentReportService();
+export const getPaymentReport = async (req, res) => {
+    const report = await getPaymentReportService();
 
-        return res.status(200).json({
-            success: true,
-            report,
-        });
-    };
+    return res.status(200).json({
+        success: true,
+        report,
+    });
+};

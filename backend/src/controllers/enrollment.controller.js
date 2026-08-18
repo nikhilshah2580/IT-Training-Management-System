@@ -3,20 +3,35 @@ import {
   getEnrollmentsService,
   getEnrollmentService,
   getMyEnrollmentsService,
+  getInstructorEnrollmentsService,
   updateEnrollmentStatusService,
   updateEnrollmentPaymentStatusService,
   updateEnrollmentProgressService,
   cancelEnrollmentService,
 } from "../services/enrollment.service.js";
 
-/*
-|--------------------------------------------------------------------------
-| STUDENT CREATE ENROLLMENT
-|--------------------------------------------------------------------------
-*/
+export const getInstructorEnrollments = async (req, res) => {
+  const { courseId, status, page, limit } = req.query;
 
+  const result = await getInstructorEnrollmentsService(req.user._id, {
+    courseId,
+    status,
+    page,
+    limit,
+  });
+
+  return res.status(200).json({
+    success: true,
+    ...result,
+  });
+};
+
+// STUDENT CREATE ENROLLMENT
 export const createEnrollment = async (req, res) => {
-  const enrollment = await createEnrollmentService(req.user._id, req.body.courseId);
+  const enrollment = await createEnrollmentService(
+    req.user._id,
+    req.body.courseId,
+  );
 
   return res.status(201).json({
     success: true,
@@ -25,12 +40,7 @@ export const createEnrollment = async (req, res) => {
   });
 };
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN GET ALL ENROLLMENTS
-|--------------------------------------------------------------------------
-*/
-
+// ADMIN GET ALL ENROLLMENTS
 export const getEnrollments = async (req, res) => {
   const { status, page, limit } = req.query;
 
@@ -46,12 +56,7 @@ export const getEnrollments = async (req, res) => {
   });
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET SINGLE ENROLLMENT
-|--------------------------------------------------------------------------
-*/
-
+// GET SINGLE ENROLLMENT
 export const getEnrollment = async (req, res) => {
   const enrollment = await getEnrollmentService(req.params.id);
 
@@ -61,12 +66,7 @@ export const getEnrollment = async (req, res) => {
   });
 };
 
-/*
-|--------------------------------------------------------------------------
-| STUDENT GET OWN ENROLLMENTS
-|--------------------------------------------------------------------------
-*/
-
+// STUDENT GET OWN ENROLLMENTS
 export const getMyEnrollments = async (req, res) => {
   const enrollments = await getMyEnrollmentsService(req.user._id);
 
@@ -76,14 +76,12 @@ export const getMyEnrollments = async (req, res) => {
   });
 };
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN UPDATE ENROLLMENT STATUS
-|--------------------------------------------------------------------------
-*/
-
+// ADMIN UPDATE ENROLLMENT STATUS
 export const updateEnrollmentStatus = async (req, res) => {
-  const enrollment = await updateEnrollmentStatusService(req.params.id, req.body.status);
+  const enrollment = await updateEnrollmentStatusService(
+    req.params.id,
+    req.body.status,
+  );
 
   return res.status(200).json({
     success: true,
@@ -92,14 +90,12 @@ export const updateEnrollmentStatus = async (req, res) => {
   });
 };
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN UPDATE PAYMENT STATUS
-|--------------------------------------------------------------------------
-*/
-
+// ADMIN UPDATE PAYMENT STATUS
 export const updateEnrollmentPaymentStatus = async (req, res) => {
-  const enrollment = await updateEnrollmentPaymentStatusService(req.params.id, req.body.paymentStatus);
+  const enrollment = await updateEnrollmentPaymentStatusService(
+    req.params.id,
+    req.body.paymentStatus,
+  );
 
   return res.status(200).json({
     success: true,
@@ -108,14 +104,13 @@ export const updateEnrollmentPaymentStatus = async (req, res) => {
   });
 };
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE COURSE PROGRESS
-|--------------------------------------------------------------------------
-*/
-
+// UPDATE COURSE PROGRESS
 export const updateEnrollmentProgress = async (req, res) => {
-  const enrollment = await updateEnrollmentProgressService(req.params.id, req.body.progress);
+  const enrollment = await updateEnrollmentProgressService(
+    req.params.id,
+    req.body.progress,
+    req.user,
+  );
 
   return res.status(200).json({
     success: true,
@@ -124,12 +119,7 @@ export const updateEnrollmentProgress = async (req, res) => {
   });
 };
 
-/*
-|--------------------------------------------------------------------------
-| CANCEL ENROLLMENT
-|--------------------------------------------------------------------------
-*/
-
+// CANCEL ENROLLMENT
 export const cancelEnrollment = async (req, res) => {
   const enrollment = await cancelEnrollmentService(req.params.id);
 

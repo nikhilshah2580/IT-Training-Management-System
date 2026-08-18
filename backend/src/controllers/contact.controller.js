@@ -79,7 +79,11 @@ export const getMyContacts = async (req, res) => {
 
 // UPDATE CONTACT - ADMIN
 export const updateContact = async (req, res) => {
-    const contact = await updateContactService(req.params.id, req.body, req.user._id);
+    const contact = await updateContactService(
+        req.params.id,
+        req.body,
+        req.user._id,
+    );
 
     // Notify the user
     try {
