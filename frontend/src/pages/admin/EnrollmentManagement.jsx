@@ -1,10 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getEnrollments, updateEnrollmentStatus, updateEnrollmentPaymentStatus, cancelEnrollment } from "../../api/enrollment.services";
+import {
+    getEnrollments,
+    updateEnrollmentStatus,
+    updateEnrollmentPaymentStatus,
+    cancelEnrollment,
+} from "../../api/enrollment.services";
 
 import { toast } from "react-toastify";
 
-import { CheckCircle, XCircle, Ban, Loader2, CreditCard, GraduationCap } from "lucide-react";
+import {
+    CheckCircle,
+    XCircle,
+    Ban,
+    Loader2,
+    CreditCard,
+    GraduationCap,
+} from "lucide-react";
 
 const EnrollmentManagement = () => {
     const queryClient = useQueryClient();
@@ -22,7 +34,6 @@ const EnrollmentManagement = () => {
 
     const enrollments = data?.enrollments || [];
 
-    
     // UPDATE ENROLLMENT STATUS
 
     const statusMutation = useMutation({
@@ -37,15 +48,17 @@ const EnrollmentManagement = () => {
         },
 
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to update enrollment");
+            toast.error(
+                error?.response?.data?.message || "Failed to update enrollment",
+            );
         },
     });
 
-    
     // UPDATE PAYMENT STATUS
 
     const paymentMutation = useMutation({
-        mutationFn: ({ id, paymentStatus }) => updateEnrollmentPaymentStatus(id, paymentStatus),
+        mutationFn: ({ id, paymentStatus }) =>
+            updateEnrollmentPaymentStatus(id, paymentStatus),
 
         onSuccess: (data) => {
             toast.success(data?.message || "Payment status updated");
@@ -60,7 +73,6 @@ const EnrollmentManagement = () => {
         },
     });
 
-    
     // CANCEL ENROLLMENT
 
     const cancelMutation = useMutation({
@@ -75,12 +87,14 @@ const EnrollmentManagement = () => {
         },
 
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to cancel enrollment");
+            toast.error(
+                error?.response?.data?.message || "Failed to cancel enrollment",
+            );
         },
     });
 
     // LOADING
-   
+
     if (isLoading) {
         return (
             <div className="flex min-h-100 items-center justify-center">
@@ -89,28 +103,32 @@ const EnrollmentManagement = () => {
         );
     }
 
-
     // ERROR
 
     if (isError) {
         return (
             <div className="rounded-xl bg-red-50 p-6 text-center">
-                <p className="font-semibold text-red-600">{error?.response?.data?.message || "Failed to load enrollments"}</p>
+                <p className="font-semibold text-red-600">
+                    {error?.response?.data?.message || "Failed to load enrollments"}
+                </p>
             </div>
         );
     }
 
-   
     // RENDER
-   
+
     return (
         <div className="space-y-6">
             {/* HEADER */}
 
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Enrollment Management</h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                    Enrollment Management
+                </h1>
 
-                <p className="mt-1 text-sm text-gray-500">Manage student course enrollments and payments.</p>
+                <p className="mt-1 text-sm text-gray-500">
+                    Manage student course enrollments and payments.
+                </p>
             </div>
 
             {/* TABLE */}
@@ -120,24 +138,39 @@ const EnrollmentManagement = () => {
                     <table className="w-full min-w-275">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Student</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold">
+                                    Student
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Course</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold">
+                                    Course
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold">
+                                    Status
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Payment</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold">
+                                    Payment
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Progress</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold">
+                                    Progress
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Actions</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
 
                         <tbody className="divide-y">
                             {enrollments.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                                    <td
+                                        colSpan="6"
+                                        className="px-6 py-12 text-center text-gray-500"
+                                    >
                                         No enrollments found.
                                     </td>
                                 </tr>
@@ -153,9 +186,13 @@ const EnrollmentManagement = () => {
                                                 </div>
 
                                                 <div>
-                                                    <p className="font-semibold text-gray-900">{enrollment.student?.fullName || "Unknown"}</p>
+                                                    <p className="font-semibold text-gray-900">
+                                                        {enrollment.student?.fullName || "Unknown"}
+                                                    </p>
 
-                                                    <p className="text-sm text-gray-500">{enrollment.student?.email || ""}</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {enrollment.student?.email || ""}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </td>
@@ -163,9 +200,13 @@ const EnrollmentManagement = () => {
                                         {/* COURSE */}
 
                                         <td className="px-6 py-4">
-                                            <p className="font-medium text-gray-900">{enrollment.course?.title || "Unknown course"}</p>
+                                            <p className="font-medium text-gray-900">
+                                                {enrollment.course?.title || "Unknown course"}
+                                            </p>
 
-                                            <p className="text-sm text-gray-500">Rs. {enrollment.course?.fee ?? 0}</p>
+                                            <p className="text-sm text-gray-500">
+                                                Rs. {enrollment.course?.fee ?? 0}
+                                            </p>
                                         </td>
 
                                         {/* STATUS */}

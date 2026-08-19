@@ -91,7 +91,9 @@ const CreateCourse = () => {
     const removeResource = (index) => {
         setFormData((prev) => ({
             ...prev,
-            resources: prev.resources.filter((_, resourceIndex) => resourceIndex !== index),
+            resources: prev.resources.filter(
+                (_, resourceIndex) => resourceIndex !== index,
+            ),
         }));
     };
 
@@ -144,14 +146,20 @@ const CreateCourse = () => {
         <div className="mx-auto max-w-5xl space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4">
-                <button type="button" onClick={() => navigate("/instructor/courses")} className="rounded-lg border bg-white p-2 hover:bg-gray-50">
+                <button
+                    type="button"
+                    onClick={() => navigate("/instructor/courses")}
+                    className="rounded-lg border bg-white p-2 hover:bg-gray-50"
+                >
                     <ArrowLeft size={20} />
                 </button>
 
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Create Course</h1>
 
-                    <p className="mt-1 text-sm text-gray-500">Create a new course for admin approval.</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Create a new course for admin approval.
+                    </p>
                 </div>
             </div>
 
@@ -164,7 +172,9 @@ const CreateCourse = () => {
                     <div className="grid gap-5 md:grid-cols-2">
                         {/* Title */}
                         <div className="md:col-span-2">
-                            <label className="mb-2 block text-sm font-medium">Course Title *</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Course Title *
+                            </label>
 
                             <input
                                 type="text"
@@ -180,7 +190,9 @@ const CreateCourse = () => {
 
                         {/* Description */}
                         <div className="md:col-span-2">
-                            <label className="mb-2 block text-sm font-medium">Description *</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Description *
+                            </label>
 
                             <textarea
                                 name="description"
@@ -195,7 +207,9 @@ const CreateCourse = () => {
 
                         {/* Category */}
                         <div>
-                            <label className="mb-2 block text-sm font-medium">Category *</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Category *
+                            </label>
 
                             <select
                                 name="category"
@@ -207,7 +221,9 @@ const CreateCourse = () => {
 
                                 <option value="Web Development">Web Development</option>
 
-                                <option value="Data Science & Analytics">Data Science & Analytics</option>
+                                <option value="Data Science & Analytics">
+                                    Data Science & Analytics
+                                </option>
 
                                 <option value="Graphic Design">Graphic Design</option>
 
@@ -225,7 +241,9 @@ const CreateCourse = () => {
 
                         {/* Skill Level */}
                         <div>
-                            <label className="mb-2 block text-sm font-medium">Skill Level *</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Skill Level *
+                            </label>
 
                             <select
                                 name="skillLevel"
@@ -250,7 +268,9 @@ const CreateCourse = () => {
                     <div className="grid gap-5 md:grid-cols-2">
                         {/* Syllabus */}
                         <div className="md:col-span-2">
-                            <label className="mb-2 block text-sm font-medium">Syllabus *</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Syllabus *
+                            </label>
 
                             <textarea
                                 name="syllabus"
@@ -264,7 +284,9 @@ const CreateCourse = () => {
 
                         {/* Duration */}
                         <div>
-                            <label className="mb-2 block text-sm font-medium">Duration *</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Duration *
+                            </label>
 
                             <input
                                 type="text"
@@ -279,7 +301,9 @@ const CreateCourse = () => {
 
                         {/* Fee */}
                         <div>
-                            <label className="mb-2 block text-sm font-medium">Course Fee *</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Course Fee *
+                            </label>
 
                             <input
                                 type="number"
@@ -295,7 +319,9 @@ const CreateCourse = () => {
 
                         {/* Prerequisites */}
                         <div className="md:col-span-2">
-                            <label className="mb-2 block text-sm font-medium">Prerequisites</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Prerequisites
+                            </label>
 
                             <textarea
                                 name="prerequisites"
@@ -309,7 +335,9 @@ const CreateCourse = () => {
 
                         {/* Deadline */}
                         <div>
-                            <label className="mb-2 block text-sm font-medium">Enrollment Deadline</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Enrollment Deadline
+                            </label>
 
                             <input
                                 type="date"
@@ -322,7 +350,9 @@ const CreateCourse = () => {
 
                         {/* Image */}
                         <div>
-                            <label className="mb-2 block text-sm font-medium">Course Image URL</label>
+                            <label className="mb-2 block text-sm font-medium">
+                                Course Image URL
+                            </label>
 
                             <input
                                 type="url"
@@ -340,7 +370,9 @@ const CreateCourse = () => {
                 <section className="rounded-xl border bg-white p-6 shadow-sm">
                     <h2 className="mb-2 text-lg font-semibold">Course Resources</h2>
 
-                    <p className="mb-5 text-sm text-gray-500">Add videos, PDFs, documents or useful links.</p>
+                    <p className="mb-5 text-sm text-gray-500">
+                        Add videos, PDFs, documents or useful links.
+                    </p>
 
                     <div className="grid gap-3 md:grid-cols-4">
                         <input
@@ -392,7 +424,10 @@ const CreateCourse = () => {
                     {formData.resources.length > 0 && (
                         <div className="mt-5 space-y-3">
                             {formData.resources.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between rounded-lg border bg-gray-50 p-4">
+                                <div
+                                    key={index}
+                                    className="flex items-center justify-between rounded-lg border bg-gray-50 p-4"
+                                >
                                     <div>
                                         <p className="font-medium">{item.title}</p>
 
@@ -401,7 +436,11 @@ const CreateCourse = () => {
                                         </p>
                                     </div>
 
-                                    <button type="button" onClick={() => removeResource(index)} className="rounded-lg p-2 text-red-600 hover:bg-red-50">
+                                    <button
+                                        type="button"
+                                        onClick={() => removeResource(index)}
+                                        className="rounded-lg p-2 text-red-600 hover:bg-red-50"
+                                    >
                                         <Trash2 size={18} />
                                     </button>
                                 </div>

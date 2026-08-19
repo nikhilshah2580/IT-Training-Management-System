@@ -38,7 +38,10 @@ const UserManagement = () => {
         return users.filter((user) => {
             const searchText = search.toLowerCase().trim();
 
-            const matchesSearch = !searchText || user.fullName?.toLowerCase().includes(searchText) || user.email?.toLowerCase().includes(searchText);
+            const matchesSearch =
+                !searchText ||
+                user.fullName?.toLowerCase().includes(searchText) ||
+                user.email?.toLowerCase().includes(searchText);
 
             const matchesRole = roleFilter === "all" || user.role === roleFilter;
 
@@ -52,7 +55,9 @@ const UserManagement = () => {
             return;
         }
 
-        const confirmed = window.confirm(`Are you sure you want to delete ${user.fullName}?`);
+        const confirmed = window.confirm(
+            `Are you sure you want to delete ${user.fullName}?`,
+        );
 
         if (!confirmed) return;
 
@@ -72,7 +77,10 @@ const UserManagement = () => {
             <div className="rounded-xl border bg-white p-8 text-center">
                 <p className="text-red-500">Failed to load users.</p>
 
-                <button onClick={() => refetch()} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white">
+                <button
+                    onClick={() => refetch()}
+                    className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white"
+                >
                     Try Again
                 </button>
             </div>
@@ -86,7 +94,9 @@ const UserManagement = () => {
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
 
-                    <p className="mt-1 text-sm text-gray-500">Manage students, instructors and administrators.</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Manage students, instructors and administrators.
+                    </p>
                 </div>
 
                 <button
@@ -103,7 +113,10 @@ const UserManagement = () => {
                 <div className="grid gap-3 md:grid-cols-[1fr_200px]">
                     {/* Search */}
                     <div className="relative">
-                        <Search size={19} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <Search
+                            size={19}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
 
                         <input
                             type="text"
@@ -137,24 +150,39 @@ const UserManagement = () => {
                     <table className="w-full min-w-200">
                         <thead className="border-b bg-gray-50">
                             <tr>
-                                <th className="px-5 py-4 text-left text-sm font-semibold">User</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold">
+                                    User
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold">Email</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold">
+                                    Email
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold">Phone</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold">
+                                    Phone
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold">Role</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold">
+                                    Role
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold">Verified</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold">
+                                    Verified
+                                </th>
 
-                                <th className="px-5 py-4 text-right text-sm font-semibold">Action</th>
+                                <th className="px-5 py-4 text-right text-sm font-semibold">
+                                    Action
+                                </th>
                             </tr>
                         </thead>
 
                         <tbody className="divide-y">
                             {filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="px-5 py-12 text-center text-gray-500">
+                                    <td
+                                        colSpan="6"
+                                        className="px-5 py-12 text-center text-gray-500"
+                                    >
                                         No users found.
                                     </td>
                                 </tr>
@@ -166,35 +194,51 @@ const UserManagement = () => {
                                             <div className="flex items-center gap-3">
                                                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-blue-600">
                                                     {user.photo ? (
-                                                        <img src={user.photo} alt={user.fullName} className="h-full w-full object-cover" />
+                                                        <img
+                                                            src={user.photo}
+                                                            alt={user.fullName}
+                                                            className="h-full w-full object-cover"
+                                                        />
                                                     ) : (
                                                         <UserRound size={20} />
                                                     )}
                                                 </div>
 
                                                 <div>
-                                                    <p className="font-medium text-gray-900">{user.fullName}</p>
+                                                    <p className="font-medium text-gray-900">
+                                                        {user.fullName}
+                                                    </p>
 
-                                                    <p className="text-xs text-gray-500">ID: {user._id}</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        ID: {user._id}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </td>
 
                                         {/* Email */}
-                                        <td className="px-5 py-4 text-sm text-gray-600">{user.email}</td>
+                                        <td className="px-5 py-4 text-sm text-gray-600">
+                                            {user.email}
+                                        </td>
 
                                         {/* Phone */}
-                                        <td className="px-5 py-4 text-sm text-gray-600">{user.phone || "—"}</td>
+                                        <td className="px-5 py-4 text-sm text-gray-600">
+                                            {user.phone || "—"}
+                                        </td>
 
                                         {/* Role */}
                                         <td className="px-5 py-4">
-                                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold capitalize text-blue-700">{user.role}</span>
+                                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold capitalize text-blue-700">
+                                                {user.role}
+                                            </span>
                                         </td>
 
                                         {/* Verified */}
                                         <td className="px-5 py-4">
                                             <span
-                                                className={`rounded-full px-3 py-1 text-xs font-semibold ${user.isVerified ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"
+                                                className={`rounded-full px-3 py-1 text-xs font-semibold ${user.isVerified
+                                                        ? "bg-green-50 text-green-700"
+                                                        : "bg-yellow-50 text-yellow-700"
                                                     }`}
                                             >
                                                 {user.isVerified ? "Verified" : "Not Verified"}
@@ -205,9 +249,15 @@ const UserManagement = () => {
                                         <td className="px-5 py-4 text-right">
                                             <button
                                                 onClick={() => handleDelete(user)}
-                                                disabled={deleteMutation.isPending || user.role === "admin"}
+                                                disabled={
+                                                    deleteMutation.isPending || user.role === "admin"
+                                                }
                                                 className="rounded-lg p-2 text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
-                                                title={user.role === "admin" ? "Admin cannot be deleted" : "Delete user"}
+                                                title={
+                                                    user.role === "admin"
+                                                        ? "Admin cannot be deleted"
+                                                        : "Delete user"
+                                                }
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -221,8 +271,12 @@ const UserManagement = () => {
 
                 {/* Footer */}
                 <div className="border-t px-5 py-4 text-sm text-gray-500">
-                    Showing <span className="font-semibold text-gray-900">{filteredUsers.length}</span> of{" "}
-                    <span className="font-semibold text-gray-900">{users.length}</span> users
+                    Showing{" "}
+                    <span className="font-semibold text-gray-900">
+                        {filteredUsers.length}
+                    </span>{" "}
+                    of <span className="font-semibold text-gray-900">{users.length}</span>{" "}
+                    users
                 </div>
             </div>
         </div>

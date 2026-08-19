@@ -1,10 +1,25 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, Eye, Pencil, Trash2, Check, X, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import {
+    Search,
+    Eye,
+    Pencil,
+    Trash2,
+    Check,
+    X,
+    ChevronLeft,
+    ChevronRight,
+    RefreshCw,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-import { getCourses, deleteCourse, approveCourse, rejectCourse } from "../../api/course.services";
+import {
+    getCourses,
+    deleteCourse,
+    approveCourse,
+    rejectCourse,
+} from "../../api/course.services";
 
 const CourseManagement = () => {
     const navigate = useNavigate();
@@ -18,7 +33,6 @@ const CourseManagement = () => {
 
     const limit = 10;
 
- 
     // GET COURSES
 
     const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
@@ -49,7 +63,8 @@ const CourseManagement = () => {
 
     const courses = data?.courses || [];
 
-    const totalPages = data?.totalPages || Math.ceil((data?.total || 0) / limit) || 1;
+    const totalPages =
+        data?.totalPages || Math.ceil((data?.total || 0) / limit) || 1;
 
     // DELETE COURSE
 
@@ -91,7 +106,6 @@ const CourseManagement = () => {
         },
     });
 
-
     // REJECT COURSE
 
     const rejectMutation = useMutation({
@@ -111,7 +125,6 @@ const CourseManagement = () => {
             toast.error(error?.response?.data?.message || "Failed to reject course");
         },
     });
-
 
     // HANDLERS
 
@@ -136,7 +149,9 @@ const CourseManagement = () => {
     };
 
     const handleApprove = (course) => {
-        const confirmed = window.confirm(`Are you sure you want to approve "${course.title}"?`);
+        const confirmed = window.confirm(
+            `Are you sure you want to approve "${course.title}"?`,
+        );
 
         if (!confirmed) return;
 
@@ -144,7 +159,9 @@ const CourseManagement = () => {
     };
 
     const handleReject = (course) => {
-        const confirmed = window.confirm(`Are you sure you want to reject "${course.title}"?`);
+        const confirmed = window.confirm(
+            `Are you sure you want to reject "${course.title}"?`,
+        );
 
         if (!confirmed) return;
 
@@ -152,7 +169,9 @@ const CourseManagement = () => {
     };
 
     const handleDelete = (course) => {
-        const confirmed = window.confirm(`Are you sure you want to delete "${course.title}"?`);
+        const confirmed = window.confirm(
+            `Are you sure you want to delete "${course.title}"?`,
+        );
 
         if (!confirmed) return;
 
@@ -186,9 +205,15 @@ const CourseManagement = () => {
     if (isError) {
         return (
             <div className="rounded-xl border bg-white p-8 text-center shadow-sm">
-                <h2 className="text-xl font-semibold text-red-600">Failed to load courses</h2>
+                <h2 className="text-xl font-semibold text-red-600">
+                    Failed to load courses
+                </h2>
 
-                <p className="mt-2 text-gray-500">{error?.response?.data?.message || error?.message || "Something went wrong"}</p>
+                <p className="mt-2 text-gray-500">
+                    {error?.response?.data?.message ||
+                        error?.message ||
+                        "Something went wrong"}
+                </p>
 
                 <button
                     onClick={() => refetch()}
@@ -203,14 +228,17 @@ const CourseManagement = () => {
 
     return (
         <div className="space-y-6">
-
             {/* HEADER */}
 
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Course Management</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        Course Management
+                    </h1>
 
-                    <p className="mt-1 text-sm text-gray-500">Manage, approve, reject and monitor courses.</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Manage, approve, reject and monitor courses.
+                    </p>
                 </div>
 
                 <button
@@ -223,7 +251,6 @@ const CourseManagement = () => {
                 </button>
             </div>
 
-
             {/* FILTERS */}
 
             <div className="rounded-xl border bg-white p-5 shadow-sm">
@@ -231,7 +258,10 @@ const CourseManagement = () => {
                     {/* Search */}
 
                     <div className="relative lg:col-span-2">
-                        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <Search
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
 
                         <input
                             type="text"
@@ -244,14 +274,20 @@ const CourseManagement = () => {
 
                     {/* Category */}
 
-                    <select value={category} onChange={handleCategoryChange} className="rounded-lg border px-3 py-2.5 outline-none focus:border-blue-500">
+                    <select
+                        value={category}
+                        onChange={handleCategoryChange}
+                        className="rounded-lg border px-3 py-2.5 outline-none focus:border-blue-500"
+                    >
                         <option value="">All Categories</option>
 
                         <option value="Programming">Programming</option>
 
                         <option value="Web Development">Web Development</option>
 
-                        <option value="Data Science & Analytics">Data Science & Analytics</option>
+                        <option value="Data Science & Analytics">
+                            Data Science & Analytics
+                        </option>
 
                         <option value="Graphic Design">Graphic Design</option>
 
@@ -284,7 +320,11 @@ const CourseManagement = () => {
 
                     {/* Status */}
 
-                    <select value={status} onChange={handleStatusChange} className="rounded-lg border px-3 py-2.5 outline-none focus:border-blue-500">
+                    <select
+                        value={status}
+                        onChange={handleStatusChange}
+                        className="rounded-lg border px-3 py-2.5 outline-none focus:border-blue-500"
+                    >
                         <option value="">All Status</option>
 
                         <option value="Pending">Pending</option>
@@ -300,7 +340,10 @@ const CourseManagement = () => {
                 {/* Reset */}
 
                 {(search || category || skillLevel || status) && (
-                    <button onClick={handleReset} className="mt-4 text-sm font-medium text-blue-600 hover:underline">
+                    <button
+                        onClick={handleReset}
+                        className="mt-4 text-sm font-medium text-blue-600 hover:underline"
+                    >
                         Clear Filters
                     </button>
                 )}
@@ -315,19 +358,33 @@ const CourseManagement = () => {
                     <table className="w-full min-w-250">
                         <thead className="border-b bg-gray-50">
                             <tr>
-                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">Course</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
+                                    Course
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">Instructor</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
+                                    Instructor
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">Category</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
+                                    Category
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">Fee</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
+                                    Fee
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">Students</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
+                                    Students
+                                </th>
 
-                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
+                                    Status
+                                </th>
 
-                                <th className="px-5 py-4 text-right text-sm font-semibold text-gray-600">Actions</th>
+                                <th className="px-5 py-4 text-right text-sm font-semibold text-gray-600">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
 
@@ -335,9 +392,13 @@ const CourseManagement = () => {
                             {courses.length === 0 ? (
                                 <tr>
                                     <td colSpan="7" className="px-5 py-16 text-center">
-                                        <p className="font-medium text-gray-700">No courses found</p>
+                                        <p className="font-medium text-gray-700">
+                                            No courses found
+                                        </p>
 
-                                        <p className="mt-1 text-sm text-gray-500">Try changing your filters.</p>
+                                        <p className="mt-1 text-sm text-gray-500">
+                                            Try changing your filters.
+                                        </p>
                                     </td>
                                 </tr>
                             ) : (
@@ -349,16 +410,26 @@ const CourseManagement = () => {
                                             <div className="flex items-center gap-3">
                                                 <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                                                     {course.courseImage ? (
-                                                        <img src={course.courseImage} alt={course.title} className="h-full w-full object-cover" />
+                                                        <img
+                                                            src={course.courseImage}
+                                                            alt={course.title}
+                                                            className="h-full w-full object-cover"
+                                                        />
                                                     ) : (
-                                                        <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">No Image</div>
+                                                        <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+                                                            No Image
+                                                        </div>
                                                     )}
                                                 </div>
 
                                                 <div className="max-w-62.5">
-                                                    <p className="truncate font-semibold text-gray-900">{course.title}</p>
+                                                    <p className="truncate font-semibold text-gray-900">
+                                                        {course.title}
+                                                    </p>
 
-                                                    <p className="text-xs text-gray-500">{course.skillLevel}</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {course.skillLevel}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </td>
@@ -366,22 +437,32 @@ const CourseManagement = () => {
                                         {/* Instructor */}
 
                                         <td className="px-5 py-4">
-                                            <p className="font-medium text-gray-800">{course.instructor?.fullName || "Unknown"}</p>
+                                            <p className="font-medium text-gray-800">
+                                                {course.instructor?.fullName || "Unknown"}
+                                            </p>
 
-                                            <p className="text-xs text-gray-500">{course.instructor?.email || ""}</p>
+                                            <p className="text-xs text-gray-500">
+                                                {course.instructor?.email || ""}
+                                            </p>
                                         </td>
 
                                         {/* Category */}
 
-                                        <td className="px-5 py-4 text-sm text-gray-600">{course.category}</td>
+                                        <td className="px-5 py-4 text-sm text-gray-600">
+                                            {course.category}
+                                        </td>
 
                                         {/* Fee */}
 
-                                        <td className="px-5 py-4 text-sm font-medium text-gray-800">Rs. {Number(course.fee || 0).toLocaleString()}</td>
+                                        <td className="px-5 py-4 text-sm font-medium text-gray-800">
+                                            Rs. {Number(course.fee || 0).toLocaleString()}
+                                        </td>
 
                                         {/* Students */}
 
-                                        <td className="px-5 py-4 text-sm text-gray-600">{course.totalStudents || 0}</td>
+                                        <td className="px-5 py-4 text-sm text-gray-600">
+                                            {course.totalStudents || 0}
+                                        </td>
 
                                         {/* Status */}
 
@@ -407,7 +488,9 @@ const CourseManagement = () => {
                                                 {/* View */}
 
                                                 <button
-                                                    onClick={() => navigate(`/admin/courses/${course._id}`)}
+                                                    onClick={() =>
+                                                        navigate(`/admin/courses/${course._id}`)
+                                                    }
                                                     className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
                                                     title="View Course"
                                                 >
@@ -417,7 +500,9 @@ const CourseManagement = () => {
                                                 {/* Edit */}
 
                                                 <button
-                                                    onClick={() => navigate(`/admin/courses/${course._id}/edit`)}
+                                                    onClick={() =>
+                                                        navigate(`/admin/courses/${course._id}/edit`)
+                                                    }
                                                     className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"
                                                     title="Edit Course"
                                                 >
@@ -429,7 +514,10 @@ const CourseManagement = () => {
                                                 {course.status === "Pending" && (
                                                     <button
                                                         onClick={() => handleApprove(course)}
-                                                        disabled={approveMutation.isPending || rejectMutation.isPending}
+                                                        disabled={
+                                                            approveMutation.isPending ||
+                                                            rejectMutation.isPending
+                                                        }
                                                         className="rounded-lg p-2 text-green-600 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
                                                         title="Approve Course"
                                                     >
@@ -442,7 +530,10 @@ const CourseManagement = () => {
                                                 {course.status === "Pending" && (
                                                     <button
                                                         onClick={() => handleReject(course)}
-                                                        disabled={approveMutation.isPending || rejectMutation.isPending}
+                                                        disabled={
+                                                            approveMutation.isPending ||
+                                                            rejectMutation.isPending
+                                                        }
                                                         className="rounded-lg p-2 text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                                                         title="Reject Course"
                                                     >

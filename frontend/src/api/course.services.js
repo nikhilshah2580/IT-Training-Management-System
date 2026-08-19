@@ -1,59 +1,61 @@
 import api from "./apiClient";
 
-// GET ALL COURSES
+// PUBLIC - GET ACTIVE COURSES
 export const getCourses = async (params = {}) => {
-    const response = await api.get("/courses", {
-        params,
-    });
+    const response = await api.get("/courses", { params });
+    return response.data;
+};
 
+// ADMIN - GET ALL COURSES
+export const getAdminCourses = async (params = {}) => {
+    const response = await api.get("/courses/admin/all", { params });
+    return response.data;
+};
+
+// INSTRUCTOR - GET OWN COURSES
+export const getMyCourses = async (params = {}) => {
+    const response = await api.get("/courses/my", { params });
     return response.data;
 };
 
 // GET SINGLE COURSE
 export const getCourseById = async (id) => {
     const response = await api.get(`/courses/${id}`);
-
     return response.data;
 };
 
-// CREATE COURSE
+// INSTRUCTOR - CREATE COURSE
 export const createCourse = async (data) => {
     const response = await api.post("/courses", data);
-
     return response.data;
 };
 
-// UPDATE COURSE
+// ADMIN / INSTRUCTOR - UPDATE COURSE
 export const updateCourse = async (id, data) => {
     const response = await api.put(`/courses/${id}`, data);
-
     return response.data;
 };
 
-// DELETE COURSE
+// ADMIN / INSTRUCTOR - DELETE COURSE
 export const deleteCourse = async (id) => {
     const response = await api.delete(`/courses/${id}`);
-
     return response.data;
 };
 
-// APPROVE COURSE
+// ADMIN - APPROVE COURSE
 export const approveCourse = async (id) => {
     const response = await api.patch(`/courses/${id}/approve`);
-
     return response.data;
 };
 
-// REJECT COURSE
+// ADMIN - REJECT COURSE
 export const rejectCourse = async (id) => {
     const response = await api.patch(`/courses/${id}/reject`);
-
     return response.data;
 };
 
-// UPDATE COURSE STATUS
+// ADMIN - UPDATE COURSE STATUS
 export const updateCourseStatus = async (id, status) => {
     const response = await api.patch(`/courses/${id}/status`, { status });
-
     return response.data;
 };

@@ -30,3 +30,35 @@ export const logoutUser = async () => {
 
     return response.data;
 };
+
+
+// GOOGLE LOGIN
+export const googleLogin = async (data) => {
+    const response = await api.post("/users/google-login", data);
+    return response.data;
+};
+
+// FORGOT PASSWORD
+export const forgotPassword = async (emailInput) => {
+    const email = typeof emailInput === 'object' && emailInput !== null ? emailInput.email : emailInput;
+    const response = await api.post("/users/forgot-password", { email });
+    return response.data;
+};
+
+// VERIFY OTP
+export const verifyOtp = async (data) => {
+    const response = await api.post("/users/verify-otp", data);
+    return response.data;
+};
+ 
+// RESET PASSWORD
+export const resetPassword = async (data) => {
+    const response = await api.post("/users/reset-password", data);
+    return response.data;
+};
+
+// REFRESH TOKEN
+export const refreshToken = async () => {
+    const response = await api.post("/users/refresh-token");
+    return response.data;
+};

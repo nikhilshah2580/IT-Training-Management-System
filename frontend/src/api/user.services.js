@@ -27,3 +27,21 @@ export const deleteUser = async (id) => {
 
     return response.data;
 };
+
+// ADMIN - CREATE USER
+export const createUserByAdmin = async (data) => {
+    const response = await api.post("/users/admin/create", data);
+    return response.data;
+};
+
+// AUTHENTICATED USER - UPDATE PROFILE
+export const updateProfile = async (data) => {
+    const response = await api.put("/users/profile", data);
+    return response.data;
+};
+
+// AUTHENTICATED USER - CHANGE PASSWORD
+export const changePassword = async (data) => {
+    const response = await api.put("/users/change-password", data);
+    return response.data;
+};

@@ -76,11 +76,20 @@ const EditCourse = () => {
     if (isError) {
         return (
             <div className="rounded-xl border bg-white p-8 text-center">
-                <h2 className="text-xl font-semibold text-red-600">Failed to load course</h2>
+                <h2 className="text-xl font-semibold text-red-600">
+                    Failed to load course
+                </h2>
 
-                <p className="mt-2 text-gray-500">{error?.response?.data?.message || error?.message || "Course not found"}</p>
+                <p className="mt-2 text-gray-500">
+                    {error?.response?.data?.message ||
+                        error?.message ||
+                        "Course not found"}
+                </p>
 
-                <button onClick={() => navigate("/instructor/courses")} className="mt-5 rounded-lg bg-gray-900 px-5 py-2.5 text-white">
+                <button
+                    onClick={() => navigate("/instructor/courses")}
+                    className="mt-5 rounded-lg bg-gray-900 px-5 py-2.5 text-white"
+                >
                     Back to Courses
                 </button>
             </div>
@@ -94,7 +103,10 @@ const EditCourse = () => {
             <div className="rounded-xl border bg-white p-8 text-center">
                 <h2 className="text-xl font-semibold">Course not found</h2>
 
-                <button onClick={() => navigate("/instructor/courses")} className="mt-5 rounded-lg bg-gray-900 px-5 py-2.5 text-white">
+                <button
+                    onClick={() => navigate("/instructor/courses")}
+                    className="mt-5 rounded-lg bg-gray-900 px-5 py-2.5 text-white"
+                >
                     Back to Courses
                 </button>
             </div>

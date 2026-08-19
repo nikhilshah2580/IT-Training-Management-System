@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { signupUser } from "../api/auth.services";
+import { signupUser } from "../../api/auth.services";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -73,6 +73,9 @@ const Signup = () => {
 
       toast.success(data.message || "Account created successfully");
 
+      // Store email locally before clearing form state
+      const registeredEmail = payload.email;
+
       // Clear form
       setFormData({
         fullName: "",
@@ -80,12 +83,15 @@ const Signup = () => {
         password: "",
       });
 
-      // Redirect to login
-      navigate("/login", {
+      // Navigate with the correct email string in state
+      navigate("/verify-email", {
+        state: { email: registeredEmail },
         replace: true,
       });
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message || "Signup failed");
+      toast.error(
+        error?.response?.data?.message || error?.message || "Signup failed",
+      );
     } finally {
       setLoading(false);
     }
@@ -95,14 +101,16 @@ const Signup = () => {
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
       <div className="w-full max-w-md">
         {/* ==============================
-                    CARD
+                CARD
                 ============================== */}
         <div className="rounded-2xl bg-white p-8 shadow-xl">
           {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
 
-            <p className="mt-2 text-gray-600">Join our IT Training Management System</p>
+            <p className="mt-2 text-gray-600">
+              Join our IT Training Management System
+            </p>
           </div>
 
           {/* ==============================
@@ -111,7 +119,10 @@ const Signup = () => {
           <form onSubmit={handleSubmit} noValidate>
             {/* Full Name */}
             <div>
-              <label htmlFor="fullName" className="mb-2 block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="fullName"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Full Name
               </label>
 
@@ -131,7 +142,10 @@ const Signup = () => {
 
             {/* Email */}
             <div className="mt-5">
-              <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
 
@@ -151,7 +165,10 @@ const Signup = () => {
 
             {/* Password */}
             <div className="mt-5">
-              <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
 
@@ -179,7 +196,9 @@ const Signup = () => {
                 </button>
               </div>
 
-              <p className="mt-2 text-xs text-gray-500">Password must contain at least 6 characters.</p>
+              <p className="mt-2 text-xs text-gray-500">
+                Password must contain at least 6 characters.
+              </p>
             </div>
 
             {/* Submit */}
@@ -195,7 +214,10 @@ const Signup = () => {
           {/* Login Link */}
           <div className="mt-6 text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700">
+            <Link
+              to="/login"
+              className="font-semibold text-blue-600 hover:text-blue-700"
+            >
               Login
             </Link>
           </div>

@@ -57,25 +57,46 @@ const Navbar = () => {
     };
 
     const navLinkClass = ({ isActive }) =>
-        `transition-colors duration-200 font-medium ${isActive ? "text-blue-600 font-semibold" : "text-gray-600 hover:text-blue-600"
+        `transition-colors duration-200 font-medium ${isActive
+            ? "text-blue-600 font-semibold"
+            : "text-gray-600 hover:text-blue-600"
         }`;
 
     return (
-        <header ref={navRef} className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md">
+        <header
+            ref={navRef}
+            className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md"
+        >
             <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
                 {/* Logo */}
-                <Link to="/" className="text-3xl tracking-normal transition-colors duration-200 hover:text-gray-700 text-black-100" style={{ fontFamily: "'Pacifico', cursive" }}>
+                <Link
+                    to="/"
+                    className="text-3xl tracking-normal transition-colors duration-200 hover:text-gray-700 text-black-100"
+                    style={{ fontFamily: "'Pacifico', cursive" }}
+                >
                     It Tms
-                </Link>   
+                </Link>
 
                 {/* Desktop Navigation */}
                 <div className="hidden items-center gap-8 md:flex">
-                    <NavLink to="/" className={navLinkClass}>Home</NavLink>
-                    <NavLink to="/courses" className={navLinkClass}>Courses</NavLink>
-                    <NavLink to="/demo-classes" className={navLinkClass}>Demo Classes</NavLink>
-                    <NavLink to="/blogs" className={navLinkClass}>Blogs</NavLink>
-                    <NavLink to="/job-listings" className={navLinkClass}>Jobs</NavLink>
-                    <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
+                    <NavLink to="/" className={navLinkClass}>
+                        Home
+                    </NavLink>
+                    <NavLink to="/courses" className={navLinkClass}>
+                        Courses
+                    </NavLink>
+                    <NavLink to="/demo-classes" className={navLinkClass}>
+                        Demo Classes
+                    </NavLink>
+                    <NavLink to="/blogs" className={navLinkClass}>
+                        Blogs
+                    </NavLink>
+                    <NavLink to="/job-listings" className={navLinkClass}>
+                        Jobs
+                    </NavLink>
+                    <NavLink to="/contact" className={navLinkClass}>
+                        Contact
+                    </NavLink>
                 </div>
 
                 {/* Desktop Auth */}
@@ -102,7 +123,9 @@ const Navbar = () => {
                                 className="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-700 transition hover:bg-gray-100"
                             >
                                 <User size={18} className="text-gray-500" />
-                                <span className="max-w-30 truncate font-medium">{user?.fullName}</span>
+                                <span className="max-w-30 truncate font-medium">
+                                    {user?.fullName}
+                                </span>
                             </Link>
                             <button
                                 type="button"
@@ -130,16 +153,48 @@ const Navbar = () => {
 
             {/* Mobile Menu Dropdown (Absolute overlay, doesn't shift body content) */}
             <div
-                className={`absolute left-0 top-full w-full overflow-hidden bg-white shadow-xl transition-all duration-300 ease-in-out md:hidden ${mobileMenuOpen ? "max-h-125 opacity-100 border-b border-gray-100" : "max-h-0 opacity-0 pointer-events-none"
+                className={`absolute left-0 top-full w-full overflow-hidden bg-white shadow-xl transition-all duration-300 ease-in-out md:hidden ${mobileMenuOpen
+                        ? "max-h-125 opacity-100 border-b border-gray-100"
+                        : "max-h-0 opacity-0 pointer-events-none"
                     }`}
             >
                 <div className="flex flex-col gap-1 px-4 py-5">
-                    <NavLink to="/" className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}>Home</NavLink>
-                    <NavLink to="/courses" className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}>Courses</NavLink>
-                    <NavLink to="/demo-classes" className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}>Demo Classes</NavLink>
-                    <NavLink to="/blogs" className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}>Blogs</NavLink>
-                    <NavLink to="/job-listings" className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}>Jobs</NavLink>
-                    <NavLink to="/contact" className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}>Contact</NavLink>
+                    <NavLink
+                        to="/"
+                        className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
+                    >
+                        Home
+                    </NavLink>
+                    <NavLink
+                        to="/courses"
+                        className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
+                    >
+                        Courses
+                    </NavLink>
+                    <NavLink
+                        to="/demo-classes"
+                        className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
+                    >
+                        Demo Classes
+                    </NavLink>
+                    <NavLink
+                        to="/blogs"
+                        className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
+                    >
+                        Blogs
+                    </NavLink>
+                    <NavLink
+                        to="/job-listings"
+                        className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
+                    >
+                        Jobs
+                    </NavLink>
+                    <NavLink
+                        to="/contact"
+                        className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
+                    >
+                        Contact
+                    </NavLink>
 
                     <div className="mt-4 border-t border-gray-100 pt-4">
                         {!isAuthenticated ? (

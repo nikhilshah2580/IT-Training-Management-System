@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import { getInstructorEnrollments, updateEnrollmentProgress } from "../../api/enrollment.services";
+import {
+    getInstructorEnrollments,
+    updateEnrollmentProgress,
+} from "../../api/enrollment.services";
 
 const CourseStudents = () => {
     const queryClient = useQueryClient();
@@ -16,7 +19,8 @@ const CourseStudents = () => {
     });
 
     const progressMutation = useMutation({
-        mutationFn: ({ enrollmentId, progress }) => updateEnrollmentProgress(enrollmentId, progress),
+        mutationFn: ({ enrollmentId, progress }) =>
+            updateEnrollmentProgress(enrollmentId, progress),
 
         onSuccess: (data) => {
             toast.success(data?.message || "Progress updated successfully");
@@ -27,7 +31,9 @@ const CourseStudents = () => {
         },
 
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to update progress");
+            toast.error(
+                error?.response?.data?.message || "Failed to update progress",
+            );
         },
     });
 
@@ -52,7 +58,8 @@ const CourseStudents = () => {
     };
 
     const handleUpdateProgress = (enrollment) => {
-        const currentProgress = progressValues[enrollment._id] ?? enrollment.progress ?? 0;
+        const currentProgress =
+            progressValues[enrollment._id] ?? enrollment.progress ?? 0;
 
         progressMutation.mutate({
             enrollmentId: enrollment._id,
@@ -82,12 +89,16 @@ const CourseStudents = () => {
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">Course Students</h1>
 
-                <p className="mt-1 text-gray-600">Manage students enrolled in your courses.</p>
+                <p className="mt-1 text-gray-600">
+                    Manage students enrolled in your courses.
+                </p>
             </div>
 
             {/* Course Filter */}
             <div className="mb-6 rounded-xl bg-white p-5 shadow">
-                <label className="mb-2 block font-medium text-gray-700">Filter by Course</label>
+                <label className="mb-2 block font-medium text-gray-700">
+                    Filter by Course
+                </label>
 
                 <select
                     value={courseId}
@@ -110,24 +121,39 @@ const CourseStudents = () => {
                     <table className="min-w-full">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Student</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                                    Student
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Course</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                                    Course
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                                    Status
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Payment</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                                    Payment
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Progress</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                                    Progress
+                                </th>
 
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Action</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                                    Action
+                                </th>
                             </tr>
                         </thead>
 
                         <tbody className="divide-y divide-gray-200">
                             {enrollments.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                                    <td
+                                        colSpan="6"
+                                        className="px-6 py-10 text-center text-gray-500"
+                                    >
                                         No students enrolled yet.
                                     </td>
                                 </tr>
@@ -137,29 +163,40 @@ const CourseStudents = () => {
 
                                     const course = enrollment.course;
 
-                                    const progress = progressValues[enrollment._id] ?? enrollment.progress ?? 0;
+                                    const progress =
+                                        progressValues[enrollment._id] ?? enrollment.progress ?? 0;
 
                                     return (
                                         <tr key={enrollment._id} className="hover:bg-gray-50">
                                             {/* Student */}
                                             <td className="px-6 py-4">
-                                                <div className="font-medium text-gray-900">{student?.fullName}</div>
+                                                <div className="font-medium text-gray-900">
+                                                    {student?.fullName}
+                                                </div>
 
-                                                <div className="text-sm text-gray-500">{student?.email}</div>
+                                                <div className="text-sm text-gray-500">
+                                                    {student?.email}
+                                                </div>
                                             </td>
 
                                             {/* Course */}
-                                            <td className="px-6 py-4 text-sm text-gray-700">{course?.title}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-700">
+                                                {course?.title}
+                                            </td>
 
                                             {/* Status */}
                                             <td className="px-6 py-4">
-                                                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">{enrollment.status}</span>
+                                                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+                                                    {enrollment.status}
+                                                </span>
                                             </td>
 
                                             {/* Payment */}
                                             <td className="px-6 py-4">
                                                 <span
-                                                    className={`rounded-full px-3 py-1 text-xs font-medium ${enrollment.paymentStatus === "Paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                                                    className={`rounded-full px-3 py-1 text-xs font-medium ${enrollment.paymentStatus === "Paid"
+                                                            ? "bg-green-100 text-green-700"
+                                                            : "bg-yellow-100 text-yellow-700"
                                                         }`}
                                                 >
                                                     {enrollment.paymentStatus}
@@ -178,7 +215,12 @@ const CourseStudents = () => {
                                                         min="0"
                                                         max="100"
                                                         value={progress}
-                                                        onChange={(event) => handleProgressChange(enrollment._id, event.target.value)}
+                                                        onChange={(event) =>
+                                                            handleProgressChange(
+                                                                enrollment._id,
+                                                                event.target.value,
+                                                            )
+                                                        }
                                                         className="w-full"
                                                     />
                                                 </div>
@@ -192,7 +234,9 @@ const CourseStudents = () => {
                                                     disabled={progressMutation.isPending}
                                                     className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
-                                                    {progressMutation.isPending ? "Updating..." : "Update"}
+                                                    {progressMutation.isPending
+                                                        ? "Updating..."
+                                                        : "Update"}
                                                 </button>
                                             </td>
                                         </tr>

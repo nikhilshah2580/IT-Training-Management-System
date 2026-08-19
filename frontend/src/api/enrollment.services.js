@@ -21,7 +21,7 @@ export const getMyEnrollments = async () => {
 
 // INSTRUCTOR GET ENROLLMENTS
 export const getInstructorEnrollments = async (params = {}) => {
-    const response = await api.get("/enrollments/instructor", {params, });
+    const response = await api.get("/enrollments/instructor", { params, });
 
     return response.data;
 };
