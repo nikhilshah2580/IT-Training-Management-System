@@ -91,7 +91,7 @@ const Navbar = () => {
                     <NavLink to="/blogs" className={navLinkClass}>
                         Blogs
                     </NavLink>
-                    <NavLink to="/job-listings" className={navLinkClass}>
+                    <NavLink to="/jobs" className={navLinkClass}>
                         Jobs
                     </NavLink>
                     <NavLink to="/contact" className={navLinkClass}>
@@ -184,7 +184,7 @@ const Navbar = () => {
                         Blogs
                     </NavLink>
                     <NavLink
-                        to="/job-listings"
+                        to="/jobs"
                         className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
                     >
                         Jobs

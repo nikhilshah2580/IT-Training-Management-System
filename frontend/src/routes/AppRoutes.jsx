@@ -56,6 +56,8 @@ import CreateJob from "../pages/admin/CreateJob";
 import EditJob from "../pages/admin/EditJob";
 import JobManagement from "../pages/admin/JobManagement";
 import Jobs from "../pages/public/Jobs";
+import DemoClass from "../pages/public/DemoClass";
+import DemoClassManagement from "../pages/admin/DemoClassManagement";
 import JobDetails from "../pages/public/JobDetails";
 import JobPlacementManagement from "../pages/admin/JobPlacementManagement";
 import CreateJobPlacement from "../pages/admin/CreateJobPlacement";
@@ -94,6 +96,7 @@ const AppRoutes = () => {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/instructors" element={<Instructors />} />
                     <Route path="/jobs" element={<Jobs />} />
+                    <Route path="/demo-classes" element={<DemoClass />} />
                     <Route path="/job/:id" element={<JobDetails />} />
                     <Route path="/job-placements" element={<JobPlacements />} />
 
@@ -124,6 +127,7 @@ const AppRoutes = () => {
                         <Route path="job-placements" element={<JobPlacementManagement />} />
                         <Route path="job-placements/create" element={<CreateJobPlacement />} />
                         <Route path="job-placements/:id/edit" element={<EditJobPlacement />} />
+                        <Route path="demo-classes" element={<DemoClassManagement />} />
 
                     </Route>
                 </Route>
