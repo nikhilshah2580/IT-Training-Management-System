@@ -25,6 +25,43 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import VerifyOtp from "../pages/auth/VerifyOtp";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import ResetPassword from "../pages/auth/ResetPassword";
+import CreateAssignment from "../pages/instructor/CreateAssignment";
+import EditAssignment from "../pages/instructor/EditAssignment";
+import AssignmentDetails from "../pages/student/AssignmentDetails";
+import MyAssignments from "../pages/student/MyAssignments";
+import AssignmentManagement from "../pages/instructor/AssignmentManagement";
+import AssignmentSubmissions from "../pages/instructor/AssignmentSubmissions";
+import SubmitAssignment from "../pages/student/SubmitAssignment";
+import InstructorCertificateManagement from "../pages/instructor/CertificateManagement";
+import AdminCertificateManagement from "../pages/admin/CertificateManagement";
+import MyCertificates from "../pages/student/MyCertificates";
+import CertificateDetails from "../pages/student/CertificateDetails";
+import AttendanceManagement from "../pages/instructor/AttendanceManagement";
+import MyAttendance from "../pages/student/MyAttendance";
+import AttendancePercentage from "../pages/student/AttendancePercentage";
+import ResourceManagement from "../pages/instructor/ResourceManagement";
+import CourseResources from "../pages/student/CourseResources";
+import ResourceDetails from "../pages/student/ResourceDetails";
+import InstructorBlogManagement from "../pages/instructor/BlogManagement";
+import AdminBlogManagement from "../pages/admin/BlogManagement";
+import Blog from "../pages/public/Blog";
+import BlogDetails from "../pages/public/BlogDetails";
+import ContactManagement from "../pages/admin/ContactManagement";
+import Contact from "../pages/public/Contact";
+import Instructors from "../pages/public/Instructors";
+import InstructorProfile from "../pages/instructor/InstructorProfile";
+import InstructorManagement from "../pages/admin/InstructorManagement";
+import EditInstructorProfile from "../pages/instructor/EditInstructorProfile";
+import CreateJob from "../pages/admin/CreateJob";
+import EditJob from "../pages/admin/EditJob";
+import JobManagement from "../pages/admin/JobManagement";
+import Jobs from "../pages/public/Jobs";
+import JobDetails from "../pages/public/JobDetails";
+import JobPlacementManagement from "../pages/admin/JobPlacementManagement";
+import CreateJobPlacement from "../pages/admin/CreateJobPlacement";
+import EditJobPlacement from "../pages/admin/EditJobPlacement";
+import JobPlacements from "../pages/public/JobPlacements";
+import MyJobPlacements from "../pages/student/MyJobPlacements";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
@@ -52,6 +89,14 @@ const AppRoutes = () => {
                     <Route path="/course/:id" element={<CourseDetails />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                     <Route path="/courses" element={<Courses />} />
+                    <Route path="/blogs" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogDetails />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/instructors" element={<Instructors />} />
+                    <Route path="/jobs" element={<Jobs />} />
+                    <Route path="/job/:id" element={<JobDetails />} />
+                    <Route path="/job-placements" element={<JobPlacements />} />
+
                 </Route> 
 
                 {/* AUTHENTICATED */}
@@ -68,6 +113,18 @@ const AppRoutes = () => {
                         <Route path="courses" element={<CourseManagement />} />
                         <Route path="enrollments" element={<EnrollmentManagement />} />
                         <Route path="courses/:id/edit" element={<AdminEditCourse />} />
+                        <Route path="certificates" element={<AdminCertificateManagement />} />
+                        <Route path="attendance" element={<AttendanceManagement />} />
+                        <Route path="blogs" element={<AdminBlogManagement />} />
+                        <Route path="contacts" element={<ContactManagement />} />
+                        <Route path="instructors" element={<InstructorManagement />} />
+                        <Route path="jobs" element={<JobManagement />} />
+                        <Route path="jobs/create" element={<CreateJob />} />
+                        <Route path="jobs/:id/edit" element={<EditJob />} />
+                        <Route path="job-placements" element={<JobPlacementManagement />} />
+                        <Route path="job-placements/create" element={<CreateJobPlacement />} />
+                        <Route path="job-placements/:id/edit" element={<EditJobPlacement />} />
+
                     </Route>
                 </Route>
 
@@ -78,6 +135,16 @@ const AppRoutes = () => {
                     <Route path="/instructor/courses/create" element={<CreateCourse />} />
                     <Route path="/instructor/courses/:id/edit" element={<EditCourse />} />
                     <Route path="/instructor/courses/:id/students" element={<CourseStudents />} />
+                    <Route path="/instructor/assignments" element={<AssignmentManagement />} />
+                    <Route path="/instructor/assignments/create" element={<CreateAssignment />} />
+                    <Route path="/instructor/assignments/:id/edit" element={<EditAssignment />} />
+                    <Route path="/instructor/assignments/:id/submissions" element={<AssignmentSubmissions />} />
+                    <Route path="/instructor/certificates" element={<InstructorCertificateManagement />} />
+                    <Route path="/instructor/resources" element={<ResourceManagement />} />
+                    <Route path="/instructor/blogs" element={<InstructorBlogManagement />} />
+                    <Route path="/instructor/profile" element={<InstructorProfile />} />
+                    <Route path="/instructor/profile/edit" element={<EditInstructorProfile />} />
+
                 </Route> 
 
                 {/* STUDENT */}
@@ -88,6 +155,17 @@ const AppRoutes = () => {
                     <Route path="/student/payment" element={<Payment />} />
                     <Route path="/payment/success" element={<PaymentSuccess />} />
                     <Route path="/payment/failure" element={<PaymentFailure />} />
+                    <Route path="/student/assignments" element={<MyAssignments />} />
+                    <Route path="/student/assignments/:id" element={<AssignmentDetails />} /> 
+                    <Route path="/student/assignments/:id/submit" element={<SubmitAssignment />} />
+                    <Route path="/student/certificates" element={<MyCertificates />} />
+                    <Route path="/student/certificates/:id" element={<CertificateDetails />} />
+                    <Route path="/student/attendance" element={<MyAttendance />} />
+                    <Route path="/student/attendance/percentage" element={<AttendancePercentage />} />
+                    <Route path="/student/resources" element={<CourseResources />} />
+                    <Route path="/student/resources/:id" element={<ResourceDetails />} />
+                    <Route path="/student/job-placements" element={<MyJobPlacements />} />
+
                 </Route>
 
                 {/* 404 */}
