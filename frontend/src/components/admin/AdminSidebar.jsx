@@ -1,12 +1,16 @@
 import {
-    LayoutDashboard,
-    Users,
+    Award,
     BookOpen,
-    GraduationCap,
     Briefcase,
+    CalendarDays,
+    GraduationCap,
+    LayoutDashboard,
+    Mail,
     MessageSquare,
-    Bell,
-    Settings,
+    NotebookTabs,
+    Star,
+    UserCheck,
+    Users,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -33,31 +37,61 @@ const menuItems = [
         icon: GraduationCap,
     },
     {
-        name: "Job Listings",
-        path: "/admin/job-listings",
-        icon: Briefcase,
+        name: "Certificates",
+        path: "/admin/certificates",
+        icon: Award,
+    },
+    {
+        name: "Attendance",
+        path: "/admin/attendance",
+        icon: NotebookTabs,
+    },
+    {
+        name: "Blogs",
+        path: "/admin/blogs",
+        icon: MessageSquare,
     },
     {
         name: "Contacts",
         path: "/admin/contacts",
+        icon: Mail,
+    },
+    {
+        name: "Instructors",
+        path: "/admin/instructors",
+        icon: UserCheck,
+    },
+    {
+        name: "Jobs",
+        path: "/admin/jobs",
+        icon: Briefcase,
+    },
+    {
+        name: "Job Placements",
+        path: "/admin/job-placements",
+        icon: Briefcase,
+    },
+    {
+        name: "Demo Classes",
+        path: "/admin/demo-classes",
+        icon: CalendarDays,
+    },
+    {
+        name: "Reviews",
+        path: "/admin/reviews",
+        icon: Star,
+    },
+    {
+        name: "Testimonials",
+        path: "/admin/testimonials",
         icon: MessageSquare,
-    },
-    {
-        name: "Notifications",
-        path: "/admin/notifications",
-        icon: Bell,
-    },
-    {
-        name: "Settings",
-        path: "/admin/settings",
-        icon: Settings,
     },
 ];
 
 const AdminSidebar = () => {
     return (
-        <aside className="w-72 bg-gray-900 text-white min-h-screen p-5">
-            <h2 className="text-2xl font-bold mb-8">Admin Panel</h2>
+        <aside className="sticky top-0 h-screen w-72 shrink-0 overflow-y-auto bg-gray-900 p-5 text-white">
+            <h2 className="mb-8 text-2xl font-bold">Admin Panel</h2>
 
             <nav className="space-y-2">
                 {menuItems.map((item) => {
@@ -68,12 +102,12 @@ const AdminSidebar = () => {
                             key={item.path}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex items-center gap-3 rounded-lg px-4 py-3 transition ${isActive ? "bg-blue-600" : "hover:bg-gray-800"
+                                `flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${isActive ? "bg-blue-600" : "hover:bg-gray-800"
                                 }`
                             }
                         >
                             <Icon size={20} />
-                            {item.name}
+                            <span>{item.name}</span>
                         </NavLink>
                     );
                 })}

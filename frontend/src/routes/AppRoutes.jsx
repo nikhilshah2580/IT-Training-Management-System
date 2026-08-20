@@ -114,6 +114,7 @@ const AppRoutes = () => {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
+
         {/* PUBLIC */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
@@ -129,10 +130,12 @@ const AppRoutes = () => {
           <Route path="/job/:id" element={<JobDetails />} />
           <Route path="/job-placements" element={<JobPlacements />} />
         </Route>
+
         {/* AUTHENTICATED */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
+
         {/* ADMIN */}
         <Route element={<RoleProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminLayout />}>
@@ -167,11 +170,15 @@ const AppRoutes = () => {
             <Route path="testimonials" element={<TestimonialManagement />} />
           </Route>
         </Route>
+        
         {/* INSTRUCTOR */}
         <Route element={<RoleProtectedRoute allowedRoles={["instructor"]} />}>
           <Route path="/instructor" element={<InstructorLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="/instructor/dashboard" element={InstructorDashboard} />
+            <Route
+              path="/instructor/dashboard"
+              element={<InstructorDashboard />}
+            />
             <Route
               path="/instructor/courses"
               element={<InstructorMyCourses />}
@@ -275,7 +282,7 @@ const AppRoutes = () => {
             <Route path="testimonials/create" element={<TestimonialForm />} />
           </Route>
         </Route>
-        ;{/* 404 */}
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
@@ -283,3 +290,4 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+

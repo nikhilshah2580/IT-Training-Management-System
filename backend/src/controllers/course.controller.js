@@ -1,9 +1,38 @@
 import * as courseService from "../services/course.service.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
+
+const prepareCoursePayload = async (req) => {
+    const payload = { ...req.body };
+
+    if (typeof payload.resources === "string") {
+        payload.resources = payload.resources ? JSON.parse(payload.resources) : [];
+    }
+
+    if (payload.enrollmentDeadline === "") {
+        payload.enrollmentDeadline = null;
+    }
+
+    if (req.file) {
+        const image = await uploadOnCloudinary(req.file.path);
+
+        if (!image?.secure_url) {
+            const error = new Error("Image upload failed");
+            error.statusCode = 500;
+            throw error;
+        }
+
+        payload.courseImage = image.secure_url;
+    }
+
+    return payload;
+};
 
 // CREATE COURSE
 export const createCourse = async (req, res) => {
+    const payload = await prepareCoursePayload(req);
+
     const course = await courseService.createCourseService(
-        req.body,
+        payload,
         req.user._id,
     );
 
@@ -73,9 +102,11 @@ export const getCourse = async (req, res) => {
 
 // UPDATE COURSE
 export const updateCourse = async (req, res) => {
+    const payload = await prepareCoursePayload(req);
+
     const course = await courseService.updateCourseService(
         req.params.id,
-        req.body,
+        payload,
         req.user,
     );
 
@@ -136,3 +167,4 @@ export const updateCourseStatus = async (req, res) => {
         course,
     });
 };
+

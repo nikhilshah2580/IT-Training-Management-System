@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 import {
-    getCourses,
+    getAdminCourses,
     deleteCourse,
     approveCourse,
     rejectCourse,
@@ -49,7 +49,7 @@ const CourseManagement = () => {
         ],
 
         queryFn: () =>
-            getCourses({
+            getAdminCourses({
                 search: search || undefined,
                 category: category || undefined,
                 skillLevel: skillLevel || undefined,
@@ -64,7 +64,7 @@ const CourseManagement = () => {
     const courses = data?.courses || [];
 
     const totalPages =
-        data?.totalPages || Math.ceil((data?.total || 0) / limit) || 1;
+        data?.pagination?.totalPages || 1;
 
     // DELETE COURSE
 
@@ -594,3 +594,4 @@ const CourseManagement = () => {
 };
 
 export default CourseManagement;
+

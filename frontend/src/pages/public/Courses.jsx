@@ -222,9 +222,9 @@ const Courses = () => {
                                 <div>
                                     {/* Thumbnail / Visual Banner */}
                                     <div className="w-full h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center p-4">
-                                        {course.thumbnail ? (
+                                        {course.courseImage ? (
                                             <img
-                                                src={course.thumbnail}
+                                                src={course.courseImage}
                                                 alt={course.title}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
@@ -271,7 +271,7 @@ const Courses = () => {
                                     </div>
 
                                     <Link
-                                        to="/CourseDetails"
+                                        to={`/course/${course._id}`}
                                         className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
                                     >
                                         View Details <ChevronRight size={14} />
@@ -317,3 +317,4 @@ const Courses = () => {
 };
 
 export default Courses;
+

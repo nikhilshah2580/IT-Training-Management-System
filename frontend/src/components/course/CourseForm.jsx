@@ -13,6 +13,7 @@ const initialForm = {
     prerequisites: "",
     enrollmentDeadline: "",
     courseImage: "",
+    courseImageFile: null,
     resources: [],
 };
 
@@ -41,6 +42,7 @@ const CourseForm = ({ course, onSubmit, onCancel, loading = false, submitText = 
             prerequisites: course.prerequisites || "",
             enrollmentDeadline: course.enrollmentDeadline ? new Date(course.enrollmentDeadline).toISOString().split("T")[0] : "",
             courseImage: course.courseImage || "",
+            courseImageFile: null,
             resources: Array.isArray(course.resources) ? course.resources : [],
         });
     }, [course]);
@@ -58,6 +60,14 @@ const CourseForm = ({ course, onSubmit, onCancel, loading = false, submitText = 
         }));
     };
 
+    const handleFileChange = (event) => {
+        const file = event.target.files?.[0] || null;
+
+        setFormData((prev) => ({
+            ...prev,
+            courseImageFile: file,
+        }));
+    };
     // -----------------------------------------
     // RESOURCE CHANGE
     // -----------------------------------------
@@ -139,29 +149,21 @@ const CourseForm = ({ course, onSubmit, onCancel, loading = false, submitText = 
             return;
         }
 
-        const payload = {
-            title: formData.title.trim(),
+        const payload = new FormData();
+        payload.append("title", formData.title.trim());
+        payload.append("description", formData.description.trim());
+        payload.append("category", formData.category);
+        payload.append("skillLevel", formData.skillLevel);
+        payload.append("syllabus", formData.syllabus.trim());
+        payload.append("duration", formData.duration.trim());
+        payload.append("fee", Number(formData.fee));
+        payload.append("prerequisites", formData.prerequisites.trim());
+        payload.append("enrollmentDeadline", formData.enrollmentDeadline || "");
+        payload.append("resources", JSON.stringify(formData.resources));
 
-            description: formData.description.trim(),
-
-            category: formData.category,
-
-            skillLevel: formData.skillLevel,
-
-            syllabus: formData.syllabus.trim(),
-
-            duration: formData.duration.trim(),
-
-            fee: Number(formData.fee),
-
-            prerequisites: formData.prerequisites.trim(),
-
-            enrollmentDeadline: formData.enrollmentDeadline || null,
-
-            courseImage: formData.courseImage.trim(),
-
-            resources: formData.resources,
-        };
+        if (formData.courseImageFile) {
+            payload.append("photo", formData.courseImageFile);
+        }
 
         onSubmit(payload);
     };
@@ -176,9 +178,9 @@ const CourseForm = ({ course, onSubmit, onCancel, loading = false, submitText = 
                 </button>
 
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Edit Course</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">{course ? "Edit Course" : "Create Course"}</h1>
 
-                    <p className="mt-1 text-sm text-gray-500">Update course information.</p>
+                    <p className="mt-1 text-sm text-gray-500">{course ? "Update course information." : "Create a new course for admin approval."}</p>
                 </div>
             </div>
 
@@ -354,15 +356,23 @@ const CourseForm = ({ course, onSubmit, onCancel, loading = false, submitText = 
                     {/* IMAGE */}
 
                     <div>
-                        <label className="mb-2 block text-sm font-medium">Course Image URL</label>
+                        <label className="mb-2 block text-sm font-medium">Course Image</label>
 
                         <input
-                            type="url"
-                            name="courseImage"
-                            value={formData.courseImage}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+                            type="file"
+                            name="photo"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="w-full rounded-lg border px-4 py-3 outline-none file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-500"
                         />
+
+                        {(formData.courseImageFile || formData.courseImage) && (
+                            <img
+                                src={formData.courseImageFile ? URL.createObjectURL(formData.courseImageFile) : formData.courseImage}
+                                alt="Course preview"
+                                className="mt-3 h-32 w-full rounded-lg border object-cover"
+                            />
+                        )}
                     </div>
                 </div>
             </section>
@@ -455,7 +465,7 @@ const CourseForm = ({ course, onSubmit, onCancel, loading = false, submitText = 
                     disabled={loading}
                     className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    {loading ? "Updating..." : submitText}
+                    {loading ? `${submitText.replace(" Course", "")}...` : submitText}
                 </button>
             </div>
         </form>
@@ -463,3 +473,4 @@ const CourseForm = ({ course, onSubmit, onCancel, loading = false, submitText = 
 };
 
 export default CourseForm;
+
