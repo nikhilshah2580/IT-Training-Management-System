@@ -160,7 +160,7 @@ const MyCourses = () => {
                                         {/* ACTION */}
                                         <button
                                             type="button"
-                                            onClick={() => navigate(`/student/courses/${course._id}`)}
+                                            onClick={() => navigate(`/course/${course._id}`)}
                                             className="mt-6 w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
                                         >
                                             View Course
@@ -177,3 +177,4 @@ const MyCourses = () => {
 };
 
 export default MyCourses;
+

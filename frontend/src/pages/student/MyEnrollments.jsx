@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
     BookOpen,
@@ -13,6 +14,7 @@ import {
 import { getMyEnrollments } from "../../api/enrollment.services";
 
 const MyEnrollments = () => {
+    const navigate = useNavigate();
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ["my-enrollments"],
         queryFn: getMyEnrollments,
@@ -284,3 +286,5 @@ const InfoItem = ({ icon, label, value }) => {
 };
 
 export default MyEnrollments;
+
+

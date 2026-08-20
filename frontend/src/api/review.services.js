@@ -44,6 +44,11 @@ export const getCourseRating = async (courseId) => {
 |--------------------------------------------------------------------------
 */
 
+
+export const getMyReviews = async () => {
+    const response = await api.get("/reviews/my");
+    return response.data;
+};
 export const createReview = async (data) => {
     const response = await api.post("/reviews", data);
 
@@ -155,3 +160,4 @@ export const adminDeleteReview = async (id) => {
 
     return response.data;
 };
+

@@ -1,9 +1,16 @@
-import { Bell, Menu, User } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const AdminNavbar = () => {
     const { user } = useSelector((state) => state.auth);
+    const fullName = user?.fullName || "Admin";
+    const initials = fullName
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
 
     return (
         <header className="sticky top-0 z-40 border-b bg-white">
@@ -37,13 +44,21 @@ const AdminNavbar = () => {
                         to="/profile"
                         className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-gray-100"
                     >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
-                            {user?.fullName?.charAt(0)?.toUpperCase() || "A"}
-                        </div>
+                        {user?.photo ? (
+                            <img
+                                src={user.photo}
+                                alt={fullName}
+                                className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-100"
+                            />
+                        ) : (
+                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+                                {initials || "A"}
+                            </div>
+                        )}
 
                         <div className="hidden text-left sm:block">
                             <p className="text-sm font-semibold text-gray-800">
-                                {user?.fullName || "Admin"}
+                                {fullName}
                             </p>
 
                             <p className="text-xs capitalize text-gray-500">

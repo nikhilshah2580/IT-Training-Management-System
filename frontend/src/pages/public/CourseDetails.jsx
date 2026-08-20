@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,6 +14,9 @@ import {
 } from "lucide-react";
 
 import { getCourseById } from "../../api/course.services";
+import { getCourseReviews } from "../../api/review.services";
+import ReviewList from "../../components/reviews/ReviewList";
+import ReviewForm from "../../components/reviews/ReviewForm";
 import { createEnrollment } from "../../api/enrollment.services";
 import { useSelector } from "react-redux";
 
@@ -20,6 +24,7 @@ const CourseDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const [showReviewForm, setShowReviewForm] = useState(false);
 
     // AUTH USER
     const user = useSelector((state) => state.auth.user);
@@ -33,6 +38,28 @@ const CourseDetails = () => {
 
     const course = data?.course;
 
+    const { data: reviewData, isLoading: reviewsLoading } = useQuery({
+        queryKey: ["course-reviews", id],
+        queryFn: () => getCourseReviews(id),
+        enabled: !!id,
+    });
+
+    const reviews = reviewData?.reviews || [];
+
+    const handleWriteReview = () => {
+        if (!user) {
+            toast.info("Please login to write a review");
+            navigate("/login");
+            return;
+        }
+
+        if (user.role !== "student") {
+            toast.error("Only students can write course reviews");
+            return;
+        }
+
+        setShowReviewForm(true);
+    };
     // ENROLLMENT MUTATION
     const enrollMutation = useMutation({
         mutationFn: createEnrollment,
@@ -320,6 +347,39 @@ const CourseDetails = () => {
                         </div>
                     </div>
                 </div>
+                <section className="mt-8 rounded-2xl border bg-white p-6 shadow-sm md:p-8">
+                    <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900">Student Reviews</h2>
+                            <p className="mt-1 text-sm text-gray-500">
+                                Public feedback from approved student reviews.
+                            </p>
+                        </div>
+                        {user?.role === "student" && (
+                            <button
+                                type="button"
+                                onClick={handleWriteReview}
+                                className="w-fit rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                            >
+                                Write Review
+                            </button>
+                        )}
+                    </div>
+
+                    {showReviewForm && (
+                        <div className="mb-6 rounded-xl bg-gray-50 p-4">
+                            <ReviewForm
+                                fixedCourseId={course._id}
+                                fixedCourseTitle={course.title}
+                                embedded
+                                onCancel={() => setShowReviewForm(false)}
+                                onSuccess={() => setShowReviewForm(false)}
+                            />
+                        </div>
+                    )}
+
+                    <ReviewList reviews={reviews} isLoading={reviewsLoading} />
+                </section>
             </div>
         </main>
     );
@@ -342,3 +402,5 @@ const InfoCard = ({ icon, label, value }) => {
 };
 
 export default CourseDetails;
+
+

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -6,13 +7,11 @@ import {
   ChevronRight,
   BookOpen,
   Award,
-  Briefcase,
   Building2,
-  Users,
-  TrendingUp,
-  CheckCircle,
   Star,
+  MessageSquareQuote,
 } from "lucide-react";
+import { getApprovedTestimonials } from "../../api/testimonial.services";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -24,6 +23,13 @@ const Home = () => {
 
   // Banner Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const { data: testimonialData } = useQuery({
+    queryKey: ["public-testimonials", { limit: 6 }],
+    queryFn: () => getApprovedTestimonials({ limit: 6 }),
+  });
+
+  const testimonials = testimonialData?.testimonials || [];
 
   const bannerSlides = [
     {
@@ -252,8 +258,78 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {testimonials.length > 0 && (
+        <section className="bg-gray-50 py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+                  Student Testimonials
+                </p>
+                <h2 className="mt-2 text-3xl font-bold text-gray-900">
+                  Stories from our learners
+                </h2>
+              </div>
+              <Link
+                to="/student/testimonials/create"
+                className="inline-flex w-fit items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                <MessageSquareQuote size={16} /> Share Your Story
+              </Link>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {testimonials.map((item) => {
+                const studentName = item.student?.fullName || "Student";
+                const initials = studentName
+                  .split(" ")
+                  .map((part) => part[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase();
+
+                return (
+                  <article
+                    key={item._id}
+                    className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.student?.photo ? (
+                        <img
+                          src={item.student.photo}
+                          alt={studentName}
+                          className="h-12 w-12 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+                          {initials || "ST"}
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{studentName}</h3>
+                        <p className="text-sm text-gray-500">
+                          {item.course?.title || "Verified learner"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center gap-1 text-yellow-500">
+                      {Array.from({ length: Number(item.rating || 0) }).map((_, index) => (
+                        <Star key={index} size={16} fill="currentColor" />
+                      ))}
+                    </div>
+
+                    <p className="mt-4 text-sm leading-6 text-gray-600">{item.message}</p>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
 
 export default Home;
+
