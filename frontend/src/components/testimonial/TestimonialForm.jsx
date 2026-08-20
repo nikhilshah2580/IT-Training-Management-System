@@ -20,10 +20,7 @@ const TestimonialForm = () => {
   });
 
   const courses = useMemo(
-    () =>
-      (data?.enrollments || [])
-        .map((item) => item.course)
-        .filter(Boolean),
+    () => (data?.enrollments || []).map((item) => item.course).filter(Boolean),
     [data],
   );
 
@@ -36,7 +33,9 @@ const TestimonialForm = () => {
       navigate("/student/testimonials");
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.message || "Failed to submit testimonial.");
+      toast.error(
+        error?.response?.data?.message || "Failed to submit testimonial.",
+      );
     },
   });
 
@@ -60,14 +59,20 @@ const TestimonialForm = () => {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Create Testimonial</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Tell future students about your learning journey. Approved testimonials are shown on the public site with your profile.
+          Tell future students about your learning journey. Approved
+          testimonials are shown on the public site with your profile.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-6 shadow-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="rounded-xl border bg-white p-6 shadow-sm"
+      >
         <div className="space-y-5">
           <div>
-            <label className="text-sm font-semibold text-gray-700">Related Course</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Related Course
+            </label>
             <select
               value={course}
               onChange={(event) => setCourse(event.target.value)}
@@ -84,7 +89,9 @@ const TestimonialForm = () => {
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-gray-700">Rating</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Rating
+            </label>
             <div className="mt-2 flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
@@ -95,17 +102,27 @@ const TestimonialForm = () => {
                   className="rounded-md p-1 text-yellow-500 hover:bg-yellow-50 disabled:opacity-60"
                   aria-label={`${value} star rating`}
                 >
-                  <Star size={24} fill={value <= rating ? "currentColor" : "none"} />
+                  <Star
+                    size={24}
+                    fill={value <= rating ? "currentColor" : "none"}
+                  />
                 </button>
               ))}
-              <span className="ml-2 text-sm font-medium text-gray-600">{rating}/5</span>
+              <span className="ml-2 text-sm font-medium text-gray-600">
+                {rating}/5
+              </span>
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-gray-700">Testimonial</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Testimonial
+            </label>
             <div className="relative mt-2">
-              <MessageSquareQuote size={18} className="absolute left-3 top-3 text-gray-400" />
+              <MessageSquareQuote
+                size={18}
+                className="absolute left-3 top-3 text-gray-400"
+              />
               <textarea
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
@@ -134,7 +151,11 @@ const TestimonialForm = () => {
             disabled={mutation.isPending || isLoading}
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {mutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+            {mutation.isPending ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Send size={16} />
+            )}
             Submit Testimonial
           </button>
         </div>
