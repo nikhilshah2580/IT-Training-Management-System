@@ -74,7 +74,7 @@ const Navbar = () => {
                     className="text-3xl tracking-normal transition-colors duration-200 hover:text-gray-700 text-black-100"
                     style={{ fontFamily: "'Pacifico', cursive" }}
                 >
-                    It Tms
+                    Sipalaya
                 </Link>
 
                 {/* Desktop Navigation */}
