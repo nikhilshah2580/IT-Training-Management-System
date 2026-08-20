@@ -8,6 +8,7 @@ import {
     Mail,
     MessageSquare,
     NotebookTabs,
+    ShieldCheck,
     Star,
     UserCheck,
     Users,
@@ -79,7 +80,8 @@ const menuItems = [
     {
         name: "Reviews",
         path: "/admin/reviews",
-        icon: Star,
+        icon: ShieldCheck,
+    Star,
     },
     {
         name: "Testimonials",
@@ -117,3 +119,4 @@ const AdminSidebar = () => {
 };
 
 export default AdminSidebar;
+

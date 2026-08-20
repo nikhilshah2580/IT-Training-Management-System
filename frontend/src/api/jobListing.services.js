@@ -73,9 +73,15 @@ export const deleteJobListing = async (id) => {
 */
 
 export const updateJobListingStatus = async (id, status) => {
-    const response = await api.patch(`/job-listings/${id}/status`, {
-        status,
-    });
+    let response;
+    if (status === "Active" || status === "Published") {
+        response = await api.patch(`/job-listings/${id}/publish`);
+    } else if (status === "Closed") {
+        response = await api.patch(`/job-listings/${id}/close`);
+    } else {
+        response = await api.put(`/job-listings/${id}`, { status });
+    }
 
     return response.data;
 };
+

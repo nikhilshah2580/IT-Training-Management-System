@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Pencil, Plus, RefreshCw, Trash2, Users } from "lucide-react";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { getErrorMessage } from "../../utils/toast";
 
 import { deleteCourse, getMyCourses } from "../../api/course.services";
 
@@ -17,6 +19,7 @@ const MyCourses = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [page] = useState(1);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
         queryKey: ["instructor-courses", { page }],
@@ -33,18 +36,12 @@ const MyCourses = () => {
             queryClient.invalidateQueries({ queryKey: ["instructor-dashboard"] });
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to delete course");
+            toast.error(getErrorMessage(error, "Failed to delete course"));
         },
     });
 
     const handleDelete = (course) => {
-        const confirmed = window.confirm(
-            `Are you sure you want to delete "${course.title}"?`,
-        );
-
-        if (!confirmed) return;
-
-        deleteMutation.mutate(course._id);
+        setDeleteTarget(course);
     };
 
     if (isLoading) {
@@ -214,3 +211,4 @@ const MyCourses = () => {
 };
 
 export default MyCourses;
+

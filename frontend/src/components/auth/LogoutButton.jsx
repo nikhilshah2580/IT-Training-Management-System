@@ -1,3 +1,4 @@
+import { LogOut } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -5,7 +6,10 @@ import { toast } from "react-toastify";
 import { logoutUser } from "../../api/auth.services";
 import { clearAuth } from "../../redux/authSlice";
 
-const LogoutButton = () => {
+const LogoutButton = ({
+    className = "inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700",
+    iconOnly = false,
+}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -27,10 +31,13 @@ const LogoutButton = () => {
 
     return (
         <button
+            type="button"
             onClick={handleLogout}
-            className="rounded-lg bg-red-600 px-4 py-2 text-white"
+            className={className}
+            title="Logout"
         >
-            Logout
+            <LogOut size={17} />
+            {!iconOnly && <span>Logout</span>}
         </button>
     );
 };

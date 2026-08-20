@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Trash2, UserRound, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { getErrorMessage } from "../../utils/toast";
 
 import { getUsers, deleteUser } from "../../api/user.services";
 
@@ -10,6 +12,7 @@ const UserManagement = () => {
 
     const [search, setSearch] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ["admin-users"],
@@ -28,7 +31,7 @@ const UserManagement = () => {
         },
 
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to delete user");
+            toast.error(getErrorMessage(error, "Failed to delete user"));
         },
     });
 
@@ -55,13 +58,7 @@ const UserManagement = () => {
             return;
         }
 
-        const confirmed = window.confirm(
-            `Are you sure you want to delete ${user.fullName}?`,
-        );
-
-        if (!confirmed) return;
-
-        deleteMutation.mutate(user._id);
+        setDeleteTarget(user);
     };
 
     if (isLoading) {
@@ -279,8 +276,10 @@ const UserManagement = () => {
                     users
                 </div>
             </div>
+            <ConfirmDialog open={Boolean(deleteTarget)} title="Delete user" message={deleteTarget ? `Delete ${deleteTarget.fullName}? This action cannot be undone.` : ""} confirmLabel="Delete" loading={deleteMutation.isPending} onConfirm={() => deleteMutation.mutate(deleteTarget._id, { onSuccess: () => setDeleteTarget(null) })} onCancel={() => setDeleteTarget(null)} />
         </div>
     );
 };
 
 export default UserManagement;
+

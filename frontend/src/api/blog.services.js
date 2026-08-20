@@ -22,6 +22,14 @@ export const getBlogs = async (params = {}) => {
     return response.data;
 };
 
+export const getManageBlogs = async (params = {}) => {
+    const response = await api.get("/blogs/admin/all", {
+        params,
+    });
+
+    return response.data;
+};
+
 // ======================================================
 // GET SINGLE BLOG
 // ======================================================
@@ -57,3 +65,4 @@ export const updateBlogStatus = async (id, status) => {
 
     return response.data;
 };
+

@@ -1,5 +1,10 @@
 import api from "./apiClient";
 
+const profileRequestConfig = (data) =>
+    data instanceof FormData
+        ? { headers: { "Content-Type": "multipart/form-data" } }
+        : {};
+
 // ======================================================
 // PUBLIC
 // GET APPROVED INSTRUCTORS
@@ -28,7 +33,11 @@ export const getInstructorProfile = async (id) => {
 // POST /instructor-profiles
 // ======================================================
 export const createInstructorProfile = async (data) => {
-    const response = await api.post("/instructor-profiles", data);
+    const response = await api.post(
+        "/instructor-profiles",
+        data,
+        profileRequestConfig(data),
+    );
 
     return response.data;
 };
@@ -50,7 +59,11 @@ export const getMyInstructorProfile = async () => {
 // PUT /instructor-profiles/me/profile
 // ======================================================
 export const updateInstructorProfile = async (data) => {
-    const response = await api.put("/instructor-profiles/me/profile", data);
+    const response = await api.put(
+        "/instructor-profiles/me/profile",
+        data,
+        profileRequestConfig(data),
+    );
 
     return response.data;
 };

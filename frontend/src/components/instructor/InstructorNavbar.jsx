@@ -1,8 +1,13 @@
-import { Bell, UserCircle } from "lucide-react";
+import { User } from "lucide-react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import NotificationBell from "../notifications/NotificationBell";
+import LogoutButton from "../auth/LogoutButton";
 
 const InstructorNavbar = () => {
     const navigate = useNavigate();
+    const { user } = useSelector((state) => state.auth);
+    const fullName = user?.fullName || "Instructor";
 
     return (
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 shadow-sm md:px-6">
@@ -19,38 +24,35 @@ const InstructorNavbar = () => {
 
             {/* Right */}
             <div className="flex items-center gap-2">
-                {/* Notifications */}
-                <button
-                    type="button"
-                    onClick={() => navigate("/notifications")}
-                    className="relative rounded-full p-2 text-slate-600 transition hover:bg-slate-100"
-                >
-                    <Bell size={21} />
-
-                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
-                </button>
+                <NotificationBell />
 
                 {/* Profile */}
                 <button
                     type="button"
                     onClick={() => navigate("/instructor/profile")}
-                    className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-slate-100"
+                    aria-label="Open instructor profile"
+                    title="Profile"
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100"
                 >
-                    <UserCircle size={30} className="text-slate-600" />
-
-                    <div className="hidden text-left md:block">
-                        <p className="text-sm font-medium text-slate-800">
-                            Instructor
-                        </p>
-
-                        <p className="text-xs text-slate-500">
-                            View Profile
-                        </p>
-                    </div>
+                    {user?.photo ? (
+                        <img
+                            src={user.photo}
+                            alt={fullName}
+                            className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-100"
+                        />
+                    ) : (
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 ring-2 ring-blue-100">
+                            <User size={18} />
+                        </div>
+                    )}
                 </button>
-            </div>
-        </header>
+                    <LogoutButton className="inline-flex items-center justify-center rounded-full p-2 text-red-600 transition hover:bg-red-50" iconOnly />
+                </div>
+            </header>
     );
 };
 
 export default InstructorNavbar;
+
+
+

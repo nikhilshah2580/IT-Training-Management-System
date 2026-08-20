@@ -10,7 +10,10 @@ export const getAssignments = async (params = {}) => {
     return response.data;
 };
 
-export const getMyAssignments = getAssignments;
+export const getMyAssignments = async () => {
+    const response = await api.get("/assignments/my-assignments");
+    return response.data;
+};
 
 export const getCourseAssignments = async (courseId) => {
     const response = await api.get("/assignments", { params: { course: courseId } });
@@ -31,3 +34,4 @@ export const deleteAssignment = async (id) => {
     const response = await api.delete(`/assignments/${id}`);
     return response.data;
 };
+

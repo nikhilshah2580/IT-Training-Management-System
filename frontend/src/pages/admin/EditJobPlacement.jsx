@@ -1,9 +1,2 @@
-import React from 'react'
-
-const EditJobPlacement = () => {
-  return (
-    <div>EditJobPlacement</div>
-  )
-}
-
-export default EditJobPlacement
+import JobPlacementManagement from "./JobPlacementManagement";
+export default JobPlacementManagement;

@@ -37,7 +37,7 @@ export const getDemoClassById = async (id) => {
 // Admin
 // ======================================================
 export const updateDemoClassStatus = async (id, status) => {
-    const response = await api.patch(`/demo-classes/${id}/status`, { status });
+    const response = await api.put(`/demo-classes/admin/${id}`, { status });
 
     return response.data;
 };
@@ -47,7 +47,8 @@ export const updateDemoClassStatus = async (id, status) => {
 // Admin
 // ======================================================
 export const deleteDemoClass = async (id) => {
-    const response = await api.delete(`/demo-classes/${id}`);
+    const response = await api.delete(`/demo-classes/admin/${id}`);
 
     return response.data;
 };
+

@@ -9,6 +9,7 @@ import { setAuth } from "../../redux/authSlice";
 import { getCurrentUser } from "../../api/auth.services";
 import { updateProfile, changePassword } from "../../api/profile.services";
 import { profileSchema, passwordSchema } from "../../schemas/profile.schema";
+import LogoutButton from "../../components/auth/LogoutButton";
 
 const FormInput = ({ icon: Icon, label, error, helperText, ...props }) => (
   <div className="w-full">

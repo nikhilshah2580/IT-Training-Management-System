@@ -45,6 +45,7 @@ import EditJobPlacement from "../pages/admin/EditJobPlacement";
 import DemoClassManagement from "../pages/admin/DemoClassManagement";
 import ReviewManagement from "../pages/admin/ReviewManagement";
 import TestimonialManagement from "../pages/admin/TestimonialManagement";
+import AuditLogManagement from "../pages/admin/AuditLogManagement";
 
 // ==================== INSTRUCTOR ====================
 import InstructorDashboard from "../pages/instructor/InstructorDashboard";
@@ -56,6 +57,7 @@ import AssignmentManagement from "../pages/instructor/AssignmentManagement";
 import CreateAssignment from "../pages/instructor/CreateAssignment";
 import EditAssignment from "../pages/instructor/EditAssignment";
 import AssignmentSubmissions from "../pages/instructor/AssignmentSubmissions";
+import InstructorSubmissions from "../pages/instructor/InstructorSubmissions";
 import InstructorCertificateManagement from "../pages/instructor/CertificateManagement";
 import ResourceManagement from "../pages/instructor/ResourceManagement";
 import InstructorBlogManagement from "../pages/instructor/BlogManagement";
@@ -112,7 +114,6 @@ const AppRoutes = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/notifications" element={<Notifications />} />
         </Route>
 
         {/* PUBLIC */}
@@ -134,6 +135,7 @@ const AppRoutes = () => {
         {/* AUTHENTICATED */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/notifications" element={<Notifications />} />
         </Route>
 
         {/* ADMIN */}
@@ -168,6 +170,7 @@ const AppRoutes = () => {
             <Route path="demo-classes" element={<DemoClassManagement />} />
             <Route path="reviews" element={<ReviewManagement />} />
             <Route path="testimonials" element={<TestimonialManagement />} />
+            <Route path="audit-logs" element={<AuditLogManagement />} />
           </Route>
         </Route>
         
@@ -206,6 +209,10 @@ const AppRoutes = () => {
             <Route
               path="/instructor/assignments/:id/edit"
               element={<EditAssignment />}
+            />
+            <Route
+              path="/instructor/submissions"
+              element={<InstructorSubmissions />}
             />
             <Route
               path="/instructor/assignments/:id/submissions"
@@ -290,4 +297,8 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+
+
+
+
 

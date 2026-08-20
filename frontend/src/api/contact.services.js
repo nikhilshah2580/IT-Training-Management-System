@@ -37,7 +37,7 @@ export const getContactById = async (id) => {
 // Admin
 // ======================================================
 export const updateContactStatus = async (id, status) => {
-    const response = await api.patch(`/contacts/${id}/status`, { status });
+    const response = await api.put(`/contacts/${id}`, { status });
 
     return response.data;
 };
@@ -51,3 +51,4 @@ export const deleteContact = async (id) => {
 
     return response.data;
 };
+

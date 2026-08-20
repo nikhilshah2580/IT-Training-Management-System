@@ -12,6 +12,8 @@ import {
     RefreshCw,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { getErrorMessage } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -30,6 +32,7 @@ const CourseManagement = () => {
     const [skillLevel, setSkillLevel] = useState("");
     const [status, setStatus] = useState("");
     const [page, setPage] = useState(1);
+    const [confirmAction, setConfirmAction] = useState(null);
 
     const limit = 10;
 
@@ -82,7 +85,7 @@ const CourseManagement = () => {
         onError: (error) => {
             console.error("Delete course error:", error?.response?.data || error);
 
-            toast.error(error?.response?.data?.message || "Failed to delete course");
+            toast.error(getErrorMessage(error, "Failed to delete course"));
         },
     });
 
@@ -102,7 +105,7 @@ const CourseManagement = () => {
         onError: (error) => {
             console.error("Approve course error:", error?.response?.data || error);
 
-            toast.error(error?.response?.data?.message || "Failed to approve course");
+            toast.error(getErrorMessage(error, "Failed to approve course"));
         },
     });
 
@@ -122,7 +125,7 @@ const CourseManagement = () => {
         onError: (error) => {
             console.error("Reject course error:", error?.response?.data || error);
 
-            toast.error(error?.response?.data?.message || "Failed to reject course");
+            toast.error(getErrorMessage(error, "Failed to reject course"));
         },
     });
 
@@ -149,33 +152,32 @@ const CourseManagement = () => {
     };
 
     const handleApprove = (course) => {
-        const confirmed = window.confirm(
-            `Are you sure you want to approve "${course.title}"?`,
-        );
-
-        if (!confirmed) return;
-
-        approveMutation.mutate(course._id);
+        setConfirmAction({
+            title: "Approve course",
+            message: `Approve "${course.title}"?`,
+            confirmLabel: "Approve",
+            tone: "primary",
+            loading: approveMutation.isPending,
+            onConfirm: () => approveMutation.mutate(course._id, { onSuccess: () => setConfirmAction(null) }),
+        });
     };
 
     const handleReject = (course) => {
-        const confirmed = window.confirm(
-            `Are you sure you want to reject "${course.title}"?`,
-        );
-
-        if (!confirmed) return;
-
-        rejectMutation.mutate(course._id);
+        setConfirmAction({
+            title: "Reject course",
+            message: `Reject "${course.title}"?`,
+            confirmLabel: "Reject",
+            onConfirm: () => rejectMutation.mutate(course._id, { onSuccess: () => setConfirmAction(null) }),
+        });
     };
 
     const handleDelete = (course) => {
-        const confirmed = window.confirm(
-            `Are you sure you want to delete "${course.title}"?`,
-        );
-
-        if (!confirmed) return;
-
-        deleteMutation.mutate(course._id);
+        setConfirmAction({
+            title: "Delete course",
+            message: `Delete "${course.title}"? This action cannot be undone.`,
+            confirmLabel: "Delete",
+            onConfirm: () => deleteMutation.mutate(course._id, { onSuccess: () => setConfirmAction(null) }),
+        });
     };
 
     const handleReset = () => {
@@ -589,9 +591,11 @@ const CourseManagement = () => {
                     </div>
                 </div>
             )}
+            <ConfirmDialog open={Boolean(confirmAction)} title={confirmAction?.title} message={confirmAction?.message} confirmLabel={confirmAction?.confirmLabel} tone={confirmAction?.tone} loading={deleteMutation.isPending || approveMutation.isPending || rejectMutation.isPending} onConfirm={confirmAction?.onConfirm} onCancel={() => setConfirmAction(null)} />
         </div>
     );
 };
 
 export default CourseManagement;
+
 

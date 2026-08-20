@@ -25,7 +25,7 @@ const VerifyOtp = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await verifyOtp(email, otp);
+            const res = await verifyOtp({ email, otp });
             if (res?.success) {
                 showSuccess("OTP verified successfully");
                 navigate("/reset-password", {
