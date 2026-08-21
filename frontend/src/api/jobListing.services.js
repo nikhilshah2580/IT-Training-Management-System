@@ -7,11 +7,11 @@ import api from "./apiClient";
 */
 
 export const getJobListings = async (params = {}) => {
-    const response = await api.get("/job-listings", {
-        params,
-    });
+  const response = await api.get("/job-listings", {
+    params,
+  });
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -21,9 +21,9 @@ export const getJobListings = async (params = {}) => {
 */
 
 export const getJobListing = async (id) => {
-    const response = await api.get(`/job-listings/${id}`);
+  const response = await api.get(`/job-listings/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -34,9 +34,9 @@ export const getJobListing = async (id) => {
 */
 
 export const createJobListing = async (data) => {
-    const response = await api.post("/job-listings", data);
+  const response = await api.post("/job-listings", data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -47,9 +47,9 @@ export const createJobListing = async (data) => {
 */
 
 export const updateJobListing = async (id, data) => {
-    const response = await api.put(`/job-listings/${id}`, data);
+  const response = await api.put(`/job-listings/${id}`, data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -60,9 +60,9 @@ export const updateJobListing = async (id, data) => {
 */
 
 export const deleteJobListing = async (id) => {
-    const response = await api.delete(`/job-listings/${id}`);
+  const response = await api.delete(`/job-listings/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -73,15 +73,14 @@ export const deleteJobListing = async (id) => {
 */
 
 export const updateJobListingStatus = async (id, status) => {
-    let response;
-    if (status === "Active" || status === "Published") {
-        response = await api.patch(`/job-listings/${id}/publish`);
-    } else if (status === "Closed") {
-        response = await api.patch(`/job-listings/${id}/close`);
-    } else {
-        response = await api.put(`/job-listings/${id}`, { status });
-    }
+  let response;
+  if (status === "Active" || status === "Published") {
+    response = await api.patch(`/job-listings/${id}/publish`);
+  } else if (status === "Closed") {
+    response = await api.patch(`/job-listings/${id}/close`);
+  } else {
+    response = await api.put(`/job-listings/${id}`, { status });
+  }
 
-    return response.data;
+  return response.data;
 };
-

@@ -306,7 +306,9 @@ const Home = () => {
                         </div>
                       )}
                       <div>
-                        <h3 className="font-semibold text-gray-900">{studentName}</h3>
+                        <h3 className="font-semibold text-gray-900">
+                          {studentName}
+                        </h3>
                         <p className="text-sm text-gray-500">
                           {item.course?.title || "Verified learner"}
                         </p>
@@ -314,12 +316,16 @@ const Home = () => {
                     </div>
 
                     <div className="mt-4 flex items-center gap-1 text-yellow-500">
-                      {Array.from({ length: Number(item.rating || 0) }).map((_, index) => (
-                        <Star key={index} size={16} fill="currentColor" />
-                      ))}
+                      {Array.from({ length: Number(item.rating || 0) }).map(
+                        (_, index) => (
+                          <Star key={index} size={16} fill="currentColor" />
+                        ),
+                      )}
                     </div>
 
-                    <p className="mt-4 text-sm leading-6 text-gray-600">{item.message}</p>
+                    <p className="mt-4 text-sm leading-6 text-gray-600">
+                      {item.message}
+                    </p>
                   </article>
                 );
               })}
@@ -332,4 +338,3 @@ const Home = () => {
 };
 
 export default Home;
-

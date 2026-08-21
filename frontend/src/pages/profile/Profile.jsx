@@ -2,8 +2,19 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
-  User, Lock, Mail, Phone, MapPin, Upload, LoaderCircle,
-  KeyRound, CheckCircle2, AlertCircle, ShieldCheck, Sparkles, UserCheck
+  User,
+  Lock,
+  Mail,
+  Phone,
+  MapPin,
+  Upload,
+  LoaderCircle,
+  KeyRound,
+  CheckCircle2,
+  AlertCircle,
+  ShieldCheck,
+  Sparkles,
+  UserCheck,
 } from "lucide-react";
 import { setAuth } from "../../redux/authSlice";
 import { getCurrentUser } from "../../api/auth.services";
@@ -24,9 +35,11 @@ const FormInput = ({ icon: Icon, label, error, helperText, ...props }) => (
         {...props}
         className={`block w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl placeholder-gray-400 
         transition-all duration-200 outline-none text-sm font-medium
-        ${error
-            ? 'focus:border-red-500 focus:ring-4 focus:ring-red-100'
-            : 'focus:border-blue-600 focus:ring-4 focus:ring-blue-50'}`}
+        ${
+          error
+            ? "focus:border-red-500 focus:ring-4 focus:ring-red-100"
+            : "focus:border-blue-600 focus:ring-4 focus:ring-blue-50"
+        }`}
       />
     </div>
     {error ? (
@@ -201,7 +214,6 @@ const Profile = () => {
   return (
     <main className="min-h-screen bg-gray-50/70 pb-20 pt-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-6">
-
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200/60 shadow-xs">
           <div>
@@ -210,8 +222,13 @@ const Profile = () => {
                 <Sparkles size={12} /> Enterprise Account
               </span>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 mt-1">Account Management</h1>
-            <p className="text-sm text-gray-500">Manage your profile information, credentials, and account settings.</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 mt-1">
+              Account Management
+            </h1>
+            <p className="text-sm text-gray-500">
+              Manage your profile information, credentials, and account
+              settings.
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
@@ -222,23 +239,28 @@ const Profile = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-
           {/* Sidebar Navigation */}
           <div className="md:col-span-4 space-y-4">
             <div className="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-xs">
               <div className="flex items-center gap-4 pb-5 border-b border-gray-100">
                 <div className="relative">
                   <img
-                    src={avatarPreview || `https://api.dicebear.com/8.x/notionists/svg?seed=${profile.fullName}`}
+                    src={
+                      avatarPreview ||
+                      `https://api.dicebear.com/8.x/notionists/svg?seed=${profile.fullName}`
+                    }
                     alt="Avatar"
                     className="w-14 h-14 rounded-full object-cover ring-2 ring-gray-100 bg-gray-50 shadow-inner"
                   />
                   <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
                 </div>
                 <div className="overflow-hidden">
-                  <h2 className="font-bold text-gray-900 truncate text-sm">{user?.fullName || 'User'}</h2>
+                  <h2 className="font-bold text-gray-900 truncate text-sm">
+                    {user?.fullName || "User"}
+                  </h2>
                   <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                    <UserCheck size={12} className="text-emerald-500" /> Verified Member
+                    <UserCheck size={12} className="text-emerald-500" />{" "}
+                    Verified Member
                   </p>
                 </div>
               </div>
@@ -246,10 +268,11 @@ const Profile = () => {
               <nav className="mt-4 space-y-1">
                 <button
                   onClick={() => setActiveTab("profile")}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all ${activeTab === "profile"
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all ${
+                    activeTab === "profile"
                       ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+                  }`}
                 >
                   <span className="flex items-center gap-2.5">
                     <User size={16} /> Personal Information
@@ -258,10 +281,11 @@ const Profile = () => {
 
                 <button
                   onClick={() => setActiveTab("security")}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all ${activeTab === "security"
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all ${
+                    activeTab === "security"
                       ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+                  }`}
                 >
                   <span className="flex items-center gap-2.5">
                     <ShieldCheck size={16} /> Security & Passwords
@@ -273,14 +297,17 @@ const Profile = () => {
 
           {/* Main Content Card Area */}
           <div className="md:col-span-8">
-
             {/* Tab 1: Profile Information */}
             {activeTab === "profile" && (
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-xs overflow-hidden animate-fadeIn">
                 <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                   <div>
-                    <h2 className="font-bold text-gray-900 text-base">Profile Details</h2>
-                    <p className="text-xs text-gray-500">Update your account profile information and avatar.</p>
+                    <h2 className="font-bold text-gray-900 text-base">
+                      Profile Details
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      Update your account profile information and avatar.
+                    </p>
                   </div>
                   <div className="bg-blue-50 text-blue-600 p-2 rounded-xl">
                     <User size={18} />
@@ -291,12 +318,18 @@ const Profile = () => {
                   {/* Avatar Upload Banner */}
                   <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50/70 border border-gray-100">
                     <img
-                      src={avatarPreview || `https://api.dicebear.com/8.x/notionists/svg?seed=${profile.fullName}`}
+                      src={
+                        avatarPreview ||
+                        `https://api.dicebear.com/8.x/notionists/svg?seed=${profile.fullName}`
+                      }
                       alt="Preview"
                       className="w-16 h-16 rounded-xl object-cover border border-white shadow-xs"
                     />
                     <div className="flex-1">
-                      <label htmlFor="photo" className="cursor-pointer inline-flex items-center gap-2 bg-white px-3.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-xs">
+                      <label
+                        htmlFor="photo"
+                        className="cursor-pointer inline-flex items-center gap-2 bg-white px-3.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-xs"
+                      >
                         <Upload size={13} />
                         Change Avatar
                       </label>
@@ -308,7 +341,9 @@ const Profile = () => {
                         onChange={handleFileChange}
                         className="hidden"
                       />
-                      <p className="text-[11px] text-gray-400 mt-1">PNG, JPG or WEBP (Max 5MB)</p>
+                      <p className="text-[11px] text-gray-400 mt-1">
+                        PNG, JPG or WEBP (Max 5MB)
+                      </p>
                     </div>
                   </div>
 
@@ -359,9 +394,12 @@ const Profile = () => {
                       className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 font-semibold text-white text-sm hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-60 shadow-xs shadow-blue-200 min-w-32.5"
                     >
                       {loadingProfile ? (
-                        <><LoaderCircle className="animate-spin" size={15} /> Saving...</>
+                        <>
+                          <LoaderCircle className="animate-spin" size={15} />{" "}
+                          Saving...
+                        </>
                       ) : (
-                        'Save Changes'
+                        "Save Changes"
                       )}
                     </button>
                   </div>
@@ -374,8 +412,12 @@ const Profile = () => {
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-xs overflow-hidden animate-fadeIn">
                 <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                   <div>
-                    <h2 className="font-bold text-gray-900 text-base">Password & Security</h2>
-                    <p className="text-xs text-gray-500">Ensure your account is using a strong password.</p>
+                    <h2 className="font-bold text-gray-900 text-base">
+                      Password & Security
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      Ensure your account is using a strong password.
+                    </p>
                   </div>
                   <div className="bg-gray-100 text-gray-700 p-2 rounded-xl">
                     <KeyRound size={18} />
@@ -420,11 +462,14 @@ const Profile = () => {
                     />
                   </div>
 
-                  {password.newPassword && password.newPassword === password.confirmPassword && password.newPassword.length >= 6 && (
-                    <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 bg-emerald-50/80 p-3 rounded-xl border border-emerald-100">
-                      <CheckCircle2 size={15} /> Passwords match and meet strength requirements.
-                    </div>
-                  )}
+                  {password.newPassword &&
+                    password.newPassword === password.confirmPassword &&
+                    password.newPassword.length >= 6 && (
+                      <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 bg-emerald-50/80 p-3 rounded-xl border border-emerald-100">
+                        <CheckCircle2 size={15} /> Passwords match and meet
+                        strength requirements.
+                      </div>
+                    )}
 
                   <div className="pt-4 border-t border-gray-100 flex justify-end">
                     <button
@@ -433,18 +478,19 @@ const Profile = () => {
                       className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-6 py-2.5 font-semibold text-white text-sm hover:bg-gray-800 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xs min-w-35"
                     >
                       {loadingPassword ? (
-                        <><LoaderCircle className="animate-spin" size={15} /> Updating...</>
+                        <>
+                          <LoaderCircle className="animate-spin" size={15} />{" "}
+                          Updating...
+                        </>
                       ) : (
-                        'Update Password'
+                        "Update Password"
                       )}
                     </button>
                   </div>
                 </form>
               </div>
             )}
-
           </div>
-
         </div>
       </div>
     </main>

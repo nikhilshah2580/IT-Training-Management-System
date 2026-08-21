@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const DemoClass = () => {
-  return (
-    <div>DemoClass</div>
-  )
-}
+  return <div>DemoClass</div>;
+};
 
-export default DemoClass
+export default DemoClass;

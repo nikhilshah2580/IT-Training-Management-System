@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const CreateAssignment = () => {
-  return (
-    <div>CreateAssignment</div>
-  )
-}
+  return <div>CreateAssignment</div>;
+};
 
-export default CreateAssignment
+export default CreateAssignment;

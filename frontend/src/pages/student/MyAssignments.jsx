@@ -4,13 +4,12 @@ import { useNavigate } from "react-router-dom";
 import {
   AlertCircle,
   CalendarClock,
-  CheckCircle2,
   ClipboardList,
   Loader2,
   Upload,
 } from "lucide-react";
 
-import { getMyAssignments } from "../../api/assignment.services";
+import { getStudentAssignments } from "../../api/assignment.services";
 import { getMySubmissions } from "../../api/submission.services";
 
 const MyAssignments = () => {
@@ -18,7 +17,7 @@ const MyAssignments = () => {
 
   const assignmentsQuery = useQuery({
     queryKey: ["student-assignments"],
-    queryFn: () => getMyAssignments({ limit: 100 }),
+    queryFn: () => getStudentAssignments({ limit: 100 }),
   });
 
   const submissionsQuery = useQuery({
@@ -27,12 +26,12 @@ const MyAssignments = () => {
   });
 
   const assignments = assignmentsQuery.data?.assignments || [];
-  const submissions = submissionsQuery.data?.submissions || [];
+  const submissions = submissionsQuery.data?.submissions;
 
   const submittedAssignmentIds = useMemo(
     () =>
       new Set(
-        submissions
+        (submissions || [])
           .map((item) => item.assignment?._id || item.assignment)
           .filter(Boolean),
       ),

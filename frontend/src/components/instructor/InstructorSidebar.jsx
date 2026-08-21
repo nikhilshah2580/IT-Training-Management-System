@@ -50,7 +50,6 @@ const InstructorSidebar = () => {
       label: "Blogs",
       path: "/instructor/blogs",
       icon: FileText,
-      
     },
     {
       label: "Profile",
@@ -143,5 +142,3 @@ const InstructorSidebar = () => {
 };
 
 export default InstructorSidebar;
-
-

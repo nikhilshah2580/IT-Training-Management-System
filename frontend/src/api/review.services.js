@@ -9,9 +9,9 @@ import api from "./apiClient";
 */
 
 export const getCourseReviews = async (courseId) => {
-    const response = await api.get(`/reviews/course/${courseId}`);
+  const response = await api.get(`/reviews/course/${courseId}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -23,9 +23,9 @@ export const getCourseReviews = async (courseId) => {
 */
 
 export const getCourseRating = async (courseId) => {
-    const response = await api.get(`/reviews/course/${courseId}/rating`);
+  const response = await api.get(`/reviews/course/${courseId}/rating`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -44,15 +44,14 @@ export const getCourseRating = async (courseId) => {
 |--------------------------------------------------------------------------
 */
 
-
 export const getMyReviews = async () => {
-    const response = await api.get("/reviews/my");
-    return response.data;
+  const response = await api.get("/reviews/my");
+  return response.data;
 };
 export const createReview = async (data) => {
-    const response = await api.post("/reviews", data);
+  const response = await api.post("/reviews", data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -64,9 +63,9 @@ export const createReview = async (data) => {
 */
 
 export const updateReview = async (id, data) => {
-    const response = await api.put(`/reviews/${id}`, data);
+  const response = await api.put(`/reviews/${id}`, data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -78,9 +77,9 @@ export const updateReview = async (id, data) => {
 */
 
 export const deleteOwnReview = async (id) => {
-    const response = await api.delete(`/reviews/${id}`);
+  const response = await api.delete(`/reviews/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -100,11 +99,11 @@ export const deleteOwnReview = async (id) => {
 */
 
 export const getAllReviews = async (params = {}) => {
-    const response = await api.get("/reviews/admin/all", {
-        params,
-    });
+  const response = await api.get("/reviews/admin/all", {
+    params,
+  });
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -116,9 +115,9 @@ export const getAllReviews = async (params = {}) => {
 */
 
 export const getReview = async (id) => {
-    const response = await api.get(`/reviews/admin/${id}`);
+  const response = await api.get(`/reviews/admin/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -142,9 +141,9 @@ export const getReview = async (id) => {
 */
 
 export const updateReviewStatus = async (id, data) => {
-    const response = await api.patch(`/reviews/admin/${id}/status`, data);
+  const response = await api.patch(`/reviews/admin/${id}/status`, data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -156,8 +155,7 @@ export const updateReviewStatus = async (id, data) => {
 */
 
 export const adminDeleteReview = async (id) => {
-    const response = await api.delete(`/reviews/admin/${id}`);
+  const response = await api.delete(`/reviews/admin/${id}`);
 
-    return response.data;
+  return response.data;
 };
-

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-// ==================== PUBLIC ====================
+// PUBLIC
 import Home from "../pages/public/Home";
 import Courses from "../pages/public/Courses";
 import CourseDetails from "../pages/public/CourseDetails";
@@ -14,7 +14,7 @@ import JobDetails from "../pages/public/JobDetails";
 import DemoClass from "../pages/public/DemoClass";
 import JobPlacements from "../pages/public/JobPlacements";
 
-// ==================== AUTH ====================
+// AUTH
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import ForgotPassword from "../pages/auth/ForgotPassword";
@@ -22,10 +22,10 @@ import VerifyOtp from "../pages/auth/VerifyOtp";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import ResetPassword from "../pages/auth/ResetPassword";
 
-// ==================== PROFILE ====================
+// PROFILE
 import Profile from "../pages/profile/Profile";
 
-// ==================== ADMIN ====================
+// ADMIN
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import UserManagement from "../pages/admin/UserManagement";
 import CourseManagement from "../pages/admin/CourseManagement";
@@ -47,7 +47,7 @@ import ReviewManagement from "../pages/admin/ReviewManagement";
 import TestimonialManagement from "../pages/admin/TestimonialManagement";
 import AuditLogManagement from "../pages/admin/AuditLogManagement";
 
-// ==================== INSTRUCTOR ====================
+// INSTRUCTOR
 import InstructorDashboard from "../pages/instructor/InstructorDashboard";
 import InstructorMyCourses from "../pages/instructor/MyCourses";
 import CreateCourse from "../pages/instructor/CreateCourse";
@@ -64,7 +64,7 @@ import InstructorBlogManagement from "../pages/instructor/BlogManagement";
 import InstructorProfile from "../pages/instructor/InstructorProfile";
 import EditInstructorProfile from "../pages/instructor/EditInstructorProfile";
 
-// ==================== STUDENT ====================
+// STUDENT
 import StudentDashboard from "../pages/student/StudentDashboard";
 import MyEnrollments from "../pages/student/MyEnrollments";
 import StudentMyCourses from "../pages/student/MyCourses";
@@ -84,18 +84,18 @@ import MyJobPlacements from "../pages/student/MyJobPlacements";
 import MyReviews from "../pages/student/MyReviews";
 import MyTestimonials from "../pages/student/MyTestimonials";
 
-// ==================== STUDENT FORMS / SHARED COMPONENTS ====================
+// STUDENT FORMS / SHARED COMPONENTS
 import ReviewForm from "../components/reviews/ReviewForm";
 import TestimonialForm from "../components/testimonial/TestimonialForm";
 
-// ==================== NOTIFICATIONS ====================
+// NOTIFICATIONS
 import Notifications from "../pages/notifications/Notifications";
 
-// ==================== ROUTE GUARDS ====================
+// ROUTE GUARDS
 import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
 
-// ==================== LAYOUTS ====================
+// LAYOUTS
 import PublicLayout from "../layouts/PublicLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -173,7 +173,7 @@ const AppRoutes = () => {
             <Route path="audit-logs" element={<AuditLogManagement />} />
           </Route>
         </Route>
-        
+
         {/* INSTRUCTOR */}
         <Route element={<RoleProtectedRoute allowedRoles={["instructor"]} />}>
           <Route path="/instructor" element={<InstructorLayout />}>

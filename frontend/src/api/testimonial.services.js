@@ -9,11 +9,11 @@ import api from "./apiClient";
 */
 
 export const getApprovedTestimonials = async (params = {}) => {
-    const response = await api.get("/testimonials", {
-        params,
-    });
+  const response = await api.get("/testimonials", {
+    params,
+  });
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -25,9 +25,9 @@ export const getApprovedTestimonials = async (params = {}) => {
 */
 
 export const getTestimonial = async (id) => {
-    const response = await api.get(`/testimonials/${id}`);
+  const response = await api.get(`/testimonials/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -47,9 +47,9 @@ export const getTestimonial = async (id) => {
 */
 
 export const createTestimonial = async (data) => {
-    const response = await api.post("/testimonials", data);
+  const response = await api.post("/testimonials", data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -61,9 +61,9 @@ export const createTestimonial = async (data) => {
 */
 
 export const getMyTestimonials = async () => {
-    const response = await api.get("/testimonials/my");
+  const response = await api.get("/testimonials/my");
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -75,9 +75,9 @@ export const getMyTestimonials = async () => {
 */
 
 export const updateMyTestimonial = async (id, data) => {
-    const response = await api.put(`/testimonials/my/${id}`, data);
+  const response = await api.put(`/testimonials/my/${id}`, data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -89,9 +89,9 @@ export const updateMyTestimonial = async (id, data) => {
 */
 
 export const deleteMyTestimonial = async (id) => {
-    const response = await api.delete(`/testimonials/my/${id}`);
+  const response = await api.delete(`/testimonials/my/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -111,11 +111,11 @@ export const deleteMyTestimonial = async (id) => {
 */
 
 export const getAllTestimonials = async (params = {}) => {
-    const response = await api.get("/testimonials/admin/all", {
-        params,
-    });
+  const response = await api.get("/testimonials/admin/all", {
+    params,
+  });
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -127,9 +127,9 @@ export const getAllTestimonials = async (params = {}) => {
 */
 
 export const approveTestimonial = async (id) => {
-    const response = await api.patch(`/testimonials/admin/${id}/approve`);
+  const response = await api.patch(`/testimonials/admin/${id}/approve`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -147,9 +147,9 @@ export const approveTestimonial = async (id) => {
 */
 
 export const rejectTestimonial = async (id, data = {}) => {
-    const response = await api.patch(`/testimonials/admin/${id}/reject`, data);
+  const response = await api.patch(`/testimonials/admin/${id}/reject`, data);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -161,9 +161,9 @@ export const rejectTestimonial = async (id, data = {}) => {
 */
 
 export const toggleFeaturedTestimonial = async (id) => {
-    const response = await api.patch(`/testimonials/admin/${id}/featured`);
+  const response = await api.patch(`/testimonials/admin/${id}/featured`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -175,7 +175,7 @@ export const toggleFeaturedTestimonial = async (id) => {
 */
 
 export const deleteTestimonial = async (id) => {
-    const response = await api.delete(`/testimonials/admin/${id}`);
+  const response = await api.delete(`/testimonials/admin/${id}`);
 
-    return response.data;
+  return response.data;
 };

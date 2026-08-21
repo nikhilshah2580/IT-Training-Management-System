@@ -16,9 +16,7 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ==============================
   // HANDLE INPUT CHANGE
-  // ==============================
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -28,9 +26,7 @@ const Signup = () => {
     }));
   };
 
-  // ==============================
   // HANDLE SIGNUP
-  // ==============================
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -100,9 +96,7 @@ const Signup = () => {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
       <div className="w-full max-w-md">
-        {/* ==============================
-                CARD
-                ============================== */}
+        {/* CARD */}
         <div className="rounded-2xl bg-white p-8 shadow-xl">
           {/* Header */}
           <div className="mb-8 text-center">
@@ -113,9 +107,7 @@ const Signup = () => {
             </p>
           </div>
 
-          {/* ==============================
-                        FORM
-                    ============================== */}
+          {/* FORM */}
           <form onSubmit={handleSubmit} noValidate>
             {/* Full Name */}
             <div>

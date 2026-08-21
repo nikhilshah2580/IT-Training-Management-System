@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const JobPlacements = () => {
-  return (
-    <div>JobPlacements</div>
-  )
-}
+  return <div>JobPlacements</div>;
+};
 
-export default JobPlacements
+export default JobPlacements;

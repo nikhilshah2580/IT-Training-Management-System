@@ -6,29 +6,29 @@ import { getCurrentUser } from "../../api/auth.services";
 import { setAuth, clearAuth } from "../../redux/authSlice";
 
 const AuthInitializer = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-        const initializeAuth = async () => {
-            try {
-                const data = await getCurrentUser();
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const data = await getCurrentUser();
 
-                const user = data?.user;
+        const user = data?.user;
 
-                if (user) {
-                    dispatch(setAuth(user));
-                } else {
-                    dispatch(clearAuth());
-                }
-            } catch (error) {
-                dispatch(clearAuth());
-            }
-        };
+        if (user) {
+          dispatch(setAuth(user));
+        } else {
+          dispatch(clearAuth());
+        }
+      } catch (error) {
+        dispatch(clearAuth());
+      }
+    };
 
-        initializeAuth();
-    }, [dispatch]);
+    initializeAuth();
+  }, [dispatch]);
 
-    return null;
+  return null;
 };
 
 export default AuthInitializer;

@@ -27,10 +27,7 @@ const ReviewForm = ({
   });
 
   const courses = useMemo(
-    () =>
-      (data?.enrollments || [])
-        .map((item) => item.course)
-        .filter(Boolean),
+    () => (data?.enrollments || []).map((item) => item.course).filter(Boolean),
     [data],
   );
 
@@ -41,7 +38,9 @@ const ReviewForm = ({
       queryClient.invalidateQueries({ queryKey: ["student-course-reviews"] });
 
       if (fixedCourseId) {
-        queryClient.invalidateQueries({ queryKey: ["course-reviews", fixedCourseId] });
+        queryClient.invalidateQueries({
+          queryKey: ["course-reviews", fixedCourseId],
+        });
       }
 
       setComment("");
@@ -83,23 +82,31 @@ const ReviewForm = ({
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Write Review</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Share your course experience. Your review appears publicly after approval.
+            Share your course experience. Your review appears publicly after
+            approval.
           </p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-6 shadow-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="rounded-xl border bg-white p-6 shadow-sm"
+      >
         <div className="space-y-5">
           {fixedCourseId ? (
             <div>
-              <label className="text-sm font-semibold text-gray-700">Course</label>
+              <label className="text-sm font-semibold text-gray-700">
+                Course
+              </label>
               <div className="mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-medium text-gray-800">
                 {fixedCourseTitle || "Selected course"}
               </div>
             </div>
           ) : (
             <div>
-              <label className="text-sm font-semibold text-gray-700">Course</label>
+              <label className="text-sm font-semibold text-gray-700">
+                Course
+              </label>
               <select
                 value={course}
                 onChange={(event) => setCourse(event.target.value)}
@@ -117,7 +124,9 @@ const ReviewForm = ({
           )}
 
           <div>
-            <label className="text-sm font-semibold text-gray-700">Rating</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Rating
+            </label>
             <div className="mt-2 flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
@@ -128,15 +137,22 @@ const ReviewForm = ({
                   className="rounded-md p-1 text-yellow-500 hover:bg-yellow-50 disabled:opacity-60"
                   aria-label={`${value} star rating`}
                 >
-                  <Star size={24} fill={value <= rating ? "currentColor" : "none"} />
+                  <Star
+                    size={24}
+                    fill={value <= rating ? "currentColor" : "none"}
+                  />
                 </button>
               ))}
-              <span className="ml-2 text-sm font-medium text-gray-600">{rating}/5</span>
+              <span className="ml-2 text-sm font-medium text-gray-600">
+                {rating}/5
+              </span>
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-gray-700">Review</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Review
+            </label>
             <textarea
               value={comment}
               onChange={(event) => setComment(event.target.value)}
@@ -153,7 +169,9 @@ const ReviewForm = ({
         <div className="mt-6 flex justify-end gap-3 border-t pt-5">
           <button
             type="button"
-            onClick={() => (onCancel ? onCancel() : navigate("/student/reviews"))}
+            onClick={() =>
+              onCancel ? onCancel() : navigate("/student/reviews")
+            }
             className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
           >
             Cancel
@@ -163,7 +181,11 @@ const ReviewForm = ({
             disabled={mutation.isPending || isLoading}
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {mutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+            {mutation.isPending ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Send size={16} />
+            )}
             Submit Review
           </button>
         </div>

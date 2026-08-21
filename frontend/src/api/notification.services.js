@@ -9,11 +9,11 @@ import api from "./apiClient";
 */
 
 export const getMyNotifications = async (params = {}) => {
-    const response = await api.get("/notifications", {
-        params,
-    });
+  const response = await api.get("/notifications", {
+    params,
+  });
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -25,9 +25,9 @@ export const getMyNotifications = async (params = {}) => {
 */
 
 export const getNotification = async (id) => {
-    const response = await api.get(`/notifications/${id}`);
+  const response = await api.get(`/notifications/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -39,9 +39,9 @@ export const getNotification = async (id) => {
 */
 
 export const markNotificationAsRead = async (id) => {
-    const response = await api.patch(`/notifications/${id}/read`);
+  const response = await api.patch(`/notifications/${id}/read`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -53,9 +53,9 @@ export const markNotificationAsRead = async (id) => {
 */
 
 export const markAllNotificationsAsRead = async () => {
-    const response = await api.patch("/notifications/read-all");
+  const response = await api.patch("/notifications/read-all");
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -67,9 +67,9 @@ export const markAllNotificationsAsRead = async () => {
 */
 
 export const deleteNotification = async (id) => {
-    const response = await api.delete(`/notifications/${id}`);
+  const response = await api.delete(`/notifications/${id}`);
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -81,9 +81,9 @@ export const deleteNotification = async (id) => {
 */
 
 export const deleteAllNotifications = async () => {
-    const response = await api.delete("/notifications");
+  const response = await api.delete("/notifications");
 
-    return response.data;
+  return response.data;
 };
 
 /*
@@ -95,7 +95,7 @@ export const deleteAllNotifications = async () => {
 */
 
 export const createAdminNotification = async (data) => {
-    const response = await api.post("/notifications/admin/create", data);
+  const response = await api.post("/notifications/admin/create", data);
 
-    return response.data;
+  return response.data;
 };
