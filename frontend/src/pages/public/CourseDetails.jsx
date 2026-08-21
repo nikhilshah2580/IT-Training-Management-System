@@ -18,7 +18,25 @@ import { getCourseReviews } from "../../api/review.services";
 import ReviewList from "../../components/reviews/ReviewList";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import { createEnrollment } from "../../api/enrollment.services";
+import { initiateEsewaPayment } from "../../api/payment.services";
 import { useSelector } from "react-redux";
+
+const submitEsewaForm = ({ endpoint, formData }) => {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = endpoint;
+
+  Object.entries(formData).forEach(([name, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+};
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -60,22 +78,39 @@ const CourseDetails = () => {
 
     setShowReviewForm(true);
   };
-  // ENROLLMENT MUTATION
+  // ENROLLMENT + ESEWA PAYMENT MUTATION
   const enrollMutation = useMutation({
-    mutationFn: createEnrollment,
+    mutationFn: async (courseId) => {
+      try {
+        await createEnrollment(courseId);
+      } catch (error) {
+        const message = error?.response?.data?.message || "";
+
+        if (!message.toLowerCase().includes("already enrolled")) {
+          throw error;
+        }
+      }
+
+      return await initiateEsewaPayment(courseId);
+    },
 
     onSuccess: (data) => {
-      toast.success(data?.message || "Course enrolled successfully");
-
-      // Refresh student's enrollments
       queryClient.invalidateQueries({
         queryKey: ["my-enrollments"],
       });
+
+      if (data?.esewa?.endpoint && data?.esewa?.formData) {
+        toast.success("Enrollment created. Redirecting to eSewa...");
+        submitEsewaForm(data.esewa);
+        return;
+      }
+
+      toast.error("eSewa payment details were not received.");
     },
 
     onError: (error) => {
       toast.error(
-        error?.response?.data?.message || "Failed to enroll in course",
+        error?.response?.data?.message || "Failed to start eSewa payment",
       );
     },
   });
@@ -331,7 +366,7 @@ const CourseDetails = () => {
                   className="w-full rounded-xl bg-blue-600 px-6 py-3.5 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
                 >
                   {enrollMutation.isPending
-                    ? "Enrolling..."
+                    ? "Opening eSewa..."
                     : course.status === "Active"
                       ? "Enroll Now"
                       : "Course Inactive"}
@@ -405,3 +440,8 @@ const InfoCard = ({ icon, label, value }) => {
 };
 
 export default CourseDetails;
+
+
+
+
+

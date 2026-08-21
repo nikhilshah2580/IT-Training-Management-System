@@ -42,6 +42,7 @@ const Footer = () => {
           <FooterColumn
             title="Explore"
             links={[
+              ["About", "/about"],
               ["Courses", "/courses"],
               ["Instructors", "/instructors"],
               ["Blogs", "/blogs"],
@@ -152,3 +153,4 @@ const SocialLink = ({ href, label, children }) => (
 );
 
 export default Footer;
+

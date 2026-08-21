@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getEnrollments,
   updateEnrollmentStatus,
-  updateEnrollmentPaymentStatus,
   cancelEnrollment,
 } from "../../api/enrollment.services";
 
@@ -14,9 +13,33 @@ import {
   XCircle,
   Ban,
   Loader2,
-  CreditCard,
   GraduationCap,
 } from "lucide-react";
+
+const PaymentStatusBadge = ({ status = "Pending" }) => {
+  const styles = {
+    Paid: "bg-green-100 text-green-700",
+    Failed: "bg-red-100 text-red-700",
+    Pending: "bg-yellow-100 text-yellow-700",
+  };
+
+  const icons = {
+    Paid: <CheckCircle size={14} />,
+    Failed: <XCircle size={14} />,
+    Pending: <Loader2 size={14} />,
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+        styles[status] || styles.Pending
+      }`}
+    >
+      {icons[status] || icons.Pending}
+      {status}
+    </span>
+  );
+};
 
 const EnrollmentManagement = () => {
   const queryClient = useQueryClient();
@@ -51,25 +74,6 @@ const EnrollmentManagement = () => {
       toast.error(
         error?.response?.data?.message || "Failed to update enrollment",
       );
-    },
-  });
-
-  // UPDATE PAYMENT STATUS
-
-  const paymentMutation = useMutation({
-    mutationFn: ({ id, paymentStatus }) =>
-      updateEnrollmentPaymentStatus(id, paymentStatus),
-
-    onSuccess: (data) => {
-      toast.success(data?.message || "Payment status updated");
-
-      queryClient.invalidateQueries({
-        queryKey: ["admin-enrollments"],
-      });
-    },
-
-    onError: (error) => {
-      toast.error(error?.response?.data?.message || "Failed to update payment");
     },
   });
 
@@ -238,23 +242,7 @@ const EnrollmentManagement = () => {
                     {/* PAYMENT */}
 
                     <td className="px-6 py-4">
-                      <select
-                        value={enrollment.paymentStatus}
-                        disabled={paymentMutation.isPending}
-                        onChange={(e) =>
-                          paymentMutation.mutate({
-                            id: enrollment._id,
-                            paymentStatus: e.target.value,
-                          })
-                        }
-                        className="rounded-lg border px-3 py-2 text-sm"
-                      >
-                        <option value="Pending">Pending</option>
-
-                        <option value="Paid">Paid</option>
-
-                        <option value="Failed">Failed</option>
-                      </select>
+                      <PaymentStatusBadge status={enrollment.paymentStatus} />
                     </td>
 
                     {/* PROGRESS */}
@@ -307,20 +295,6 @@ const EnrollmentManagement = () => {
                           <Ban size={18} />
                         </button>
 
-                        <button
-                          type="button"
-                          title="Mark payment paid"
-                          disabled={paymentMutation.isPending}
-                          onClick={() =>
-                            paymentMutation.mutate({
-                              id: enrollment._id,
-                              paymentStatus: "Paid",
-                            })
-                          }
-                          className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
-                        >
-                          <CreditCard size={18} />
-                        </button>
                       </div>
                     </td>
                   </tr>
@@ -335,3 +309,5 @@ const EnrollmentManagement = () => {
 };
 
 export default EnrollmentManagement;
+
+

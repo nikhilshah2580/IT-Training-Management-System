@@ -53,15 +53,6 @@ export const updateEnrollmentStatus = async (id, status) => {
   return response.data;
 };
 
-// ADMIN - UPDATE PAYMENT STATUS
-
-export const updateEnrollmentPaymentStatus = async (id, paymentStatus) => {
-  const response = await api.patch(`/enrollments/${id}/payment-status`, {
-    paymentStatus,
-  });
-
-  return response.data;
-};
 
 // ADMIN / INSTRUCTOR - UPDATE PROGRESS
 

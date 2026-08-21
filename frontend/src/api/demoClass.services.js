@@ -1,4 +1,4 @@
-import api from "./apiClient";
+﻿import api from "./apiClient";
 
 // REQUEST DEMO CLASS
 // Public user
@@ -38,6 +38,14 @@ export const updateDemoClassStatus = async (id, status) => {
 // Admin
 export const deleteDemoClass = async (id) => {
   const response = await api.delete(`/demo-classes/admin/${id}`);
+
+  return response.data;
+};
+
+// BOOK DEMO CLASS
+// Student
+export const bookDemoClass = async (id) => {
+  const response = await api.post(`/demo-classes/${id}/book`);
 
   return response.data;
 };

@@ -6,6 +6,18 @@ export const createPayment = async (data) => {
   return response.data;
 };
 
+// STUDENT - INITIATE ESEWA PAYMENT
+export const initiateEsewaPayment = async (courseId) => {
+  const response = await api.post("/payments/esewa/initiate", { courseId });
+  return response.data;
+};
+
+// STUDENT - VERIFY ESEWA PAYMENT
+export const verifyEsewaPayment = async (data) => {
+  const response = await api.post("/payments/esewa/verify", { data });
+  return response.data;
+};
+
 // STUDENT - GET OWN PAYMENTS
 export const getMyPayments = async () => {
   const response = await api.get("/payments/my-payments");
@@ -24,13 +36,6 @@ export const getPaymentById = async (id) => {
   return response.data;
 };
 
-// ADMIN - UPDATE PAYMENT STATUS
-export const updatePaymentStatus = async (id, paymentStatus) => {
-  const response = await api.patch(`/payments/${id}/status`, {
-    paymentStatus,
-  });
-  return response.data;
-};
 
 // ADMIN - DELETE PAYMENT
 export const deletePayment = async (id) => {

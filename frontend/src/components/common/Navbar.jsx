@@ -1,11 +1,34 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, Menu, User, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import { logoutUser } from "../../api/auth.services";
 import { clearAuth } from "../../redux/authSlice";
+
+const aboutLinks = [
+  {
+    title: "Company Overview",
+    description: "Learn about Sipalaya InfoTech.",
+    path: "/about#company-overview",
+  },
+  {
+    title: "Mission & Vision",
+    description: "Our commitment to shaping Nepal's IT future.",
+    path: "/about#mission-vision",
+  },
+  {
+    title: "Our Team",
+    description: "Meet the experts and mentors behind Sipalaya.",
+    path: "/about#our-team",
+  },
+  {
+    title: "Why Choose Us",
+    description: "What sets Sipalaya InfoTech apart.",
+    path: "/about#why-choose-us",
+  },
+];
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -17,12 +40,10 @@ const Navbar = () => {
 
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
-  }, [location.pathname]);
+  }, [location.pathname, location.hash]);
 
-  // Close mobile menu on outside click or scroll
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -63,22 +84,22 @@ const Navbar = () => {
         : "text-gray-600 hover:text-blue-600"
     }`;
 
+  const isAboutActive = location.pathname === "/about";
+
   return (
     <header
       ref={navRef}
-      className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md"
+      className="sticky top-0 z-50 border-b border-gray-100 bg-[#f5f5f5]/90 backdrop-blur-md"
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
-        {/* Logo */}
         <Link
           to="/"
-          className="text-3xl tracking-normal transition-colors duration-200 hover:text-gray-700 text-black-100"
+          className="text-3xl tracking-normal text-black-100 transition-colors duration-200 hover:text-gray-700"
           style={{ fontFamily: "'Pacifico', cursive" }}
         >
           Sipalaya
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden items-center gap-8 md:flex">
           <NavLink to="/" className={navLinkClass}>
             Home
@@ -86,6 +107,44 @@ const Navbar = () => {
           <NavLink to="/courses" className={navLinkClass}>
             Courses
           </NavLink>
+
+          <div className="group relative">
+            <Link
+              to="/about"
+              className={`flex items-center gap-1 font-medium transition-colors duration-200 ${
+                isAboutActive
+                  ? "text-blue-600 font-semibold"
+                  : "text-gray-600 hover:text-blue-600"
+              }`}
+            >
+              About Us
+              <ChevronDown
+                size={15}
+                className="transition-transform duration-200 group-hover:rotate-180"
+              />
+            </Link>
+
+            {/* Smaller, compact dropdown card width (w-72) */}
+            <div className="invisible absolute left-1/2 top-full w-72 -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+              <div className="rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl">
+                {aboutLinks.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="block rounded-md px-3 py-2 transition hover:bg-blue-50"
+                  >
+                    <span className="block text-xs font-bold text-gray-900">
+                      {item.title}
+                    </span>
+                    <span className="mt-0.5 block text-[11px] leading-tight text-gray-500">
+                      {item.description}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <NavLink to="/demo-classes" className={navLinkClass}>
             Demo Classes
           </NavLink>
@@ -100,13 +159,12 @@ const Navbar = () => {
           </NavLink>
         </div>
 
-        {/* Desktop Auth */}
         <div className="hidden items-center gap-3 md:flex">
           {!isAuthenticated ? (
             <>
               <Link
                 to="/login"
-                className="rounded-lg px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-100"
+                className="rounded-lg px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-200/60"
               >
                 Login
               </Link>
@@ -123,7 +181,7 @@ const Navbar = () => {
                 to="/profile"
                 aria-label="Open profile"
                 title="Profile"
-                className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-gray-100"
+                className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-gray-200/60"
               >
                 {user?.photo ? (
                   <img
@@ -132,7 +190,7 @@ const Navbar = () => {
                     className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-100"
                   />
                 ) : (
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 ring-2 ring-blue-100">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-gray-600 ring-2 ring-blue-100">
                     <User size={18} />
                   </span>
                 )}
@@ -149,10 +207,9 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Hamburger Button */}
         <button
           type="button"
-          className="rounded-lg p-2 text-gray-700 transition hover:bg-gray-100 md:hidden"
+          className="rounded-lg p-2 text-gray-700 transition hover:bg-gray-200/60 md:hidden"
           onClick={() => setMobileMenuOpen((prev) => !prev)}
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle menu"
@@ -161,11 +218,10 @@ const Navbar = () => {
         </button>
       </nav>
 
-      {/* Mobile Menu Dropdown (Absolute overlay, doesn't shift body content) */}
       <div
         className={`absolute left-0 top-full w-full overflow-hidden bg-white shadow-xl transition-all duration-300 ease-in-out md:hidden ${
           mobileMenuOpen
-            ? "max-h-125 opacity-100 border-b border-gray-100"
+            ? "max-h-[80vh] overflow-y-auto border-b border-gray-100 opacity-100"
             : "max-h-0 opacity-0 pointer-events-none"
         }`}
       >
@@ -182,6 +238,34 @@ const Navbar = () => {
           >
             Courses
           </NavLink>
+
+          <div className="rounded-lg bg-gray-50 p-2">
+            <NavLink
+              to="/about"
+              className={
+                navLinkClass + " block py-2 px-3 rounded-lg hover:bg-white"
+              }
+            >
+              About Us
+            </NavLink>
+            <div className="mt-1 grid gap-1">
+              {aboutLinks.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="rounded-lg px-3 py-2 hover:bg-white"
+                >
+                  <span className="block text-xs font-semibold text-gray-800">
+                    {item.title}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] leading-tight text-gray-500">
+                    {item.description}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
           <NavLink
             to="/demo-classes"
             className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}

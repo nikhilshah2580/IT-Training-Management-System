@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // PUBLIC
 import Home from "../pages/public/Home";
 import Courses from "../pages/public/Courses";
@@ -7,6 +7,7 @@ import NotFound from "../pages/public/NotFound";
 import Unauthorized from "../pages/public/Unauthorized";
 import Blog from "../pages/public/Blog";
 import BlogDetails from "../pages/public/BlogDetails";
+import About from "../pages/public/About";
 import Contact from "../pages/public/Contact";
 import Instructors from "../pages/public/Instructors";
 import Jobs from "../pages/public/Jobs";
@@ -124,6 +125,7 @@ const AppRoutes = () => {
           <Route path="/courses" element={<Courses />} />
           <Route path="/blogs" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogDetails />} />
+          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/instructors" element={<Instructors />} />
           <Route path="/jobs" element={<Jobs />} />
@@ -297,3 +299,4 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+
