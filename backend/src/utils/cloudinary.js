@@ -17,8 +17,9 @@ const uploadOnCloudinary = async (path) => {
   } catch (error) {
     console.log("Cloudinary Upload Error:", error);
     let message = "Failed to upload file on Cloudinary";
-    if (error.code === 'ENOTFOUND' || error.syscall === 'getaddrinfo') {
-      message = "Network error: Unable to connect to api.cloudinary.com. Please check your internet connection or DNS settings.";
+    if (error.code === "ENOTFOUND" || error.syscall === "getaddrinfo") {
+      message =
+        "Network error: Unable to connect to api.cloudinary.com. Please check your internet connection or DNS settings.";
     }
     let err = new Error(message);
     err.statusCode = 500;

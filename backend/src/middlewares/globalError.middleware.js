@@ -9,6 +9,7 @@ const globalErrorMiddleware = (err, req, res, next) => {
     success: false,
     message: err.message || "Internal Server Error",
     status: statusCode,
+    ...(err.errors && { errors: err.errors }),
   });
 };
 

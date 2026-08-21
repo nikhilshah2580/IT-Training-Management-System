@@ -1,181 +1,245 @@
 import Assignment from "../models/assignment.model.js";
 import Course from "../models/course.model.js";
+import Enrollment from "../models/enrollment.model.js";
 
 // Create assignment
 export const createAssignmentService = async (instructorId, data) => {
-    const { course, title, description, dueDate, attachment } = data;
+  const { course, title, description, dueDate, attachment } = data;
 
-    const courseData = await Course.findById(course);
+  const courseData = await Course.findById(course);
 
-    if (!courseData) {
-        const error = new Error("Course not found.");
-        error.statusCode = 404;
-        throw error;
-    }
+  if (!courseData) {
+    const error = new Error("Course not found.");
+    error.statusCode = 404;
+    throw error;
+  }
 
-    // Only course instructor can create assignment
-    if (courseData.instructor.toString() !== instructorId.toString()) {
-        const error = new Error(
-            "You can only create assignments for your own courses.",
-        );
+  // Only course instructor can create assignment
+  if (courseData.instructor.toString() !== instructorId.toString()) {
+    const error = new Error(
+      "You can only create assignments for your own courses.",
+    );
 
-        error.statusCode = 403;
-        throw error;
-    }
+    error.statusCode = 403;
+    throw error;
+  }
 
-    if (new Date(dueDate) <= new Date()) {
-        const error = new Error("Due date must be in the future.");
+  if (new Date(dueDate) <= new Date()) {
+    const error = new Error("Due date must be in the future.");
 
-        error.statusCode = 400;
-        throw error;
-    }
+    error.statusCode = 400;
+    throw error;
+  }
 
-    return await Assignment.create({
-        course,
-        title,
-        description,
-        dueDate,
-        attachment: attachment || "",
-    });
+  return await Assignment.create({
+    course,
+    title,
+    description,
+    dueDate,
+    attachment: attachment || "",
+  });
 };
 
 // Get all assignments
 export const getAssignmentsService = async ({
-    course,
-    status,
-    page = 1,
-    limit = 10,
+  course,
+  status,
+  page = 1,
+  limit = 10,
+  actor,
 }) => {
-    const query = {};
+  const query = {};
 
-    if (course) {
-        query.course = course;
-    }
+  if (course) {
+    query.course = course;
+  }
 
-    if (status) {
-        query.status = status;
-    }
+  if (actor?.role === "student") {
+    const enrollments = await Enrollment.find({
+      student: actor._id,
+      status: { $in: ["Active", "Completed"] },
+    }).select("course");
 
-    const pageNumber = Math.max(Number(page) || 1, 1);
+    const enrolledCourseIds = enrollments.map(
+      (enrollment) => enrollment.course,
+    );
 
-    const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 100);
+    query.course = course
+      ? {
+          $in: enrolledCourseIds.filter(
+            (id) => id.toString() === course.toString(),
+          ),
+        }
+      : { $in: enrolledCourseIds };
+  }
 
-    const skip = (pageNumber - 1) * limitNumber;
+  if (actor?.role === "instructor") {
+    const courses = await Course.find({
+      instructor: actor._id,
+      ...(course && { _id: course }),
+    }).select("_id");
 
-    const [assignments, total] = await Promise.all([
-        Assignment.find(query)
-            .populate("course", "title instructor duration")
-            .sort({ dueDate: 1 })
-            .skip(skip)
-            .limit(limitNumber),
+    query.course = { $in: courses.map((item) => item._id) };
+  }
 
-        Assignment.countDocuments(query),
-    ]);
+  if (status) {
+    query.status = status;
+  }
 
-    return {
-        assignments,
-        pagination: {
-            total,
-            page: pageNumber,
-            limit: limitNumber,
-            totalPages: Math.ceil(total / limitNumber),
-        },
-    };
+  const pageNumber = Math.max(Number(page) || 1, 1);
+
+  const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 100);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const [assignments, total] = await Promise.all([
+    Assignment.find(query)
+      .populate("course", "title instructor duration")
+      .sort({ dueDate: 1 })
+      .skip(skip)
+      .limit(limitNumber),
+
+    Assignment.countDocuments(query),
+  ]);
+
+  return {
+    assignments,
+    pagination: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  };
 };
 
 // Get single assignment
-export const getAssignmentService = async (id) => {
-    return await Assignment.findById(id).populate(
-        "course",
-        "title instructor duration",
-    );
+export const getAssignmentService = async (id, actor) => {
+  const assignment = await Assignment.findById(id).populate(
+    "course",
+    "title instructor duration",
+  );
+
+  if (!assignment) {
+    return null;
+  }
+
+  if (actor?.role === "student") {
+    const enrollment = await Enrollment.findOne({
+      student: actor._id,
+      course: assignment.course._id || assignment.course,
+      status: { $in: ["Active", "Completed"] },
+    });
+
+    if (!enrollment) {
+      const error = new Error(
+        "You must be enrolled in this course to view this assignment.",
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+  }
+
+  if (actor?.role === "instructor") {
+    const instructorId = assignment.course?.instructor;
+
+    if (!instructorId || instructorId.toString() !== actor._id.toString()) {
+      const error = new Error(
+        "You can only view assignments for your own courses.",
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+  }
+
+  return assignment;
 };
 
 // Update assignment
 export const updateAssignmentService = async (id, instructorId, data) => {
-    const assignment = await Assignment.findById(id).populate("course");
+  const assignment = await Assignment.findById(id).populate("course");
 
-    if (!assignment) {
-        return null;
+  if (!assignment) {
+    return null;
+  }
+
+  if (assignment.course.instructor.toString() !== instructorId.toString()) {
+    const error = new Error(
+      "You can only update assignments for your own courses.",
+    );
+
+    error.statusCode = 403;
+    throw error;
+  }
+
+  if (data.dueDate) {
+    if (new Date(data.dueDate) <= new Date()) {
+      const error = new Error("Due date must be in the future.");
+
+      error.statusCode = 400;
+      throw error;
     }
+  }
 
-    if (assignment.course.instructor.toString() !== instructorId.toString()) {
-        const error = new Error(
-            "You can only update assignments for your own courses.",
-        );
+  const allowedUpdates = {};
 
-        error.statusCode = 403;
-        throw error;
-    }
+  if (data.title !== undefined) {
+    allowedUpdates.title = data.title;
+  }
 
-    if (data.dueDate) {
-        if (new Date(data.dueDate) <= new Date()) {
-            const error = new Error("Due date must be in the future.");
+  if (data.description !== undefined) {
+    allowedUpdates.description = data.description;
+  }
 
-            error.statusCode = 400;
-            throw error;
-        }
-    }
+  if (data.dueDate !== undefined) {
+    allowedUpdates.dueDate = data.dueDate;
+  }
 
-    const allowedUpdates = {};
+  if (data.attachment !== undefined) {
+    allowedUpdates.attachment = data.attachment;
+  }
 
-    if (data.title !== undefined) {
-        allowedUpdates.title = data.title;
-    }
+  if (data.status !== undefined) {
+    allowedUpdates.status = data.status;
+  }
 
-    if (data.description !== undefined) {
-        allowedUpdates.description = data.description;
-    }
-
-    if (data.dueDate !== undefined) {
-        allowedUpdates.dueDate = data.dueDate;
-    }
-
-    if (data.attachment !== undefined) {
-        allowedUpdates.attachment = data.attachment;
-    }
-
-    if (data.status !== undefined) {
-        allowedUpdates.status = data.status;
-    }
-
-    return await Assignment.findByIdAndUpdate(id, allowedUpdates, {
-        returnDocument: "after",
-        runValidators: true,
-    }).populate("course", "title instructor duration");
+  return await Assignment.findByIdAndUpdate(id, allowedUpdates, {
+    returnDocument: "after",
+    runValidators: true,
+  }).populate("course", "title instructor duration");
 };
 
 // Delete assignment
 export const deleteAssignmentService = async (id, instructorId) => {
-    const assignment = await Assignment.findById(id).populate("course");
+  const assignment = await Assignment.findById(id).populate("course");
 
-    if (!assignment) {
-        return null;
-    }
+  if (!assignment) {
+    return null;
+  }
 
-    if (assignment.course.instructor.toString() !== instructorId.toString()) {
-        const error = new Error(
-            "You can only delete assignments for your own courses.",
-        );
+  if (assignment.course.instructor.toString() !== instructorId.toString()) {
+    const error = new Error(
+      "You can only delete assignments for your own courses.",
+    );
 
-        error.statusCode = 403;
-        throw error;
-    }
+    error.statusCode = 403;
+    throw error;
+  }
 
-    return await Assignment.findByIdAndDelete(id);
+  return await Assignment.findByIdAndDelete(id);
 };
 
 // Get assignments for instructor's course
 export const getInstructorAssignmentsService = async (instructorId) => {
-    const courses = await Course.find({
-        instructor: instructorId,
-    }).select("_id");
+  const courses = await Course.find({
+    instructor: instructorId,
+  }).select("_id");
 
-    const courseIds = courses.map((course) => course._id);
+  const courseIds = courses.map((course) => course._id);
 
-    return await Assignment.find({
-        course: { $in: courseIds },
-    })
-        .populate("course", "title duration")
-        .sort({ dueDate: 1 });
+  return await Assignment.find({
+    course: { $in: courseIds },
+  })
+    .populate("course", "title duration")
+    .sort({ dueDate: 1 });
 };

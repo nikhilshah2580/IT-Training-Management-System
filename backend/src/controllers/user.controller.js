@@ -28,6 +28,7 @@ import {
   deleteUserService,
   changePasswordService,
 } from "../services/user.service.js";
+import { writeAuditLog } from "../utils/auditLog.js";
 
 // SIGN UP
 export const signUpUser = async (req, res) => {
@@ -161,6 +162,12 @@ export const updateProfile = async (req, res) => {
 // ADMIN CREATE USER
 export const createUserByAdmin = async (req, res) => {
   const user = await createUserService(req.body);
+  await writeAuditLog(req, {
+    action: "admin.user.create",
+    targetType: "User",
+    targetId: user._id,
+    metadata: { role: user.role, email: user.email },
+  });
 
   return res.status(201).json({
     success: true,
@@ -199,6 +206,12 @@ export const getUser = async (req, res) => {
 // ADMIN UPDATE USER
 export const updateUser = async (req, res) => {
   const user = await updateUserService(req.params.id, req.body);
+  await writeAuditLog(req, {
+    action: "admin.user.update",
+    targetType: "User",
+    targetId: req.params.id,
+    metadata: { fields: Object.keys(req.body || {}) },
+  });
 
   return res.status(200).json({
     success: true,
@@ -210,6 +223,11 @@ export const updateUser = async (req, res) => {
 // ADMIN DELETE USER
 export const deleteUser = async (req, res) => {
   await deleteUserService(req.params.id);
+  await writeAuditLog(req, {
+    action: "admin.user.delete",
+    targetType: "User",
+    targetId: req.params.id,
+  });
 
   return res.status(200).json({
     success: true,

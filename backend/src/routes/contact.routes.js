@@ -1,6 +1,13 @@
 import express from "express";
 
-import { createContact, getContacts, getContact, getMyContacts, updateContact, deleteContact } from "../controllers/contact.controller.js";
+import {
+  createContact,
+  getContacts,
+  getContact,
+  getMyContacts,
+  updateContact,
+  deleteContact,
+} from "../controllers/contact.controller.js";
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
@@ -29,6 +36,11 @@ contactRoutes.put("/:id", verifyToken, authorizeRoles("admin"), updateContact);
 
 // ADMIN
 // Delete inquiry
-contactRoutes.delete("/:id", verifyToken, authorizeRoles("admin"), deleteContact);
+contactRoutes.delete(
+  "/:id",
+  verifyToken,
+  authorizeRoles("admin"),
+  deleteContact,
+);
 
 export default contactRoutes;

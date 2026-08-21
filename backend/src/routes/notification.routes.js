@@ -1,13 +1,13 @@
 import express from "express";
 
 import {
-    getMyNotifications,
-    getNotification,
-    markNotificationAsRead,
-    markAllNotificationsAsRead,
-    deleteNotification,
-    deleteAllNotifications,
-    createAdminNotification,
+  getMyNotifications,
+  getNotification,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification,
+  deleteAllNotifications,
+  createAdminNotification,
 } from "../controllers/notification.controller.js";
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
@@ -36,6 +36,11 @@ notificationRoutes.delete("/:id", verifyToken, deleteNotification);
 notificationRoutes.delete("/", verifyToken, deleteAllNotifications);
 
 //ADMIN
-notificationRoutes.post("/admin/create", verifyToken, authorizeRoles("admin"), createAdminNotification);
+notificationRoutes.post(
+  "/admin/create",
+  verifyToken,
+  authorizeRoles("admin"),
+  createAdminNotification,
+);
 
 export default notificationRoutes;

@@ -5,263 +5,271 @@ import Course from "../models/course.model.js";
 import Enrollment from "../models/enrollment.model.js";
 
 const generateCertificateNumber = () => {
-    const year = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
-    const randomNumber = crypto.randomBytes(4).toString("hex").toUpperCase();
+  const randomNumber = crypto.randomBytes(4).toString("hex").toUpperCase();
 
-    return `SIP-${year}-${randomNumber}`;
+  return `SIP-${year}-${randomNumber}`;
 };
 
 const generateVerificationCode = () => {
-    return crypto.randomBytes(16).toString("hex").toUpperCase();
+  return crypto.randomBytes(16).toString("hex").toUpperCase();
 };
 
 // Create certificate
 export const createCertificateService = async (data, issuedBy) => {
-    const { student, course, completionDate, grade, certificateUrl } = data;
+  const { student, course, completionDate, grade, certificateUrl } = data;
 
-    const studentExists = await User.findById(student);
+  const studentExists = await User.findById(student);
 
-    if (!studentExists) {
-        const error = new Error("Student not found");
-        error.statusCode = 404;
-        throw error;
+  if (!studentExists) {
+    const error = new Error("Student not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (studentExists.role !== "student") {
+    const error = new Error("Certificate can only be issued to a student");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const courseExists = await Course.findById(course);
+
+  if (!courseExists) {
+    const error = new Error("Course not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const enrollment = await Enrollment.findOne({
+    student,
+    course,
+  });
+
+  if (!enrollment || enrollment.status !== "Completed") {
+    const error = new Error(
+      "Certificate can only be issued after course completion",
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (issuedBy) {
+    const issuer = await User.findById(issuedBy).select("role");
+    if (!issuer || !["admin", "instructor"].includes(issuer.role)) {
+      const error = new Error("Invalid certificate issuer");
+      error.statusCode = 403;
+      throw error;
     }
-
-    if (studentExists.role !== "student") {
-        const error = new Error("Certificate can only be issued to a student");
-        error.statusCode = 400;
-        throw error;
+    if (
+      issuer.role === "instructor" &&
+      courseExists.instructor.toString() !== issuedBy.toString()
+    ) {
+      const error = new Error(
+        "You can only issue certificates for your own courses",
+      );
+      error.statusCode = 403;
+      throw error;
     }
+  }
 
-    const courseExists = await Course.findById(course);
+  const existingCertificate = await Certificate.findOne({
+    student,
+    course,
+    status: "Issued",
+  });
 
-    if (!courseExists) {
-        const error = new Error("Course not found");
-        error.statusCode = 404;
-        throw error;
-    }
+  if (existingCertificate) {
+    const error = new Error("Certificate already issued for this course");
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const enrollment = await Enrollment.findOne({
-        student,
-        course,
-    });
+  const certificate = await Certificate.create({
+    certificateNumber: generateCertificateNumber(),
+    verificationCode: generateVerificationCode(),
+    student,
+    course,
+    issuedBy,
+    completionDate: completionDate || new Date(),
+    grade,
+    certificateUrl: certificateUrl || "",
+  });
 
-    if (!enrollment || enrollment.status !== "Completed") {
-        const error = new Error(
-            "Certificate can only be issued after course completion",
-        );
-        error.statusCode = 400;
-        throw error;
-    }
-
-    if (issuedBy) {
-        const issuer = await User.findById(issuedBy).select("role");
-        if (!issuer || !["admin", "instructor"].includes(issuer.role)) {
-            const error = new Error("Invalid certificate issuer");
-            error.statusCode = 403;
-            throw error;
-        }
-        if (
-            issuer.role === "instructor" &&
-            courseExists.instructor.toString() !== issuedBy.toString()
-        ) {
-            const error = new Error(
-                "You can only issue certificates for your own courses",
-            );
-            error.statusCode = 403;
-            throw error;
-        }
-    }
-
-    const existingCertificate = await Certificate.findOne({
-        student,
-        course,
-        status: "Issued",
-    });
-
-    if (existingCertificate) {
-        const error = new Error("Certificate already issued for this course");
-        error.statusCode = 400;
-        throw error;
-    }
-
-    const certificate = await Certificate.create({
-        certificateNumber: generateCertificateNumber(),
-        verificationCode: generateVerificationCode(),
-        student,
-        course,
-        issuedBy,
-        completionDate: completionDate || new Date(),
-        grade,
-        certificateUrl: certificateUrl || "",
-    });
-
-    return await Certificate.findById(certificate._id)
-        .populate("student", "fullName email photo")
-        .populate("course", "title duration")
-        .populate("issuedBy", "fullName email");
+  return await Certificate.findById(certificate._id)
+    .populate("student", "fullName email photo")
+    .populate("course", "title duration")
+    .populate("issuedBy", "fullName email");
 };
 
 // Get all certificates
 export const getCertificatesService = async ({
-    page = 1,
-    limit = 10,
-    search = "",
-    status,
+  page = 1,
+  limit = 10,
+  search = "",
+  status,
+  actor,
 } = {}) => {
-    page = Number(page);
-    limit = Number(limit);
+  page = Number(page);
+  limit = Number(limit);
 
-    const skip = (page - 1) * limit;
+  const skip = (page - 1) * limit;
 
-    const filter = {};
+  const filter = {};
 
-    if (status) {
-        filter.status = status;
-    }
+  if (actor?.role === "instructor") {
+    const instructorCourses = await Course.find({
+      instructor: actor._id,
+    }).select("_id");
+    filter.course = { $in: instructorCourses.map((course) => course._id) };
+  }
 
-    if (search) {
-        filter.certificateNumber = {
-            $regex: search,
-            $options: "i",
-        };
-    }
+  if (status) {
+    filter.status = status;
+  }
 
-    const [certificates, total] = await Promise.all([
-        Certificate.find(filter)
-            .populate("student", "fullName email photo")
-            .populate("course", "title duration")
-            .populate("issuedBy", "fullName email")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit),
-
-        Certificate.countDocuments(filter),
-    ]);
-
-    return {
-        certificates,
-        pagination: {
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit),
-        },
+  if (search) {
+    filter.certificateNumber = {
+      $regex: search,
+      $options: "i",
     };
+  }
+
+  const [certificates, total] = await Promise.all([
+    Certificate.find(filter)
+      .populate("student", "fullName email photo")
+      .populate("course", "title duration")
+      .populate("issuedBy", "fullName email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+
+    Certificate.countDocuments(filter),
+  ]);
+
+  return {
+    certificates,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 // Get single certificate
 export const getCertificateService = async (id, actor) => {
-    const certificate = await Certificate.findById(id);
+  const certificate = await Certificate.findById(id);
 
-    if (!certificate) {
-        return null;
-    }
+  if (!certificate) {
+    return null;
+  }
 
-    if (
-        actor?.role === "student" &&
-        certificate.student.toString() !== actor._id.toString()
-    ) {
-        const error = new Error("You can only view your own certificates");
-        error.statusCode = 403;
-        throw error;
-    }
+  if (
+    actor?.role === "student" &&
+    certificate.student.toString() !== actor._id.toString()
+  ) {
+    const error = new Error("You can only view your own certificates");
+    error.statusCode = 403;
+    throw error;
+  }
 
-    return Certificate.findById(id)
-        .populate("student", "fullName email phone photo")
-        .populate("course", "title description duration fee")
-        .populate("issuedBy", "fullName email role");
+  return Certificate.findById(id)
+    .populate("student", "fullName email phone photo")
+    .populate("course", "title description duration fee")
+    .populate("issuedBy", "fullName email role");
 };
 
 // Get student's certificates
 export const getStudentCertificatesService = async (studentId) => {
-    return await Certificate.find({
-        student: studentId,
-    })
-        .populate("course", "title duration description")
-        .populate("issuedBy", "fullName")
-        .sort({ issueDate: -1 });
+  return await Certificate.find({
+    student: studentId,
+  })
+    .populate("course", "title duration description")
+    .populate("issuedBy", "fullName")
+    .sort({ issueDate: -1 });
 };
 
 // Verify certificate publicly
 export const verifyCertificateService = async (verificationCode) => {
-    const certificate = await Certificate.findOne({
-        verificationCode,
-        status: "Issued",
-    })
-        .populate("student", "fullName")
-        .populate("course", "title duration")
-        .populate("issuedBy", "fullName");
+  const certificate = await Certificate.findOne({
+    verificationCode,
+    status: "Issued",
+  })
+    .populate("student", "fullName")
+    .populate("course", "title duration")
+    .populate("issuedBy", "fullName");
 
-    return certificate;
+  return certificate;
 };
 
 // Update certificate
 export const updateCertificateService = async (id, data, actor) => {
-    const existingCertificate = await Certificate.findById(id).populate(
-        "course",
-        "instructor",
+  const existingCertificate = await Certificate.findById(id).populate(
+    "course",
+    "instructor",
+  );
+
+  if (!existingCertificate) {
+    return null;
+  }
+
+  if (
+    actor?.role === "instructor" &&
+    existingCertificate.course.instructor.toString() !== actor._id.toString()
+  ) {
+    const error = new Error(
+      "You can only update certificates for your own courses",
     );
+    error.statusCode = 403;
+    throw error;
+  }
 
-    if (!existingCertificate) {
-        return null;
-    }
+  const allowedUpdates = {};
 
-    if (
-        actor?.role === "instructor" &&
-        existingCertificate.course.instructor.toString() !== actor._id.toString()
-    ) {
-        const error = new Error(
-            "You can only update certificates for your own courses",
-        );
-        error.statusCode = 403;
-        throw error;
-    }
+  if (data.grade !== undefined) {
+    allowedUpdates.grade = data.grade;
+  }
 
-    const allowedUpdates = {};
+  if (data.completionDate !== undefined) {
+    allowedUpdates.completionDate = data.completionDate;
+  }
 
-    if (data.grade !== undefined) {
-        allowedUpdates.grade = data.grade;
-    }
+  if (data.certificateUrl !== undefined) {
+    allowedUpdates.certificateUrl = data.certificateUrl;
+  }
 
-    if (data.completionDate !== undefined) {
-        allowedUpdates.completionDate = data.completionDate;
-    }
+  if (data.status !== undefined) {
+    allowedUpdates.status = data.status;
+  }
 
-    if (data.certificateUrl !== undefined) {
-        allowedUpdates.certificateUrl = data.certificateUrl;
-    }
+  const certificate = await Certificate.findByIdAndUpdate(id, allowedUpdates, {
+    returnDocument: "after",
+    runValidators: true,
+  })
+    .populate("student", "fullName email")
+    .populate("course", "title")
+    .populate("issuedBy", "fullName");
 
-    if (data.status !== undefined) {
-        allowedUpdates.status = data.status;
-    }
-
-    const certificate = await Certificate.findByIdAndUpdate(id, allowedUpdates, {
-        returnDocument: "after",
-        runValidators: true,
-    })
-        .populate("student", "fullName email")
-        .populate("course", "title")
-        .populate("issuedBy", "fullName");
-
-    return certificate;
+  return certificate;
 };
 
 // Revoke certificate
 export const revokeCertificateService = async (id) => {
-    return await Certificate.findByIdAndUpdate(
-        id,
-        {
-            status: "Revoked",
-        },
-        {
-            returnDocument: "after",
-        },
-    );
+  return await Certificate.findByIdAndUpdate(
+    id,
+    {
+      status: "Revoked",
+    },
+    {
+      returnDocument: "after",
+    },
+  );
 };
 
 // Delete certificate
 export const deleteCertificateService = async (id) => {
-    return await Certificate.findByIdAndDelete(id);
+  return await Certificate.findByIdAndDelete(id);
 };

@@ -5,282 +5,282 @@ import Course from "../models/course.model.js";
 
 // Create Submission
 export const createSubmissionService = async ({
-    assignmentId,
-    studentId,
-    file,
+  assignmentId,
+  studentId,
+  file,
 }) => {
-    if (!file) {
-        const error = new Error("Assignment file is required.");
-        error.statusCode = 400;
-        throw error;
-    }
+  if (!file) {
+    const error = new Error("Assignment file is required.");
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const assignment = await Assignment.findById(assignmentId);
+  const assignment = await Assignment.findById(assignmentId);
 
-    if (!assignment) {
-        const error = new Error("Assignment not found.");
-        error.statusCode = 404;
-        throw error;
-    }
+  if (!assignment) {
+    const error = new Error("Assignment not found.");
+    error.statusCode = 404;
+    throw error;
+  }
 
-    const enrollment = await Enrollment.findOne({
-        student: studentId,
-        course: assignment.course,
-        status: { $in: ["Active", "Completed"] },
-    });
+  const enrollment = await Enrollment.findOne({
+    student: studentId,
+    course: assignment.course,
+    status: { $in: ["Active", "Completed"] },
+  });
 
-    if (!enrollment) {
-        const error = new Error(
-            "You must be enrolled in this course to submit the assignment.",
-        );
-        error.statusCode = 403;
-        throw error;
-    }
+  if (!enrollment) {
+    const error = new Error(
+      "You must be enrolled in this course to submit the assignment.",
+    );
+    error.statusCode = 403;
+    throw error;
+  }
 
-    if (assignment.status === "Closed") {
-        const error = new Error("This assignment is closed.");
-        error.statusCode = 400;
-        throw error;
-    }
+  if (assignment.status === "Closed") {
+    const error = new Error("This assignment is closed.");
+    error.statusCode = 400;
+    throw error;
+  }
 
-    // Check deadline
-    const now = new Date();
+  // Check deadline
+  const now = new Date();
 
-    const status =
-        assignment.dueDate && now > assignment.dueDate ? "Late" : "Submitted";
+  const status =
+    assignment.dueDate && now > assignment.dueDate ? "Late" : "Submitted";
 
-    // Check existing submission
-    const existingSubmission = await Submission.findOne({
-        assignment: assignmentId,
-        student: studentId,
-    });
+  // Check existing submission
+  const existingSubmission = await Submission.findOne({
+    assignment: assignmentId,
+    student: studentId,
+  });
 
-    if (existingSubmission) {
-        const error = new Error("You have already submitted this assignment.");
+  if (existingSubmission) {
+    const error = new Error("You have already submitted this assignment.");
 
-        error.statusCode = 400;
-        throw error;
-    }
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const submission = await Submission.create({
-        assignment: assignmentId,
-        student: studentId,
-        file,
-        submittedAt: now,
-        status,
-    });
+  const submission = await Submission.create({
+    assignment: assignmentId,
+    student: studentId,
+    file,
+    submittedAt: now,
+    status,
+  });
 
-    return await Submission.findById(submission._id)
-        .populate("student", "fullName email photo")
-        .populate("assignment", "title description dueDate course");
+  return await Submission.findById(submission._id)
+    .populate("student", "fullName email photo")
+    .populate("assignment", "title description dueDate course");
 };
 
 // Get Student's Submissions
 export const getMySubmissionsService = async (studentId) => {
-    return await Submission.find({
-        student: studentId,
-    })
-        .populate("assignment", "title description dueDate course")
-        .populate("gradedBy", "fullName email")
-        .sort({ createdAt: -1 });
+  return await Submission.find({
+    student: studentId,
+  })
+    .populate("assignment", "title description dueDate course")
+    .populate("gradedBy", "fullName email")
+    .sort({ createdAt: -1 });
 };
 
 // Get Single Submission
 export const getSubmissionService = async (id, actor) => {
-    const submission = await Submission.findById(id).populate(
-        "assignment",
-        "title description dueDate course",
+  const submission = await Submission.findById(id).populate(
+    "assignment",
+    "title description dueDate course",
+  );
+
+  if (!submission) {
+    return null;
+  }
+
+  if (actor?.role === "student") {
+    if (submission.student.toString() !== actor._id.toString()) {
+      const error = new Error("You can only view your own submission.");
+      error.statusCode = 403;
+      throw error;
+    }
+  } else if (actor?.role === "instructor") {
+    const course = await Course.findById(submission.assignment.course).select(
+      "instructor",
     );
-
-    if (!submission) {
-        return null;
+    if (!course || course.instructor.toString() !== actor._id.toString()) {
+      const error = new Error(
+        "You can only view submissions for your own courses.",
+      );
+      error.statusCode = 403;
+      throw error;
     }
+  }
 
-    if (actor?.role === "student") {
-        if (submission.student.toString() !== actor._id.toString()) {
-            const error = new Error("You can only view your own submission.");
-            error.statusCode = 403;
-            throw error;
-        }
-    } else if (actor?.role === "instructor") {
-        const course = await Course.findById(submission.assignment.course).select(
-            "instructor",
-        );
-        if (!course || course.instructor.toString() !== actor._id.toString()) {
-            const error = new Error(
-                "You can only view submissions for your own courses.",
-            );
-            error.statusCode = 403;
-            throw error;
-        }
-    }
-
-    return Submission.findById(id)
-        .populate("student", "fullName email phone photo")
-        .populate("assignment", "title description dueDate course")
-        .populate("gradedBy", "fullName email");
+  return Submission.findById(id)
+    .populate("student", "fullName email phone photo")
+    .populate("assignment", "title description dueDate course")
+    .populate("gradedBy", "fullName email");
 };
 
 // Get Submissions By Assignment
 export const getSubmissionsByAssignmentService = async (
-    assignmentId,
-    actor,
+  assignmentId,
+  actor,
 ) => {
-    const assignment = await Assignment.findById(assignmentId);
+  const assignment = await Assignment.findById(assignmentId);
 
-    if (!assignment) {
-        const error = new Error("Assignment not found.");
-        error.statusCode = 404;
-        throw error;
+  if (!assignment) {
+    const error = new Error("Assignment not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (actor?.role === "instructor") {
+    const course = await Course.findById(assignment.course).select(
+      "instructor",
+    );
+    if (!course || course.instructor.toString() !== actor._id.toString()) {
+      const error = new Error(
+        "You can only view submissions for your own courses.",
+      );
+      error.statusCode = 403;
+      throw error;
     }
+  }
 
-    if (actor?.role === "instructor") {
-        const course = await Course.findById(assignment.course).select(
-            "instructor",
-        );
-        if (!course || course.instructor.toString() !== actor._id.toString()) {
-            const error = new Error(
-                "You can only view submissions for your own courses.",
-            );
-            error.statusCode = 403;
-            throw error;
-        }
-    }
-
-    return await Submission.find({
-        assignment: assignmentId,
-    })
-        .populate("student", "fullName email phone photo")
-        .populate("gradedBy", "fullName email")
-        .sort({ createdAt: -1 });
+  return await Submission.find({
+    assignment: assignmentId,
+  })
+    .populate("student", "fullName email phone photo")
+    .populate("gradedBy", "fullName email")
+    .sort({ createdAt: -1 });
 };
 
 // Grade Submission
 export const gradeSubmissionService = async (
-    id,
-    grade,
-    feedback,
-    instructorId,
+  id,
+  grade,
+  feedback,
+  instructorId,
 ) => {
-    if (grade === undefined || grade === null || grade === "") {
-        const error = new Error("Grade is required.");
-        error.statusCode = 400;
-        throw error;
-    }
+  if (grade === undefined || grade === null || grade === "") {
+    const error = new Error("Grade is required.");
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const numericGrade = Number(grade);
+  const numericGrade = Number(grade);
 
-    if (Number.isNaN(numericGrade) || numericGrade < 0 || numericGrade > 100) {
-        const error = new Error("Grade must be between 0 and 100.");
+  if (Number.isNaN(numericGrade) || numericGrade < 0 || numericGrade > 100) {
+    const error = new Error("Grade must be between 0 and 100.");
 
-        error.statusCode = 400;
-        throw error;
-    }
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const submission = await Submission.findById(id);
+  const submission = await Submission.findById(id);
 
-    if (!submission) {
-        const error = new Error("Submission not found.");
+  if (!submission) {
+    const error = new Error("Submission not found.");
 
-        error.statusCode = 404;
-        throw error;
-    }
+    error.statusCode = 404;
+    throw error;
+  }
 
-    const assignment = await Assignment.findById(submission.assignment).select(
-        "course",
+  const assignment = await Assignment.findById(submission.assignment).select(
+    "course",
+  );
+  const course = assignment
+    ? await Course.findById(assignment.course).select("instructor")
+    : null;
+
+  if (!course) {
+    const error = new Error("Course not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (course.instructor.toString() !== instructorId.toString()) {
+    const error = new Error(
+      "You can only grade submissions for your own courses.",
     );
-    const course = assignment
-        ? await Course.findById(assignment.course).select("instructor")
-        : null;
+    error.statusCode = 403;
+    throw error;
+  }
 
-    if (!course) {
-        const error = new Error("Course not found.");
-        error.statusCode = 404;
-        throw error;
-    }
+  submission.grade = numericGrade;
+  submission.feedback = feedback || "";
+  submission.status = "Graded";
+  submission.gradedAt = new Date();
+  submission.gradedBy = instructorId;
 
-    if (course.instructor.toString() !== instructorId.toString()) {
-        const error = new Error(
-            "You can only grade submissions for your own courses.",
-        );
-        error.statusCode = 403;
-        throw error;
-    }
+  await submission.save();
 
-    submission.grade = numericGrade;
-    submission.feedback = feedback || "";
-    submission.status = "Graded";
-    submission.gradedAt = new Date();
-    submission.gradedBy = instructorId;
-
-    await submission.save();
-
-    return await Submission.findById(id)
-        .populate("student", "fullName email phone photo")
-        .populate("assignment", "title description dueDate course")
-        .populate("gradedBy", "fullName email");
+  return await Submission.findById(id)
+    .populate("student", "fullName email phone photo")
+    .populate("assignment", "title description dueDate course")
+    .populate("gradedBy", "fullName email");
 };
 
 // Delete Submission
 export const deleteSubmissionService = async (id, studentId) => {
-    const submission = await Submission.findById(id);
+  const submission = await Submission.findById(id);
 
-    if (!submission) {
-        const error = new Error("Submission not found.");
+  if (!submission) {
+    const error = new Error("Submission not found.");
 
-        error.statusCode = 404;
-        throw error;
-    }
+    error.statusCode = 404;
+    throw error;
+  }
 
-    // Student can delete only their own submission
-    if (submission.student.toString() !== studentId.toString()) {
-        const error = new Error("You can only delete your own submission.");
+  // Student can delete only their own submission
+  if (submission.student.toString() !== studentId.toString()) {
+    const error = new Error("You can only delete your own submission.");
 
-        error.statusCode = 403;
-        throw error;
-    }
+    error.statusCode = 403;
+    throw error;
+  }
 
-    await Submission.findByIdAndDelete(id);
+  await Submission.findByIdAndDelete(id);
 
-    return submission;
+  return submission;
 };
 
 // Get All Submissions - Admin
 export const getAllSubmissionsService = async ({
-    page = 1,
-    limit = 10,
-    status,
+  page = 1,
+  limit = 10,
+  status,
 }) => {
-    page = Number(page);
-    limit = Number(limit);
+  page = Number(page);
+  limit = Number(limit);
 
-    const filter = {};
+  const filter = {};
 
-    if (status) {
-        filter.status = status;
-    }
+  if (status) {
+    filter.status = status;
+  }
 
-    const skip = (page - 1) * limit;
+  const skip = (page - 1) * limit;
 
-    const [submissions, total] = await Promise.all([
-        Submission.find(filter)
-            .populate("student", "fullName email phone photo")
-            .populate("assignment", "title dueDate course")
-            .populate("gradedBy", "fullName email")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit),
+  const [submissions, total] = await Promise.all([
+    Submission.find(filter)
+      .populate("student", "fullName email phone photo")
+      .populate("assignment", "title dueDate course")
+      .populate("gradedBy", "fullName email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
 
-        Submission.countDocuments(filter),
-    ]);
+    Submission.countDocuments(filter),
+  ]);
 
-    return {
-        submissions,
-        pagination: {
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit),
-        },
-    };
+  return {
+    submissions,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };

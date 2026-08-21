@@ -1,115 +1,115 @@
 import {
-    createSubmissionService,
-    getMySubmissionsService,
-    getSubmissionService,
-    getSubmissionsByAssignmentService,
-    gradeSubmissionService,
-    deleteSubmissionService,
-    getAllSubmissionsService,
+  createSubmissionService,
+  getMySubmissionsService,
+  getSubmissionService,
+  getSubmissionsByAssignmentService,
+  gradeSubmissionService,
+  deleteSubmissionService,
+  getAllSubmissionsService,
 } from "../services/submission.service.js";
 
 // Student - Create Submission
 export const createSubmission = async (req, res) => {
-    if (!req.file) {
-        const error = new Error("Assignment file is required.");
+  if (!req.file) {
+    const error = new Error("Assignment file is required.");
 
-        error.statusCode = 400;
-        throw error;
-    }
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const submission = await createSubmissionService({
-        assignmentId: req.body.assignment,
-        studentId: req.user._id,
-        file: req.file.path,
-    });
+  const submission = await createSubmissionService({
+    assignmentId: req.body.assignment,
+    studentId: req.user._id,
+    file: req.file.path,
+  });
 
-    return res.status(201).json({
-        success: true,
-        message: "Assignment submitted successfully.",
-        submission,
-    });
+  return res.status(201).json({
+    success: true,
+    message: "Assignment submitted successfully.",
+    submission,
+  });
 };
 
 // Student - Get My Submissions
 export const getMySubmissions = async (req, res) => {
-    const submissions = await getMySubmissionsService(req.user._id);
+  const submissions = await getMySubmissionsService(req.user._id);
 
-    return res.status(200).json({
-        success: true,
-        submissions,
-    });
+  return res.status(200).json({
+    success: true,
+    submissions,
+  });
 };
 
 // Get Single Submission
 export const getSubmission = async (req, res) => {
-    const submission = await getSubmissionService(req.params.id, req.user);
+  const submission = await getSubmissionService(req.params.id, req.user);
 
-    if (!submission) {
-        const error = new Error("Submission not found.");
+  if (!submission) {
+    const error = new Error("Submission not found.");
 
-        error.statusCode = 404;
-        throw error;
-    }
+    error.statusCode = 404;
+    throw error;
+  }
 
-    return res.status(200).json({
-        success: true,
-        submission,
-    });
+  return res.status(200).json({
+    success: true,
+    submission,
+  });
 };
 
 // Instructor - Get Assignment Submissions
 export const getSubmissionsByAssignment = async (req, res) => {
-    const submissions = await getSubmissionsByAssignmentService(
-        req.params.assignmentId,
-        req.user,
-    );
+  const submissions = await getSubmissionsByAssignmentService(
+    req.params.assignmentId,
+    req.user,
+  );
 
-    return res.status(200).json({
-        success: true,
-        submissions,
-    });
+  return res.status(200).json({
+    success: true,
+    submissions,
+  });
 };
 
 // Instructor - Grade Submission
 export const gradeSubmission = async (req, res) => {
-    const { grade, feedback } = req.body;
+  const { grade, feedback } = req.body;
 
-    const submission = await gradeSubmissionService(
-        req.params.id,
-        grade,
-        feedback,
-        req.user._id,
-    );
+  const submission = await gradeSubmissionService(
+    req.params.id,
+    grade,
+    feedback,
+    req.user._id,
+  );
 
-    return res.status(200).json({
-        success: true,
-        message: "Submission graded successfully.",
-        submission,
-    });
+  return res.status(200).json({
+    success: true,
+    message: "Submission graded successfully.",
+    submission,
+  });
 };
 
 // Student - Delete Submission
 export const deleteSubmission = async (req, res) => {
-    await deleteSubmissionService(req.params.id, req.user._id);
+  await deleteSubmissionService(req.params.id, req.user._id);
 
-    return res.status(200).json({
-        success: true,
-        message: "Submission deleted successfully.",
-    });
+  return res.status(200).json({
+    success: true,
+    message: "Submission deleted successfully.",
+  });
 };
 
 // Admin - Get All Submissions
 export const getAllSubmissions = async (req, res) => {
-    const { page, limit, status } = req.query;
+  const { page, limit, status } = req.query;
 
-    const result = await getAllSubmissionsService({
-        page,
-        limit,
-        status,
-    });
+  const result = await getAllSubmissionsService({
+    page,
+    limit,
+    status,
+  });
 
-    return res.status(200).json({
-        success: true,
-        ...result,
-    });
+  return res.status(200).json({
+    success: true,
+    ...result,
+  });
 };

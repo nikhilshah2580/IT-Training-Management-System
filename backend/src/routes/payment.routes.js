@@ -1,13 +1,13 @@
 import express from "express";
 
 import {
-    createPayment,
-    getPayments,
-    getPayment,
-    getMyPayments,
-    updatePaymentStatus,
-    deletePayment,
-    getPaymentReport,
+  createPayment,
+  getPayments,
+  getPayment,
+  getMyPayments,
+  updatePaymentStatus,
+  deletePayment,
+  getPaymentReport,
 } from "../controllers/payment.controller.js";
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
@@ -18,16 +18,36 @@ const paymentRoutes = express.Router();
 // Student creates payment
 paymentRoutes.post("/", verifyToken, authorizeRoles("student"), createPayment);
 // Student gets own payments
-paymentRoutes.get("/my-payments", verifyToken, authorizeRoles("student"), getMyPayments);
+paymentRoutes.get(
+  "/my-payments",
+  verifyToken,
+  authorizeRoles("student"),
+  getMyPayments,
+);
 // Admin financial report
-paymentRoutes.get("/report", verifyToken, authorizeRoles("admin"), getPaymentReport);
+paymentRoutes.get(
+  "/report",
+  verifyToken,
+  authorizeRoles("admin"),
+  getPaymentReport,
+);
 // Admin gets all payments
 paymentRoutes.get("/", verifyToken, authorizeRoles("admin"), getPayments);
 // Admin gets single payment
 paymentRoutes.get("/:id", verifyToken, authorizeRoles("admin"), getPayment);
 // Admin updates payment status
-paymentRoutes.patch("/:id/status", verifyToken, authorizeRoles("admin"), updatePaymentStatus);
+paymentRoutes.patch(
+  "/:id/status",
+  verifyToken,
+  authorizeRoles("admin"),
+  updatePaymentStatus,
+);
 // Admin deletes payment
-paymentRoutes.delete("/:id", verifyToken, authorizeRoles("admin"), deletePayment);
+paymentRoutes.delete(
+  "/:id",
+  verifyToken,
+  authorizeRoles("admin"),
+  deletePayment,
+);
 
 export default paymentRoutes;

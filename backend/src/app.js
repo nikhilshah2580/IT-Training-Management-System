@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import userRoutes from "./routes/user.routes.js";
 import globalErrorMiddleware from "./middlewares/globalError.middleware.js";
 import cookieParser from "cookie-parser";
@@ -21,9 +22,12 @@ import instructorProfileRoutes from "./routes/instructorProfile.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import auditLogRoutes from "./routes/auditLog.routes.js";
+import { apiLimiter } from "./middlewares/rateLimit.middleware.js";
 
 const app = express();
-app.use(express.json());
+app.use(helmet());
+app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",
@@ -43,6 +47,7 @@ app.use(
     credentials: true,
   }),
 );
+app.use("/api", apiLimiter);
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/payments", paymentRoutes);
@@ -62,6 +67,7 @@ app.use("/api/instructor-profiles", instructorProfileRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/audit-logs", auditLogRoutes);
 
 app.use(globalErrorMiddleware);
 

@@ -1,44 +1,94 @@
 import express from "express";
 
 import {
-    createCourse,
-    getCourses,
-    getMyCourses,
-    getAdminCourses,
-    getCourse,
-    updateCourse,
-    deleteCourse,
-    approveCourse,
-    rejectCourse,
-    updateCourseStatus,
+  createCourse,
+  getCourses,
+  getMyCourses,
+  getAdminCourses,
+  getCourse,
+  updateCourse,
+  deleteCourse,
+  approveCourse,
+  rejectCourse,
+  updateCourseStatus,
 } from "../controllers/course.controller.js";
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
 import upload from "../middlewares/upload.middleware.js";
+import { validate } from "../middlewares/validate.middleware.js";
+import {
+  createCourseValidation,
+  updateCourseValidation,
+  updateCourseStatusValidation,
+} from "../validations/course.validation.js";
 
 const courseRoutes = express.Router();
 
 // Get courses
 courseRoutes.get("/", getCourses);
 // Get instructor's own courses
-courseRoutes.get("/my", verifyToken, authorizeRoles("instructor"), getMyCourses);
+courseRoutes.get(
+  "/my",
+  verifyToken,
+  authorizeRoles("instructor"),
+  getMyCourses,
+);
 // Get all courses for admin
-courseRoutes.get("/admin/all", verifyToken, authorizeRoles("admin"), getAdminCourses);
+courseRoutes.get(
+  "/admin/all",
+  verifyToken,
+  authorizeRoles("admin"),
+  getAdminCourses,
+);
 // Get single course
 courseRoutes.get("/:id", getCourse);
 // Instructor creates course
-courseRoutes.post("/", verifyToken, authorizeRoles("instructor"), upload.single("photo"), createCourse);
+courseRoutes.post(
+  "/",
+  verifyToken,
+  authorizeRoles("instructor"),
+  upload.single("photo"),
+  validate(createCourseValidation),
+  createCourse,
+);
 // Instructor/Admin updates course
-courseRoutes.put("/:id", verifyToken, authorizeRoles("admin", "instructor"), upload.single("photo"), updateCourse);
+courseRoutes.put(
+  "/:id",
+  verifyToken,
+  authorizeRoles("admin", "instructor"),
+  upload.single("photo"),
+  validate(updateCourseValidation),
+  updateCourse,
+);
 // Instructor/Admin deletes course
-courseRoutes.delete("/:id", verifyToken, authorizeRoles("admin", "instructor"), deleteCourse);
+courseRoutes.delete(
+  "/:id",
+  verifyToken,
+  authorizeRoles("admin", "instructor"),
+  deleteCourse,
+);
 // Approve course
-courseRoutes.patch("/:id/approve", verifyToken, authorizeRoles("admin"), approveCourse);
+courseRoutes.patch(
+  "/:id/approve",
+  verifyToken,
+  authorizeRoles("admin"),
+  approveCourse,
+);
 // Reject course
-courseRoutes.patch("/:id/reject", verifyToken, authorizeRoles("admin"), rejectCourse);
+courseRoutes.patch(
+  "/:id/reject",
+  verifyToken,
+  authorizeRoles("admin"),
+  rejectCourse,
+);
 // Change status
-courseRoutes.patch("/:id/status", verifyToken, authorizeRoles("admin"), updateCourseStatus);
+courseRoutes.patch(
+  "/:id/status",
+  verifyToken,
+  authorizeRoles("admin"),
+  validate(updateCourseStatusValidation),
+  updateCourseStatus,
+);
 
 export default courseRoutes;
-

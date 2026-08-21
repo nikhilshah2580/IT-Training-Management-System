@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
+import { validateEnv } from "./src/utils/validateEnv.js";
 dotenv.config();
+validateEnv();
 
 import http from "http";
 import dns from "dns";
