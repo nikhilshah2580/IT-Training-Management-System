@@ -11,6 +11,11 @@ import {
   Loader2,
   User,
   CreditCard,
+  ShieldCheck,
+  Sparkles,
+  CheckCircle2,
+  Share2,
+  Bookmark,
 } from "lucide-react";
 
 import { getCourseById } from "../../api/course.services";
@@ -78,6 +83,7 @@ const CourseDetails = () => {
 
     setShowReviewForm(true);
   };
+
   // ENROLLMENT + ESEWA PAYMENT MUTATION
   const enrollMutation = useMutation({
     mutationFn: async (courseId) => {
@@ -85,12 +91,10 @@ const CourseDetails = () => {
         await createEnrollment(courseId);
       } catch (error) {
         const message = error?.response?.data?.message || "";
-
         if (!message.toLowerCase().includes("already enrolled")) {
           throw error;
         }
       }
-
       return await initiateEsewaPayment(courseId);
     },
 
@@ -119,25 +123,19 @@ const CourseDetails = () => {
   const handleEnroll = () => {
     if (!user) {
       toast.info("Please login to enroll in a course");
-
       navigate("/login");
-
       return;
     }
 
     if (user.role !== "student") {
       toast.error("Only students can enroll in courses");
-
       return;
     }
 
-    if (!course) {
-      return;
-    }
+    if (!course) return;
 
     if (course.status !== "Active") {
       toast.error("This course is currently inactive");
-
       return;
     }
 
@@ -147,11 +145,12 @@ const CourseDetails = () => {
   // LOADING
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center">
           <Loader2 size={45} className="mx-auto animate-spin text-blue-600" />
-
-          <p className="mt-4 text-gray-500">Loading course...</p>
+          <p className="mt-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Loading course details...
+          </p>
         </div>
       </div>
     );
@@ -160,21 +159,19 @@ const CourseDetails = () => {
   // ERROR
   if (isError) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="w-full max-w-lg rounded-xl border bg-white p-8 text-center shadow-sm">
-          <h1 className="text-2xl font-bold text-red-600">
+      <div className="flex min-h-screen items-center justify-center px-4 bg-slate-50">
+        <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl">
+          <h1 className="text-xl font-black text-rose-600">
             Failed to load course
           </h1>
-
-          <p className="mt-3 text-gray-500">
+          <p className="mt-2 text-xs font-medium text-slate-500">
             {error?.response?.data?.message ||
               error?.message ||
               "Course could not be loaded"}
           </p>
-
           <button
             onClick={() => navigate(-1)}
-            className="mt-6 rounded-lg bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700"
+            className="mt-6 rounded-2xl bg-slate-900 px-6 py-3 text-xs font-bold text-white transition hover:bg-slate-800"
           >
             Go Back
           </button>
@@ -186,13 +183,14 @@ const CourseDetails = () => {
   // COURSE NOT FOUND
   if (!course) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Course not found</h1>
-
+          <h1 className="text-2xl font-bold text-slate-900">
+            Course not found
+          </h1>
           <button
             onClick={() => navigate("/courses")}
-            className="mt-5 rounded-lg bg-blue-600 px-5 py-2.5 text-white"
+            className="mt-5 rounded-2xl bg-blue-600 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700"
           >
             Browse Courses
           </button>
@@ -201,26 +199,23 @@ const CourseDetails = () => {
     );
   }
 
-  // RENDER
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-8">
+    <main className="min-h-screen bg-slate-50/50 pb-20 pt-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        {/* BACK */}
-
+        {/* BACK BUTTON */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600"
+          className="mb-6 inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 shadow-2xs transition hover:bg-slate-50 hover:text-blue-600"
         >
-          <ArrowLeft size={18} />
-          Back
+          <ArrowLeft size={16} />
+          Back to Courses
         </button>
 
-        {/* COURSE CARD */}
-
-        <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-          {/* COURSE IMAGE */}
-
-          <div className="flex h-64 items-center justify-center bg-gray-100 md:h-80">
+        {/* MAIN HERO CONTAINER */}
+        <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-100">
+          {/* COURSE BANNER / IMAGE */}
+          <div className="relative flex h-72 sm:h-96 w-full items-center justify-center bg-slate-900 overflow-hidden">
+            <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/20 to-transparent z-10" />
             {course.courseImage ? (
               <img
                 src={course.courseImage}
@@ -228,184 +223,209 @@ const CourseDetails = () => {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <GraduationCap size={90} className="text-gray-300" />
+              <GraduationCap size={80} className="text-slate-600 z-0" />
             )}
-          </div>
 
-          <div className="p-6 md:p-10">
-            {/* TITLE */}
-
-            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div>
-                <div className="mb-3 flex flex-wrap gap-2">
-                  {course.category && (
-                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-                      {course.category}
-                    </span>
-                  )}
-
-                  {course.skillLevel && (
-                    <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
-                      {course.skillLevel}
-                    </span>
-                  )}
-                </div>
-
-                <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">
-                  {course.title}
-                </h1>
-              </div>
-
-              {/* STATUS */}
-
+            {/* Absolute badge overlay */}
+            <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-center">
+              <span className="rounded-full bg-white/90 backdrop-blur-md px-4 py-1.5 text-xs font-bold text-slate-900 shadow-sm">
+                {course.category || "Professional Training"}
+              </span>
               <span
-                className={`w-fit rounded-full px-4 py-2 text-sm font-semibold ${
+                className={`rounded-full px-4 py-1.5 text-xs font-bold shadow-sm backdrop-blur-md ${
                   course.status === "Active"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
+                    ? "bg-emerald-500/90 text-white"
+                    : "bg-rose-500/90 text-white"
                 }`}
               >
                 {course.status}
               </span>
             </div>
 
-            {/* DESCRIPTION */}
-
-            <div className="mt-8">
-              <h2 className="text-xl font-bold text-gray-900">
-                About this course
-              </h2>
-
-              <p className="mt-3 leading-7 text-gray-600">
-                {course.description || "No course description available."}
-              </p>
+            <div className="absolute bottom-6 left-6 right-6 z-20">
+              <div className="flex flex-wrap gap-2 mb-3">
+                {course.skillLevel && (
+                  <span className="rounded-xl bg-blue-600/90 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white shadow-sm">
+                    {course.skillLevel}
+                  </span>
+                )}
+              </div>
+              <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white drop-shadow-md">
+                {course.title}
+              </h1>
             </div>
+          </div>
 
-            {/* COURSE INFORMATION */}
+          <div className="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+            {/* LEFT COLUMN: DESCRIPTION & DETAILS (Takes 2 cols) */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* METRICS GRID */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <InfoCard
+                  icon={<Clock size={18} className="text-blue-600" />}
+                  label="Duration"
+                  value={course.duration || "N/A"}
+                />
+                <InfoCard
+                  icon={<CreditCard size={18} className="text-emerald-600" />}
+                  label="Course Fee"
+                  value={`Rs. ${course.fee?.toLocaleString() ?? 0}`}
+                />
+                <InfoCard
+                  icon={<BookOpen size={18} className="text-purple-600" />}
+                  label="Category"
+                  value={course.category || "N/A"}
+                />
+                <InfoCard
+                  icon={<User size={18} className="text-amber-600" />}
+                  label="Skill Level"
+                  value={course.skillLevel || "N/A"}
+                />
+              </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <InfoCard
-                icon={<Clock size={20} />}
-                label="Duration"
-                value={course.duration || "N/A"}
-              />
+              {/* ABOUT SECTION */}
+              <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-6 sm:p-8">
+                <h2 className="text-lg font-black text-slate-900 mb-3 flex items-center gap-2">
+                  <Sparkles size={18} className="text-blue-600" /> About This
+                  Course
+                </h2>
+                <p className="text-xs sm:text-sm leading-relaxed text-slate-600 font-medium whitespace-pre-line">
+                  {course.description || "No course description available."}
+                </p>
+              </div>
 
-              <InfoCard
-                icon={<CreditCard size={20} />}
-                label="Course Fee"
-                value={`Rs. ${course.fee ?? 0}`}
-              />
-
-              <InfoCard
-                icon={<BookOpen size={20} />}
-                label="Category"
-                value={course.category || "N/A"}
-              />
-
-              <InfoCard
-                icon={<User size={20} />}
-                label="Skill Level"
-                value={course.skillLevel || "N/A"}
-              />
-            </div>
-
-            {/* INSTRUCTOR */}
-
-            {course.instructor && (
-              <div className="mt-8 rounded-xl bg-gray-50 p-5">
-                <h2 className="text-lg font-bold text-gray-900">Instructor</h2>
-
-                <div className="mt-3 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100">
-                    <User size={20} className="text-blue-600" />
-                  </div>
-
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {typeof course.instructor === "object"
-                        ? course.instructor.fullName
-                        : course.instructor}
-                    </p>
-
-                    {typeof course.instructor === "object" &&
-                      course.instructor.email && (
-                        <p className="text-sm text-gray-500">
-                          {course.instructor.email}
-                        </p>
+              {/* INSTRUCTOR CARD */}
+              {course.instructor && (
+                <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-2xs">
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">
+                    Trained By Expert Mentor
+                  </h2>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 font-bold text-lg">
+                      {typeof course.instructor === "object" &&
+                      course.instructor.fullName ? (
+                        course.instructor.fullName.charAt(0)
+                      ) : (
+                        <User size={24} />
                       )}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-base">
+                        {typeof course.instructor === "object"
+                          ? course.instructor.fullName
+                          : course.instructor}
+                      </h3>
+                      {typeof course.instructor === "object" &&
+                        course.instructor.email && (
+                          <p className="text-xs text-slate-500 font-medium mt-0.5">
+                            {course.instructor.email}
+                          </p>
+                        )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT COLUMN: ACTION STICKY SIDEBAR */}
+            <div className="space-y-6">
+              <div className="sticky top-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-slate-100 space-y-6">
+                <div className="border-b border-slate-100 pb-4">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Total Investment
+                  </span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-black text-slate-900">
+                      Rs. {course.fee?.toLocaleString() ?? 0}
+                    </span>
+                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                      Best Value
+                    </span>
+                  </div>
+                </div>
+
+                {course.enrollmentDeadline && (
+                  <div className="flex items-center gap-3 text-xs text-slate-600 bg-amber-50/60 border border-amber-200/60 p-3.5 rounded-2xl font-medium">
+                    <CalendarDays
+                      size={18}
+                      className="text-amber-600 shrink-0"
+                    />
+                    <span>
+                      Enrollment deadline:{" "}
+                      <strong className="text-amber-900 block sm:inline">
+                        {new Date(
+                          course.enrollmentDeadline,
+                        ).toLocaleDateString()}
+                      </strong>
+                    </span>
+                  </div>
+                )}
+
+                <div className="space-y-3 pt-2">
+                  {user?.role === "student" ? (
+                    <button
+                      type="button"
+                      onClick={handleEnroll}
+                      disabled={
+                        enrollMutation.isPending || course.status !== "Active"
+                      }
+                      className="w-full rounded-2xl bg-blue-600 px-6 py-4 text-xs font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-700 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+                    >
+                      {enrollMutation.isPending
+                        ? "Opening eSewa Secure Gateway..."
+                        : course.status === "Active"
+                          ? "Enroll & Pay via eSewa"
+                          : "Course Inactive"}
+                    </button>
+                  ) : !user ? (
+                    <button
+                      type="button"
+                      onClick={() => navigate("/login")}
+                      className="w-full rounded-2xl bg-blue-600 px-6 py-4 text-xs font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-700 hover:scale-[1.02]"
+                    >
+                      Login to Enroll
+                    </button>
+                  ) : (
+                    <div className="text-center p-3 bg-slate-100 rounded-2xl text-xs font-bold text-slate-500">
+                      Enrollment is restricted to student accounts.
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-2 text-[11px] font-semibold text-slate-400 pt-2">
+                    <ShieldCheck size={14} className="text-emerald-500" />{" "}
+                    Secure eSewa & Certificate Guaranteed
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* ENROLLMENT DEADLINE */}
-
-            {course.enrollmentDeadline && (
-              <div className="mt-6 flex items-center gap-2 text-sm text-gray-600">
-                <CalendarDays size={18} />
-
-                <span>
-                  Enrollment deadline:{" "}
-                  <strong>
-                    {new Date(course.enrollmentDeadline).toLocaleDateString()}
-                  </strong>
-                </span>
-              </div>
-            )}
-
-            {/* ACTION */}
-
-            <div className="mt-8 border-t pt-6">
-              {user?.role === "student" ? (
-                <button
-                  type="button"
-                  onClick={handleEnroll}
-                  disabled={
-                    enrollMutation.isPending || course.status !== "Active"
-                  }
-                  className="w-full rounded-xl bg-blue-600 px-6 py-3.5 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
-                >
-                  {enrollMutation.isPending
-                    ? "Opening eSewa..."
-                    : course.status === "Active"
-                      ? "Enroll Now"
-                      : "Course Inactive"}
-                </button>
-              ) : !user ? (
-                <button
-                  type="button"
-                  onClick={() => navigate("/login")}
-                  className="w-full rounded-xl bg-blue-600 px-6 py-3.5 font-semibold text-white hover:bg-blue-700 md:w-auto"
-                >
-                  Login to Enroll
-                </button>
-              ) : null}
             </div>
           </div>
         </div>
-        <section className="mt-8 rounded-2xl border bg-white p-6 shadow-sm md:p-8">
-          <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+
+        {/* STUDENT REVIEWS SECTION */}
+        <section className="mt-12 rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-10 shadow-xl shadow-slate-100">
+          <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Student Reviews
+              <h2 className="text-2xl font-black text-slate-900">
+                Student Feedback & Reviews
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Public feedback from approved student reviews.
+              <p className="mt-1 text-xs sm:text-sm text-slate-500 font-medium">
+                Verified reviews and feedback shared by enrolled course
+                graduates.
               </p>
             </div>
             {user?.role === "student" && (
               <button
                 type="button"
                 onClick={handleWriteReview}
-                className="w-fit rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                className="w-fit rounded-2xl bg-slate-900 px-5 py-3 text-xs font-bold text-white shadow-md hover:bg-slate-800 transition"
               >
-                Write Review
+                Write a Review
               </button>
             )}
           </div>
 
           {showReviewForm && (
-            <div className="mb-6 rounded-xl bg-gray-50 p-4">
+            <div className="mb-8 rounded-2xl bg-slate-50 border border-slate-200 p-6">
               <ReviewForm
                 fixedCourseId={course._id}
                 fixedCourseTitle={course.title}
@@ -423,25 +443,19 @@ const CourseDetails = () => {
   );
 };
 
-// INFO CARD
-
+// INFO CARD COMPONENT
 const InfoCard = ({ icon, label, value }) => {
   return (
-    <div className="rounded-xl border bg-white p-4">
-      <div className="flex items-center gap-2 text-blue-600">
-        {icon}
-
-        <span className="text-sm font-medium text-gray-500">{label}</span>
+    <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-2xs flex flex-col justify-between hover:border-blue-200 transition">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="p-2 rounded-xl bg-slate-50">{icon}</span>
+        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          {label}
+        </span>
       </div>
-
-      <p className="mt-2 font-semibold text-gray-900">{value}</p>
+      <p className="font-bold text-slate-900 text-sm truncate">{value}</p>
     </div>
   );
 };
 
 export default CourseDetails;
-
-
-
-
-

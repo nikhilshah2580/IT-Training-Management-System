@@ -13,7 +13,8 @@ import Instructors from "../pages/public/Instructors";
 import Jobs from "../pages/public/Jobs";
 import JobDetails from "../pages/public/JobDetails";
 import DemoClass from "../pages/public/DemoClass";
-import JobPlacements from "../pages/public/JobPlacements";
+import Counselling from "../pages/public/Counselling";
+
 
 // AUTH
 import Login from "../pages/auth/Login";
@@ -131,7 +132,7 @@ const AppRoutes = () => {
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/demo-classes" element={<DemoClass />} />
           <Route path="/job/:id" element={<JobDetails />} />
-          <Route path="/job-placements" element={<JobPlacements />} />
+          <Route path="/counselling" element={<Counselling />} />
         </Route>
 
         {/* AUTHENTICATED */}

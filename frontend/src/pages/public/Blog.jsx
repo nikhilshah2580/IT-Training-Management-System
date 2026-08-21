@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   CalendarDays,
@@ -8,6 +9,9 @@ import {
   Loader2,
   Search,
   Tags,
+  Sparkles,
+  BookOpen,
+  AlertCircle,
 } from "lucide-react";
 
 import { getBlogs } from "../../api/blog.services";
@@ -51,39 +55,55 @@ const Blog = () => {
   }, [data, search]);
 
   return (
-    <div className="bg-white text-slate-900">
-      <section className="border-b border-slate-200 bg-slate-50">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-            Blog
-          </p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight">
+    <div className="min-h-screen bg-slate-50/50 text-slate-900 pb-20">
+      {/* COMPACT & VIBRANT COLORFUL HERO SECTION */}
+      <section className="relative overflow-hidden bg-linear-to-r from-indigo-900 via-purple-900 to-blue-900 py-14 px-4 sm:px-6 lg:px-8 text-white shadow-md">
+        <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-pink-500/30 blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 h-64 w-64 rounded-full bg-cyan-500/30 blur-2xl pointer-events-none" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="relative z-10 mx-auto max-w-7xl"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-1 text-xs font-bold text-pink-300 backdrop-blur-md shadow-sm mb-3">
+            <Sparkles size={13} className="text-pink-400 animate-pulse" /> Blog
+            Insights
+          </div>
+          <h1 className="max-w-3xl text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-snug">
             IT trends, learning tips, and career guidance.
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
-            Read backend-managed articles from Sipalaya instructors and admins.
+          <p className="mt-2.5 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-200 font-medium">
+            Managed articles from Sipalaya
           </p>
-        </div>
+        </motion.div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_260px]">
+      {/* FILTER & SEARCH TOOLBAR */}
+      <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="grid gap-4 rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs md:grid-cols-[1fr_260px]"
+        >
           <div className="relative">
             <Search
               size={17}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
             />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-11 pr-4 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
               placeholder="Search blog articles..."
             />
           </div>
           <select
             value={category}
             onChange={(event) => setCategory(event.target.value)}
-            className="rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
           >
             {categories.map((item) => (
               <option key={item} value={item}>
@@ -91,10 +111,11 @@ const Blog = () => {
               </option>
             ))}
           </select>
-        </div>
+        </motion.div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+      {/* MAIN CONTENT GRID */}
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {isLoading ? (
           <LoaderState label="Loading blogs..." />
         ) : isError ? (
@@ -105,8 +126,8 @@ const Blog = () => {
           <EmptyState />
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {blogs.map((blog) => (
-              <BlogCard key={blog._id} blog={blog} />
+            {blogs.map((blog, index) => (
+              <BlogCard key={blog._id} blog={blog} index={index} />
             ))}
           </div>
         )}
@@ -115,79 +136,98 @@ const Blog = () => {
   );
 };
 
-const BlogCard = ({ blog }) => (
-  <article className="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+const BlogCard = ({ blog, index }) => (
+  <motion.article
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, delay: index * 0.05 }}
+    className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xs hover:shadow-xl transition-all duration-300"
+  >
     {blog.featuredImage ? (
       <img
         src={blog.featuredImage}
         alt={blog.title}
-        className="h-48 w-full object-cover"
+        className="h-48 w-full object-cover border-b border-slate-100"
       />
     ) : (
-      <div className="flex h-48 w-full items-center justify-center bg-blue-50 text-sm font-semibold text-blue-700">
+      <div className="flex h-48 w-full items-center justify-center bg-linear-to-br from-indigo-500/10 to-purple-500/10 text-sm font-bold text-indigo-600 border-b border-slate-100">
         {blog.category || "Technology"}
       </div>
     )}
-    <div className="flex flex-1 flex-col p-5">
-      <div className="flex flex-wrap gap-3 text-xs font-medium text-slate-500">
-        <span className="inline-flex items-center gap-1">
-          <CalendarDays size={14} />
+
+    <div className="flex flex-1 flex-col p-6 md:p-8">
+      <div className="flex flex-wrap gap-4 text-xs font-semibold text-slate-400">
+        <span className="inline-flex items-center gap-1.5">
+          <CalendarDays size={14} className="text-indigo-600" />
           {formatDate(blog.publishedAt || blog.createdAt)}
         </span>
-        <span className="inline-flex items-center gap-1">
-          <Eye size={14} />
+        <span className="inline-flex items-center gap-1.5">
+          <Eye size={14} className="text-indigo-600" />
           {blog.views || 0} views
         </span>
       </div>
-      <h2 className="mt-3 line-clamp-2 text-xl font-bold text-slate-900">
+
+      <h2 className="mt-3 line-clamp-2 text-lg md:text-xl font-bold text-slate-900 tracking-tight group-hover:text-indigo-600 transition-colors">
         {blog.title}
       </h2>
-      <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+
+      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600 font-medium">
         {blog.excerpt}
       </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        <span className="inline-flex items-center gap-1 rounded-xl border border-indigo-200/60 bg-indigo-50/50 px-3 py-1 text-xs font-bold text-indigo-600">
           <Tags size={13} />
           {blog.category}
         </span>
         {(blog.tags || []).slice(0, 2).map((tag) => (
           <span
             key={tag}
-            className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
+            className="rounded-xl border border-slate-200/60 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600"
           >
             {tag}
           </span>
         ))}
       </div>
+
       <Link
         to={`/blog/${blog._id}`}
-        className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-blue-600 hover:text-blue-700"
+        className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-bold text-indigo-600 hover:text-indigo-700 transition"
       >
         Read Article <ArrowRight size={16} />
       </Link>
     </div>
-  </article>
+  </motion.article>
 );
 
 const LoaderState = ({ label }) => (
-  <div className="flex items-center justify-center py-16 text-slate-500">
-    <Loader2 size={22} className="mr-2 animate-spin" />
+  <div className="flex items-center justify-center py-20 text-slate-500 font-semibold">
+    <Loader2 size={22} className="mr-2 animate-spin text-indigo-600" />
     {label}
   </div>
 );
+
 const ErrorState = ({ message }) => (
-  <div className="rounded-lg border border-red-100 bg-red-50 p-6 text-sm text-red-700">
-    {message}
+  <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-sm font-medium text-red-700 flex items-center gap-3">
+    <AlertCircle size={18} className="shrink-0 text-red-600" />
+    <span>{message}</span>
   </div>
 );
+
 const EmptyState = () => (
-  <div className="rounded-lg border border-slate-200 bg-slate-50 p-8 text-center">
-    <h2 className="text-xl font-bold">No published blogs found</h2>
-    <p className="mt-2 text-sm text-slate-600">
+  <div className="rounded-3xl border border-slate-200/80 bg-white p-12 text-center shadow-xs">
+    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500/10 to-purple-500/10 text-indigo-600 border border-indigo-200/60 mb-4">
+      <BookOpen size={24} />
+    </div>
+    <h2 className="text-lg font-bold text-slate-900">
+      No published blogs found
+    </h2>
+    <p className="mt-1 text-sm text-slate-500 font-medium">
       Articles created in the backend will appear here after publishing.
     </p>
   </div>
 );
+
 const formatDate = (value) =>
   value
     ? new Date(value).toLocaleDateString(undefined, {

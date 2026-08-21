@@ -1,214 +1,211 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 
+import { signupSchema } from "../../schemas/auth.schema";
 import { signupUser } from "../../api/auth.services";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
+  // Initialize React Hook Form with Zod Resolver
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+    },
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // HANDLE INPUT CHANGE
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // HANDLE SIGNUP
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // Trim values before sending
-    const payload = {
-      fullName: formData.fullName.trim(),
-      email: formData.email.trim().toLowerCase(),
-      password: formData.password,
-    };
-
-    // Basic frontend validation
-    if (!payload.fullName) {
-      toast.error("Full name is required");
-      return;
-    }
-
-    if (!payload.email) {
-      toast.error("Email is required");
-      return;
-    }
-
-    if (!payload.password) {
-      toast.error("Password is required");
-      return;
-    }
-
-    if (payload.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-
+  // HANDLE SIGNUP SUBMISSION
+  const onSubmit = async (data) => {
     try {
-      setLoading(true);
+      const payload = {
+        fullName: data.fullName.trim(),
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+      };
 
-      const data = await signupUser(payload);
+      const response = await signupUser(payload);
 
-      if (!data?.success) {
-        throw new Error(data?.message || "Signup failed");
+      if (!response?.success) {
+        throw new Error(response?.message || "Signup failed");
       }
 
-      toast.success(data.message || "Account created successfully");
+      toast.success(response.message || "Account created successfully");
 
-      // Store email locally before clearing form state
-      const registeredEmail = payload.email;
-
-      // Clear form
-      setFormData({
-        fullName: "",
-        email: "",
-        password: "",
-      });
-
-      // Navigate with the correct email string in state
       navigate("/verify-email", {
-        state: { email: registeredEmail },
+        state: { email: payload.email },
         replace: true,
       });
     } catch (error) {
       toast.error(
         error?.response?.data?.message || error?.message || "Signup failed",
       );
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
+    <main className="min-h-screen flex items-center justify-center bg-slate-50/50 px-4 py-12">
       <div className="w-full max-w-md">
         {/* CARD */}
-        <div className="rounded-2xl bg-white p-8 shadow-xl">
+        <div className="rounded-3xl bg-white border border-slate-100 p-8 sm:p-10 shadow-xl shadow-slate-200/50">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-
-            <p className="mt-2 text-gray-600">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+              Create Account
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
               Join our IT Training Management System
             </p>
           </div>
 
           {/* FORM */}
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            className="space-y-5"
+          >
             {/* Full Name */}
             <div>
               <label
                 htmlFor="fullName"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
               >
                 Full Name
               </label>
-
-              <input
-                id="fullName"
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                autoComplete="name"
-                required
-                disabled={loading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                  <User size={18} />
+                </span>
+                <input
+                  id="fullName"
+                  type="text"
+                  {...register("fullName")}
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                  disabled={isSubmitting}
+                  className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-4 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
+                    errors.fullName
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                  } disabled:bg-slate-100`}
+                />
+              </div>
+              {errors.fullName && (
+                <p className="mt-1 text-xs text-red-600 font-medium">
+                  {errors.fullName.message}
+                </p>
+              )}
             </div>
 
             {/* Email */}
-            <div className="mt-5">
+            <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
               >
                 Email Address
               </label>
-
-              <input
-                id="email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                autoComplete="email"
-                required
-                disabled={loading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                  <Mail size={18} />
+                </span>
+                <input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                  disabled={isSubmitting}
+                  className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-4 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
+                    errors.email
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                  } disabled:bg-slate-100`}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-600 font-medium">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* Password */}
-            <div className="mt-5">
+            <div>
               <label
                 htmlFor="password"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
               >
                 Password
               </label>
 
               <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                  <Lock size={18} />
+                </span>
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  {...register("password")}
                   placeholder="Create a password"
                   autoComplete="new-password"
-                  required
-                  disabled={loading}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-20 outline-none transition focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
+                  disabled={isSubmitting}
+                  className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-12 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
+                    errors.password
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                  } disabled:bg-slate-100`}
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  disabled={loading}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                  disabled={isSubmitting}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition"
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
 
-              <p className="mt-2 text-xs text-gray-500">
-                Password must contain at least 6 characters.
-              </p>
+              {errors.password ? (
+                <p className="mt-1 text-xs text-red-600 font-medium">
+                  {errors.password.message}
+                </p>
+              ) : (
+                <p className="mt-2 text-xs text-slate-500 font-medium">
+                  Password must contain at least 6 characters.
+                </p>
+              )}
             </div>
 
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading}
-              className="mt-7 w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={isSubmitting}
+              className="mt-2 w-full rounded-2xl bg-blue-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Creating Account..." : "Create Account"}
+              {isSubmitting ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
           {/* Login Link */}
-          <div className="mt-6 text-center text-sm text-gray-600">
+          <div className="mt-8 text-center text-sm text-slate-600">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-semibold text-blue-600 hover:text-blue-700"
+              className="font-bold text-blue-600 hover:text-blue-700"
             >
               Login
             </Link>

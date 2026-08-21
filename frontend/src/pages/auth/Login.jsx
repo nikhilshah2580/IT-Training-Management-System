@@ -1,49 +1,53 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { Lock, Mail, Loader2 } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react";
 
+import { loginSchema } from "../../schemas/auth.schema";
 import { loginUser } from "../../api/auth.services";
 import { setAuth } from "../../redux/authSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  // Initialize React Hook Form with Zod Resolver
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  // HANDLE LOGIN SUBMISSION
+  const onSubmit = async (data) => {
     try {
-      setLoading(true);
+      const payload = {
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+      };
 
-      const data = await loginUser(formData);
+      const response = await loginUser(payload);
 
-      if (!data?.success || !data?.user) {
-        throw new Error(data?.message || "Invalid login response");
+      if (!response?.success || !response?.user) {
+        throw new Error(response?.message || "Invalid login response");
       }
 
-      const user = data.user;
+      const user = response.user;
 
       // Store user in Redux
       dispatch(setAuth(user));
 
-      toast.success(data.message || "Login successful");
+      toast.success(response.message || "Login successful");
 
       // Role-based redirect
       switch (user.role) {
@@ -67,104 +71,146 @@ const Login = () => {
       toast.error(
         error?.response?.data?.message || error?.message || "Login failed",
       );
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-xl border border-gray-100">
-        {/* Brand / Logo Header */}
-        <div className="text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Welcome back
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Please enter your details to sign in
-          </p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Email address
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
-                <Mail size={18} />
-              </span>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-                placeholder="name@example.com"
-                className="w-full rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 transition-all text-sm"
-              />
-            </div>
+    <main className="min-h-screen flex items-center justify-center bg-slate-50/50 px-4 py-12">
+      <div className="w-full max-w-md">
+        {/* CARD */}
+        <div className="rounded-3xl bg-white border border-slate-100 p-8 sm:p-10 shadow-xl shadow-slate-200/50">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+              Welcome back
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Please enter your details to sign in
+            </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Password
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
-                <Lock size={18} />
-              </span>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="w-full rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 transition-all text-sm"
-              />
-            </div>
-            {/* Forgot password moved below the password input, aligned to the right */}
-            <div className="flex justify-end mt-1.5">
-              <Link
-                to="/forgot-password"
-                className="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
-              >
-                Forgot password?
-              </Link>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 w-full flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3.5 font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+          {/* FORM */}
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            className="space-y-5"
           >
-            {loading ? (
-              <>
-                <Loader2 size={18} className="animate-spin mr-2" />
-                Signing in...
-              </>
-            ) : (
-              "Sign in"
-            )}
-          </button>
-        </form>
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+              >
+                Email Address
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                  <Mail size={18} />
+                </span>
+                <input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="name@example.com"
+                  autoComplete="email"
+                  disabled={isSubmitting}
+                  className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-4 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
+                    errors.email
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                  } disabled:bg-slate-100`}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-600 font-medium">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-        {/* Don't have an account footer */}
-        <div className="text-center mt-6 pt-6 border-t border-gray-100">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="font-semibold text-blue-600 hover:text-blue-500 transition-colors"
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                  <Lock size={18} />
+                </span>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  disabled={isSubmitting}
+                  className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-12 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
+                    errors.password
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                  } disabled:bg-slate-100`}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  disabled={isSubmitting}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-600 font-medium">
+                  {errors.password.message}
+                </p>
+              )}
+
+              {/* Forgot password link */}
+              <div className="flex justify-end mt-2">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-2 w-full flex items-center justify-center rounded-2xl bg-blue-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-blue-500/25 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
             >
-              Sign up
-            </Link>
-          </p>
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={18} className="animate-spin mr-2" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign in"
+              )}
+            </button>
+          </form>
+
+          {/* Signup Footer Link */}
+          <div className="text-center mt-8 pt-6 border-t border-slate-100">
+            <p className="text-sm text-slate-600">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="font-bold text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </main>

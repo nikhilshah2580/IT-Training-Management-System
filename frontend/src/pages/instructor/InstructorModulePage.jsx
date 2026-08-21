@@ -314,7 +314,7 @@ const InstructorModulePage = ({
 
       <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[56rem]">
+          <table className="w-full min-w-4xl">
             <thead className="bg-gray-50">
               <tr>
                 {columns.map((column) => (

@@ -1,34 +1,11 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { ChevronDown, LogOut, Menu, User, X } from "lucide-react";
+import { LogOut, Menu, User, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import { logoutUser } from "../../api/auth.services";
 import { clearAuth } from "../../redux/authSlice";
-
-const aboutLinks = [
-  {
-    title: "Company Overview",
-    description: "Learn about Sipalaya InfoTech.",
-    path: "/about#company-overview",
-  },
-  {
-    title: "Mission & Vision",
-    description: "Our commitment to shaping Nepal's IT future.",
-    path: "/about#mission-vision",
-  },
-  {
-    title: "Our Team",
-    description: "Meet the experts and mentors behind Sipalaya.",
-    path: "/about#our-team",
-  },
-  {
-    title: "Why Choose Us",
-    description: "What sets Sipalaya InfoTech apart.",
-    path: "/about#why-choose-us",
-  },
-];
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -84,8 +61,6 @@ const Navbar = () => {
         : "text-gray-600 hover:text-blue-600"
     }`;
 
-  const isAboutActive = location.pathname === "/about";
-
   return (
     <header
       ref={navRef}
@@ -94,12 +69,23 @@ const Navbar = () => {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
         <Link
           to="/"
-          className="text-3xl tracking-normal text-black-100 transition-colors duration-200 hover:text-gray-700"
+          className="text-3xl tracking-normal transition-colors duration-200 inline-flex"
           style={{ fontFamily: "'Pacifico', cursive" }}
         >
-          Sipalaya
+          {/* First 4 letters in Color 1 */}
+          <span className="text-black">S</span>
+          <span className="text-black">i</span>
+          <span className="text-black">p</span>
+          <span className="text-black">a</span>
+
+          {/* Last 4 letters in Color 2 */}
+          <span className="text-red-600">l</span>
+          <span className="text-green-600">a</span>
+          <span className="text-green-600">y</span>
+          <span className="text-green-600">a</span>
         </Link>
 
+        {/* Desktop Nav Links */}
         <div className="hidden items-center gap-8 md:flex">
           <NavLink to="/" className={navLinkClass}>
             Home
@@ -107,44 +93,9 @@ const Navbar = () => {
           <NavLink to="/courses" className={navLinkClass}>
             Courses
           </NavLink>
-
-          <div className="group relative">
-            <Link
-              to="/about"
-              className={`flex items-center gap-1 font-medium transition-colors duration-200 ${
-                isAboutActive
-                  ? "text-blue-600 font-semibold"
-                  : "text-gray-600 hover:text-blue-600"
-              }`}
-            >
-              About Us
-              <ChevronDown
-                size={15}
-                className="transition-transform duration-200 group-hover:rotate-180"
-              />
-            </Link>
-
-            {/* Smaller, compact dropdown card width (w-72) */}
-            <div className="invisible absolute left-1/2 top-full w-72 -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
-              <div className="rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl">
-                {aboutLinks.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="block rounded-md px-3 py-2 transition hover:bg-blue-50"
-                  >
-                    <span className="block text-xs font-bold text-gray-900">
-                      {item.title}
-                    </span>
-                    <span className="mt-0.5 block text-[11px] leading-tight text-gray-500">
-                      {item.description}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-
+          <NavLink to="/about" className={navLinkClass}>
+            About Us
+          </NavLink>
           <NavLink to="/demo-classes" className={navLinkClass}>
             Demo Classes
           </NavLink>
@@ -159,6 +110,7 @@ const Navbar = () => {
           </NavLink>
         </div>
 
+        {/* Desktop Actions */}
         <div className="hidden items-center gap-3 md:flex">
           {!isAuthenticated ? (
             <>
@@ -207,6 +159,7 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* Mobile Menu Button */}
         <button
           type="button"
           className="rounded-lg p-2 text-gray-700 transition hover:bg-gray-200/60 md:hidden"
@@ -218,6 +171,7 @@ const Navbar = () => {
         </button>
       </nav>
 
+      {/* Mobile Dropdown Menu */}
       <div
         className={`absolute left-0 top-full w-full overflow-hidden bg-white shadow-xl transition-all duration-300 ease-in-out md:hidden ${
           mobileMenuOpen
@@ -238,34 +192,12 @@ const Navbar = () => {
           >
             Courses
           </NavLink>
-
-          <div className="rounded-lg bg-gray-50 p-2">
-            <NavLink
-              to="/about"
-              className={
-                navLinkClass + " block py-2 px-3 rounded-lg hover:bg-white"
-              }
-            >
-              About Us
-            </NavLink>
-            <div className="mt-1 grid gap-1">
-              {aboutLinks.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="rounded-lg px-3 py-2 hover:bg-white"
-                >
-                  <span className="block text-xs font-semibold text-gray-800">
-                    {item.title}
-                  </span>
-                  <span className="mt-0.5 block text-[11px] leading-tight text-gray-500">
-                    {item.description}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-
+          <NavLink
+            to="/about"
+            className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}
+          >
+            About Us
+          </NavLink>
           <NavLink
             to="/demo-classes"
             className={navLinkClass + " py-2 px-3 rounded-lg hover:bg-gray-50"}

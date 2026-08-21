@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  UploadCloud,
+  BookOpen,
+  Layers,
+  CheckCircle2,
+} from "lucide-react";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 const initialForm = {
   title: "",
@@ -31,7 +40,6 @@ const CourseForm = ({
   submitText = "Update Course",
 }) => {
   const [formData, setFormData] = useState(initialForm);
-
   const [resource, setResource] = useState(initialResource);
 
   useEffect(() => {
@@ -55,13 +63,8 @@ const CourseForm = ({
     });
   }, [course]);
 
-  // -----------------------------------------
-  // INPUT CHANGE
-  // -----------------------------------------
-
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -70,28 +73,19 @@ const CourseForm = ({
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] || null;
-
     setFormData((prev) => ({
       ...prev,
       courseImageFile: file,
     }));
   };
-  // -----------------------------------------
-  // RESOURCE CHANGE
-  // -----------------------------------------
 
   const handleResourceChange = (event) => {
     const { name, value } = event.target;
-
     setResource((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
-
-  // -----------------------------------------
-  // ADD RESOURCE
-  // -----------------------------------------
 
   const addResource = () => {
     if (!resource.title.trim() || !resource.url.trim()) {
@@ -114,10 +108,6 @@ const CourseForm = ({
     setResource(initialResource);
   };
 
-  // -----------------------------------------
-  // REMOVE RESOURCE
-  // -----------------------------------------
-
   const removeResource = (index) => {
     setFormData((prev) => ({
       ...prev,
@@ -127,10 +117,6 @@ const CourseForm = ({
     }));
   };
 
-  // -----------------------------------------
-  // SUBMIT
-  // -----------------------------------------
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -138,22 +124,18 @@ const CourseForm = ({
       toast.error("Course title is required");
       return;
     }
-
     if (!formData.description.trim()) {
       toast.error("Course description is required");
       return;
     }
-
     if (!formData.syllabus.trim()) {
       toast.error("Syllabus is required");
       return;
     }
-
     if (!formData.duration.trim()) {
       toast.error("Duration is required");
       return;
     }
-
     if (formData.fee === "" || Number(formData.fee) < 0) {
       toast.error("Enter a valid course fee");
       return;
@@ -179,44 +161,54 @@ const CourseForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* HEADER */}
-
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border bg-white p-2 hover:bg-gray-50"
-        >
-          <ArrowLeft size={20} />
-        </button>
-
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {course ? "Edit Course" : "Create Course"}
-          </h1>
-
-          <p className="mt-1 text-sm text-gray-500">
-            {course
-              ? "Update course information."
-              : "Create a new course for admin approval."}
-          </p>
+    <motion.form
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      onSubmit={handleSubmit}
+      className="space-y-6 max-w-5xl mx-auto pb-16"
+    >
+      {/* HEADER SECTION */}
+      <div className="flex items-center justify-between border-b border-slate-100 pb-6">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="group rounded-2xl border border-slate-200 bg-white p-3 text-slate-600 shadow-xs transition hover:bg-slate-50 hover:border-slate-300"
+          >
+            <ArrowLeft
+              size={18}
+              className="transition group-hover:-translate-x-0.5"
+            />
+          </button>
+          <div>
+            <h1 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">
+              {course ? "Edit Training Course" : "Create New Course"}
+            </h1>
+            <p className="mt-0.5 text-xs md:text-sm text-slate-400 font-medium">
+              {course
+                ? "Update course syllabus, metadata, and properties."
+                : "Build a new professional curriculum for admin review."}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* BASIC INFORMATION */}
-
-      <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <h2 className="mb-5 text-lg font-semibold">Basic Information</h2>
+      <section className="rounded-3xl border border-slate-100 bg-white p-6 md:p-8 shadow-xs space-y-5">
+        <div className="flex items-center gap-2 border-b border-slate-50 pb-3">
+          <BookOpen size={18} className="text-indigo-600" />
+          <h2 className="text-sm md:text-base font-bold text-slate-800">
+            Basic Information
+          </h2>
+        </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           {/* TITLE */}
-
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium">
-              Course Title *
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Course Title <span className="text-rose-500">*</span>
             </label>
-
             <input
               type="text"
               name="title"
@@ -224,77 +216,65 @@ const CourseForm = ({
               onChange={handleChange}
               maxLength={150}
               required
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              placeholder="e.g. Advanced Full-Stack Architecture & React"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
 
           {/* DESCRIPTION */}
-
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium">
-              Description *
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Description <span className="text-rose-500">*</span>
             </label>
-
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows={5}
+              rows={4}
               required
-              className="w-full resize-none rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              placeholder="Provide a comprehensive summary of what students will learn..."
+              className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
 
           {/* CATEGORY */}
-
           <div>
-            <label className="mb-2 block text-sm font-medium">Category *</label>
-
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Category <span className="text-rose-500">*</span>
+            </label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             >
               <option value="Programming">Programming</option>
-
               <option value="Web Development">Web Development</option>
-
               <option value="Data Science & Analytics">
                 Data Science & Analytics
               </option>
-
               <option value="Graphic Design">Graphic Design</option>
-
               <option value="Networking">Networking</option>
-
               <option value="Cyber Security">Cyber Security</option>
-
               <option value="Database">Database</option>
-
               <option value="Cloud Computing">Cloud Computing</option>
-
               <option value="Other">Other</option>
             </select>
           </div>
 
           {/* SKILL LEVEL */}
-
           <div>
-            <label className="mb-2 block text-sm font-medium">
-              Skill Level *
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Skill Level <span className="text-rose-500">*</span>
             </label>
-
             <select
               name="skillLevel"
               value={formData.skillLevel}
               onChange={handleChange}
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             >
               <option value="Beginner">Beginner</option>
-
               <option value="Intermediate">Intermediate</option>
-
               <option value="Advanced">Advanced</option>
             </select>
           </div>
@@ -302,48 +282,52 @@ const CourseForm = ({
       </section>
 
       {/* COURSE DETAILS */}
-
-      <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <h2 className="mb-5 text-lg font-semibold">Course Details</h2>
+      <section className="rounded-3xl border border-slate-100 bg-white p-6 md:p-8 shadow-xs space-y-5">
+        <div className="flex items-center gap-2 border-b border-slate-50 pb-3">
+          <Layers size={18} className="text-indigo-600" />
+          <h2 className="text-sm md:text-base font-bold text-slate-800">
+            Curriculum & Logistics
+          </h2>
+        </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           {/* SYLLABUS */}
-
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium">Syllabus *</label>
-
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Syllabus Outline <span className="text-rose-500">*</span>
+            </label>
             <textarea
               name="syllabus"
               value={formData.syllabus}
               onChange={handleChange}
-              rows={7}
+              rows={6}
               required
-              className="w-full resize-none rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              placeholder="Module 1: Introduction... Module 2: Deep Dive..."
+              className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
 
           {/* DURATION */}
-
           <div>
-            <label className="mb-2 block text-sm font-medium">Duration *</label>
-
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Duration <span className="text-rose-500">*</span>
+            </label>
             <input
               type="text"
               name="duration"
               value={formData.duration}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              placeholder="e.g. 6 Weeks / 30 Hours"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
 
           {/* FEE */}
-
           <div>
-            <label className="mb-2 block text-sm font-medium">
-              Course Fee *
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Course Fee ($) <span className="text-rose-500">*</span>
             </label>
-
             <input
               type="number"
               name="fee"
@@ -351,105 +335,109 @@ const CourseForm = ({
               onChange={handleChange}
               min="0"
               required
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              placeholder="0 for Free"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
 
           {/* PREREQUISITES */}
-
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium">
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
               Prerequisites
             </label>
-
             <textarea
               name="prerequisites"
               value={formData.prerequisites}
               onChange={handleChange}
               rows={3}
-              className="w-full resize-none rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              placeholder="List any required prior knowledge or tools..."
+              className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
 
           {/* DEADLINE */}
-
           <div>
-            <label className="mb-2 block text-sm font-medium">
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
               Enrollment Deadline
             </label>
-
             <input
               type="date"
               name="enrollmentDeadline"
               value={formData.enrollmentDeadline}
               onChange={handleChange}
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
 
           {/* IMAGE */}
-
           <div>
-            <label className="mb-2 block text-sm font-medium">
-              Course Image
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
+              Course Cover Image
+            </label>
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 p-4 text-center transition hover:border-indigo-400 hover:bg-indigo-50/30">
+              <UploadCloud size={18} className="text-indigo-600" />
+              <span className="text-xs font-bold text-slate-600 truncate">
+                {formData.courseImageFile
+                  ? formData.courseImageFile.name
+                  : "Upload cover file"}
+              </span>
+              <input
+                type="file"
+                name="photo"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
             </label>
 
-            <input
-              type="file"
-              name="photo"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full rounded-lg border px-4 py-3 outline-none file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-500"
-            />
-
             {(formData.courseImageFile || formData.courseImage) && (
-              <img
-                src={
-                  formData.courseImageFile
-                    ? URL.createObjectURL(formData.courseImageFile)
-                    : formData.courseImage
-                }
-                alt="Course preview"
-                className="mt-3 h-32 w-full rounded-lg border object-cover"
-              />
+              <div className="relative mt-3 h-32 w-full overflow-hidden rounded-2xl border border-slate-200">
+                <img
+                  src={
+                    formData.courseImageFile
+                      ? URL.createObjectURL(formData.courseImageFile)
+                      : formData.courseImage
+                  }
+                  alt="Course preview"
+                  className="h-full w-full object-cover"
+                />
+              </div>
             )}
           </div>
         </div>
       </section>
 
       {/* RESOURCES */}
+      <section className="rounded-3xl border border-slate-100 bg-white p-6 md:p-8 shadow-xs space-y-5">
+        <div className="border-b border-slate-50 pb-3">
+          <h2 className="text-sm md:text-base font-bold text-slate-800">
+            Learning Resources
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Attach external videos, PDFs, documents, or reference links.
+          </p>
+        </div>
 
-      <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <h2 className="mb-2 text-lg font-semibold">Course Resources</h2>
-
-        <p className="mb-5 text-sm text-gray-500">
-          Add or remove learning resources.
-        </p>
-
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-4">
           <input
             type="text"
             name="title"
             value={resource.title}
             onChange={handleResourceChange}
             placeholder="Resource title"
-            className="rounded-lg border px-3 py-2.5 outline-none focus:border-blue-500"
+            className="rounded-2xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
           />
 
           <select
             name="type"
             value={resource.type}
             onChange={handleResourceChange}
-            className="rounded-lg border px-3 py-2.5 outline-none focus:border-blue-500"
+            className="rounded-2xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
           >
             <option value="Video">Video</option>
-
             <option value="PDF">PDF</option>
-
             <option value="Document">Document</option>
-
             <option value="Link">Link</option>
-
             <option value="Other">Other</option>
           </select>
 
@@ -458,43 +446,44 @@ const CourseForm = ({
             name="url"
             value={resource.url}
             onChange={handleResourceChange}
-            placeholder="Resource URL"
-            className="rounded-lg border px-3 py-2.5 outline-none focus:border-blue-500"
+            placeholder="https://resource-url.com"
+            className="rounded-2xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
           />
 
           <button
             type="button"
             onClick={addResource}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white hover:bg-gray-800"
+            className="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-indigo-600 active:scale-[0.98]"
           >
-            <Plus size={17} />
-            Add Resource
+            <Plus size={15} /> Add Resource
           </button>
         </div>
 
-        {/* RESOURCE LIST */}
-
         {formData.resources.length > 0 && (
-          <div className="mt-5 space-y-3">
+          <div className="mt-4 space-y-2.5">
             {formData.resources.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between rounded-lg border bg-gray-50 p-4"
+                className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/60 p-3.5 transition"
               >
-                <div className="min-w-0">
-                  <p className="font-medium">{item.title}</p>
-
-                  <p className="mt-1 truncate text-xs text-gray-500">
-                    {item.type} • {item.url}
+                <div className="min-w-0 pr-2">
+                  <p className="text-xs md:text-sm font-bold text-slate-800 truncate">
+                    {item.title}
+                  </p>
+                  <p className="mt-0.5 text-[11px] font-medium text-slate-400 truncate">
+                    <span className="text-indigo-600 font-semibold">
+                      {item.type}
+                    </span>{" "}
+                    • {item.url}
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => removeResource(index)}
-                  className="ml-4 rounded-lg p-2 text-red-600 hover:bg-red-50"
+                  className="rounded-xl p-2 text-rose-500 transition hover:bg-rose-50 shrink-0"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 size={16} />
                 </button>
               </div>
             ))}
@@ -503,12 +492,11 @@ const CourseForm = ({
       </section>
 
       {/* ACTIONS */}
-
-      <div className="flex justify-end gap-3">
+      <div className="flex items-center justify-end gap-3 pt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border bg-white px-5 py-3 font-medium hover:bg-gray-50"
+          className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs md:text-sm font-bold text-slate-600 shadow-xs transition hover:bg-slate-50"
         >
           Cancel
         </button>
@@ -516,12 +504,13 @@ const CourseForm = ({
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-indigo-600 to-blue-600 px-6 py-3 text-xs md:text-sm font-bold text-white shadow-md transition hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {loading ? `${submitText.replace(" Course", "")}...` : submitText}
+          <CheckCircle2 size={16} />
+          {loading ? "Processing..." : submitText}
         </button>
       </div>
-    </form>
+    </motion.form>
   );
 };
 

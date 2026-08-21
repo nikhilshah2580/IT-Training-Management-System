@@ -6,26 +6,26 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
   Legend,
 } from "recharts";
 import {
   Award,
-  Bell,
   BookOpen,
   Briefcase,
-  CalendarDays,
-  ClipboardCheck,
   CreditCard,
-  FileText,
   GraduationCap,
   Loader2,
-  MessageSquare,
   RefreshCw,
-  Star,
   UserCheck,
   Users,
   TrendingUp,
+  ArrowUpRight,
 } from "lucide-react";
 import { getDashboard } from "../../api/dashboard.services";
 
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <Loader2 size={40} className="animate-spin text-indigo-600" />
       </div>
     );
@@ -55,13 +55,13 @@ const AdminDashboard = () => {
 
   if (isError) {
     return (
-      <div className="rounded-2xl bg-red-50 p-6 text-center border border-red-100 shadow-sm">
+      <div className="rounded-3xl bg-red-50 p-8 text-center border border-red-100 shadow-sm max-w-md mx-auto mt-20">
         <p className="font-semibold text-red-700">
           {error?.response?.data?.message || "Failed to load dashboard"}
         </p>
         <button
           onClick={() => refetch()}
-          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 font-semibold text-white shadow-md hover:bg-indigo-700 transition"
+          className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-700 transition"
         >
           <RefreshCw size={16} /> Retry
         </button>
@@ -77,52 +77,53 @@ const AdminDashboard = () => {
       dashboardData?.users?.total ?? 0,
       Users,
       "from-blue-500 to-indigo-600",
+      "/admin/users",
     ],
     [
       "Students",
       dashboardData?.users?.students ?? 0,
       GraduationCap,
       "from-cyan-500 to-blue-600",
+      "/admin/users",
     ],
     [
       "Instructors",
       dashboardData?.users?.instructors ?? 0,
       UserCheck,
       "from-emerald-500 to-teal-600",
+      "/admin/instructors",
     ],
     [
       "Active Courses",
       dashboardData?.courses?.active ?? 0,
       BookOpen,
       "from-amber-500 to-orange-600",
+      "/admin/courses",
     ],
     [
       "Job Placements",
       dashboardData?.placements?.total ?? 0,
       Briefcase,
       "from-purple-500 to-indigo-600",
-    ],
-    [
-      "Pending Inquiries",
-      dashboardData?.contacts?.pending ?? 0,
-      MessageSquare,
-      "from-pink-500 to-rose-600",
+      "/admin/job-placements",
     ],
     [
       "Paid Payments",
       dashboardData?.payments?.successful ?? 0,
       CreditCard,
       "from-green-500 to-emerald-600",
+      "/admin/enrollments",
     ],
     [
       "Certificates",
       dashboardData?.certificates?.total ?? 0,
       Award,
       "from-violet-500 to-purple-600",
+      "/admin/certificates",
     ],
   ];
 
-  // Chart Data preparation
+  // Chart Data Preparation
   const userRoleData = [
     { name: "Students", value: dashboardData?.users?.students ?? 0 },
     { name: "Instructors", value: dashboardData?.users?.instructors ?? 0 },
@@ -142,189 +143,13 @@ const AdminDashboard = () => {
     { name: "Failed", value: dashboardData?.payments?.failed ?? 0 },
   ];
 
-  const dashboardSections = [
-    {
-      title: "Users Overview",
-      path: "/admin/users",
-      icon: Users,
-      items: [
-        ["Total", dashboardData?.users?.total],
-        ["Students", dashboardData?.users?.students],
-        ["Instructors", dashboardData?.users?.instructors],
-        ["Admins", dashboardData?.users?.admins],
-        ["Verified", dashboardData?.users?.verified],
-      ],
-    },
-    {
-      title: "Courses Management",
-      path: "/admin/courses",
-      icon: BookOpen,
-      items: [
-        ["Total", dashboardData?.courses?.total],
-        ["Pending", dashboardData?.courses?.pending],
-        ["Active", dashboardData?.courses?.active],
-        ["Inactive", dashboardData?.courses?.inactive],
-        ["Rejected", dashboardData?.courses?.rejected],
-      ],
-    },
-    {
-      title: "Enrollments",
-      path: "/admin/enrollments",
-      icon: GraduationCap,
-      items: [
-        ["Total", dashboardData?.enrollments?.total],
-        ["Active", dashboardData?.enrollments?.active],
-        ["Completed", dashboardData?.enrollments?.completed],
-      ],
-    },
-    {
-      title: "Payments & Revenue",
-      path: "/admin/enrollments",
-      icon: CreditCard,
-      items: [
-        ["Total", dashboardData?.payments?.total],
-        ["Paid", dashboardData?.payments?.successful],
-        ["Pending", dashboardData?.payments?.pending],
-        ["Failed", dashboardData?.payments?.failed],
-      ],
-    },
-    {
-      title: "Assignments & Submissions",
-      path: "/admin/attendance",
-      icon: ClipboardCheck,
-      items: [
-        ["Assignments", dashboardData?.assignments?.total],
-        ["Active", dashboardData?.assignments?.active],
-        ["Closed", dashboardData?.assignments?.closed],
-        ["Submissions", dashboardData?.submissions?.total],
-        ["Graded", dashboardData?.submissions?.graded],
-        ["Late", dashboardData?.submissions?.late],
-      ],
-    },
-    {
-      title: "Attendance Tracker",
-      path: "/admin/attendance",
-      icon: ClipboardCheck,
-      items: [
-        ["Total Logs", dashboardData?.attendance?.total],
-        ["Present", dashboardData?.attendance?.present],
-        ["Absent", dashboardData?.attendance?.absent],
-        ["Late", dashboardData?.attendance?.late],
-      ],
-    },
-    {
-      title: "Certificates",
-      path: "/admin/certificates",
-      icon: Award,
-      items: [["Total Issued", dashboardData?.certificates?.total]],
-    },
-    {
-      title: "Learning Resources",
-      path: "/admin/courses",
-      icon: FileText,
-      items: [
-        ["Total", dashboardData?.resources?.total],
-        ["Published", dashboardData?.resources?.published],
-      ],
-    },
-    {
-      title: "Blogs & Articles",
-      path: "/admin/blogs",
-      icon: FileText,
-      items: [
-        ["Total", dashboardData?.blogs?.total],
-        ["Published", dashboardData?.blogs?.published],
-        ["Draft", dashboardData?.blogs?.draft],
-        ["Archived", dashboardData?.blogs?.archived],
-        ["Featured", dashboardData?.blogs?.featured],
-      ],
-    },
-    {
-      title: "Demo Classes",
-      path: "/admin/demo-classes",
-      icon: CalendarDays,
-      items: [
-        ["Total", dashboardData?.demoClasses?.total],
-        ["Scheduled", dashboardData?.demoClasses?.scheduled],
-        ["Completed", dashboardData?.demoClasses?.completed],
-        ["Cancelled", dashboardData?.demoClasses?.cancelled],
-      ],
-    },
-    {
-      title: "Job Listings",
-      path: "/admin/jobs",
-      icon: Briefcase,
-      items: [
-        ["Total", dashboardData?.jobListings?.total],
-        ["Published", dashboardData?.jobListings?.published],
-        ["Draft", dashboardData?.jobListings?.draft],
-        ["Closed", dashboardData?.jobListings?.closed],
-        ["Expired", dashboardData?.jobListings?.expired],
-      ],
-    },
-    {
-      title: "Job Placements",
-      path: "/admin/job-placements",
-      icon: Briefcase,
-      items: [
-        ["Total", dashboardData?.placements?.total],
-        ["Placed", dashboardData?.placements?.placed],
-        ["Joined", dashboardData?.placements?.joined],
-        ["Pending", dashboardData?.placements?.pending],
-      ],
-    },
-    {
-      title: "Reviews & Ratings",
-      path: "/admin/reviews",
-      icon: Star,
-      items: [
-        ["Total", dashboardData?.reviews?.total],
-        ["Pending", dashboardData?.reviews?.pending],
-        ["Approved", dashboardData?.reviews?.approved],
-        ["Rejected", dashboardData?.reviews?.rejected],
-      ],
-    },
-    {
-      title: "Testimonials",
-      path: "/admin/testimonials",
-      icon: MessageSquare,
-      items: [
-        ["Total", dashboardData?.testimonials?.total],
-        ["Pending", dashboardData?.testimonials?.pending],
-        ["Approved", dashboardData?.testimonials?.approved],
-        ["Rejected", dashboardData?.testimonials?.rejected],
-        ["Featured", dashboardData?.testimonials?.featured],
-      ],
-    },
-    {
-      title: "Instructor Profiles",
-      path: "/admin/instructors",
-      icon: UserCheck,
-      items: [
-        ["Total", dashboardData?.instructorProfiles?.total],
-        ["Pending", dashboardData?.instructorProfiles?.pending],
-        ["Approved", dashboardData?.instructorProfiles?.approved],
-        ["Rejected", dashboardData?.instructorProfiles?.rejected],
-      ],
-    },
-    {
-      title: "Inquiries & Contacts",
-      path: "/admin/contacts",
-      icon: MessageSquare,
-      items: [
-        ["Total", dashboardData?.contacts?.total],
-        ["Pending", dashboardData?.contacts?.pending],
-      ],
-    },
-    {
-      title: "System Notifications",
-      path: "/notifications",
-      icon: Bell,
-      items: [
-        ["Total", dashboardData?.notifications?.total],
-        ["Unread", dashboardData?.notifications?.unread],
-      ],
-    },
+  // Overview Bar Chart Data for Platform Core Metrics
+  const platformOverviewBarData = [
+    { name: "Users", count: dashboardData?.users?.total ?? 0 },
+    { name: "Courses", count: dashboardData?.courses?.total ?? 0 },
+    { name: "Enrollments", count: dashboardData?.enrollments?.total ?? 0 },
+    { name: "Placements", count: dashboardData?.placements?.total ?? 0 },
+    { name: "Blogs", count: dashboardData?.blogs?.total ?? 0 },
   ];
 
   return (
@@ -335,13 +160,13 @@ const AdminDashboard = () => {
       className="space-y-8 pb-12"
     >
       {/* Header Banner */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white p-6 rounded-2xl shadow-xs border border-gray-100">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white p-6 sm:p-8 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100">
         <div>
-          <h2 className="text-2xl font-black tracking-tight text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             Dashboard Overview{" "}
-            <TrendingUp className="text-indigo-600" size={24} />
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
+            <TrendingUp className="text-indigo-600" size={26} />
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 font-normal">
             Real-time analytics and system metrics for your training ecosystem.
           </p>
         </div>
@@ -349,31 +174,33 @@ const AdminDashboard = () => {
           whileTap={{ scale: 0.95 }}
           onClick={() => refetch()}
           disabled={isFetching}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-gray-800 disabled:opacity-50 transition"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 hover:bg-slate-800 disabled:opacity-50 transition"
         >
           <RefreshCw size={16} className={isFetching ? "animate-spin" : ""} />
           Refresh Stats
         </motion.button>
       </div>
 
-      {/* Top Stat Cards with Gradient Accents */}
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {topStats.map(([title, value, Icon, gradient], index) => (
+      {/* Top Stat Cards */}
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {topStats.map(([title, value, Icon, gradient, path], index) => (
           <motion.div
             key={title}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
+            transition={{ duration: 0.3, delay: index * 0.04 }}
             whileHover={{ y: -4 }}
-            className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:shadow-xl"
+            className="relative overflow-hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/40 transition hover:shadow-2xl group"
           >
-            <div className="absolute top-0 left-0 h-1.5 w-full bg-linear-to-r ${gradient}" />
+            <div
+              className={`absolute top-0 left-0 h-1.5 w-full bg-linear-to-r ${gradient}`}
+            />
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold tracking-wider uppercase text-gray-400">
+                <p className="text-xs font-semibold tracking-wider uppercase text-slate-400">
                   {title}
                 </p>
-                <p className="mt-2 text-3xl font-extrabold text-gray-900">
+                <p className="mt-2 text-3xl font-bold text-slate-900">
                   {value}
                 </p>
               </div>
@@ -383,109 +210,143 @@ const AdminDashboard = () => {
                 <Icon size={22} />
               </div>
             </div>
+            <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
+              <Link
+                to={path}
+                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1 transition"
+              >
+                View report <ArrowUpRight size={14} />
+              </Link>
+            </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Analytics Visualizations (Pie Charts Section) */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      {/* Analytics Visualizations */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Core Ecosystem Growth Bar Chart */}
+        <motion.div
+          whileHover={{ y: -2 }}
+          className="rounded-3xl border border-slate-100 bg-white p-6 sm:p-8 shadow-xl shadow-slate-200/40 flex flex-col justify-between"
+        >
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-slate-900">
+              Platform Core Volume
+            </h3>
+            <p className="text-xs text-slate-400 font-normal">
+              Comparison of core system modules
+            </p>
+          </div>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={platformOverviewBarData}
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f1f5f9"
+                />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
+                />
+                <Tooltip
+                  cursor={{ fill: "#f8fafc" }}
+                  contentStyle={{
+                    backgroundColor: "#0f172a",
+                    borderRadius: "16px",
+                    border: "none",
+                    color: "#fff",
+                    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
+                  }}
+                  itemStyle={{ color: "#fff", fontWeight: "500" }}
+                />
+                <Bar dataKey="count" fill="#4F46E5" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+
+        {/* User Role Distribution Donut Chart */}
         <ChartCard title="User Role Distribution" data={userRoleData} />
-        <ChartCard title="Course Health Status" data={courseStatusData} />
-        <ChartCard title="Payment Processing Status" data={paymentStatusData} />
       </div>
 
-      {/* Detailed Management Panels */}
-      <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-4">
-          Detailed Modules
-        </h3>
-        <div className="grid gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-          {dashboardSections.map((section, idx) => (
-            <DashboardPanel key={section.title} {...section} index={idx} />
-          ))}
-        </div>
+      {/* Secondary Row of Analytics Charts */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ChartCard
+          title="Course Health Status Breakdown"
+          data={courseStatusData}
+        />
+        <ChartCard title="Payment Processing Status" data={paymentStatusData} />
       </div>
     </motion.div>
   );
 };
 
-// Reusable Donut Chart Component
+// Reusable Modern Donut Chart Component
 const ChartCard = ({ title, data }) => (
   <motion.div
     whileHover={{ y: -2 }}
-    className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm flex flex-col justify-between"
+    className="rounded-3xl border border-slate-100 bg-white p-6 sm:p-8 shadow-xl shadow-slate-200/40 flex flex-col justify-between"
   >
-    <h3 className="text-base font-bold text-gray-800 mb-2">{title}</h3>
-    <div className="h-64 w-full">
+    <div className="mb-4">
+      <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+      <p className="text-xs text-slate-400 font-normal">
+        Breakdown distribution metrics
+      </p>
+    </div>
+    <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={60}
-            outerRadius={85}
-            paddingAngle={6}
+            innerRadius={70}
+            outerRadius={100}
+            paddingAngle={8}
             dataKey="value"
           >
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
+                strokeWidth={0}
               />
             ))}
           </Pie>
           <Tooltip
             contentStyle={{
-              backgroundColor: "#111827",
-              borderRadius: "12px",
+              backgroundColor: "#0f172a",
+              borderRadius: "16px",
               border: "none",
               color: "#fff",
+              boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
             }}
-            itemStyle={{ color: "#fff" }}
+            itemStyle={{ color: "#fff", fontWeight: "500" }}
           />
-          <Legend verticalAlign="bottom" height={36} iconType="circle" />
+          <Legend
+            verticalAlign="bottom"
+            height={36}
+            iconType="circle"
+            formatter={(value) => (
+              <span className="text-xs font-medium text-slate-600">
+                {value}
+              </span>
+            )}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
-  </motion.div>
-);
-
-// Animated Panel Component
-const DashboardPanel = ({ title, items, path, icon: Icon, index }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3, delay: index * 0.03 }}
-  >
-    <Link
-      to={path}
-      className="group block rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:border-indigo-200 hover:shadow-xl hover:-translate-y-1"
-    >
-      <div className="flex items-center justify-between gap-4">
-        <h3 className="text-base font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">
-          {title}
-        </h3>
-        {Icon && (
-          <div className="rounded-xl bg-indigo-50 p-2.5 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white">
-            <Icon size={18} />
-          </div>
-        )}
-      </div>
-      <div className="mt-4 space-y-2.5">
-        {items.map(([label, value]) => (
-          <div
-            key={label}
-            className="flex items-center justify-between border-b border-gray-50 pb-2.5 last:border-0 last:pb-0"
-          >
-            <span className="text-sm font-medium text-gray-500">{label}</span>
-            <span className="font-bold text-gray-900 bg-gray-50 px-2 py-0.5 rounded-md">
-              {value ?? 0}
-            </span>
-          </div>
-        ))}
-      </div>
-    </Link>
   </motion.div>
 );
 
