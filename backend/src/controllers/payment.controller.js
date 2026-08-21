@@ -1,9 +1,10 @@
 import {
   createPaymentService,
+  initiateEsewaPaymentService,
+  verifyEsewaPaymentService,
   getPaymentsService,
   getPaymentService,
   getMyPaymentsService,
-  updatePaymentStatusService,
   deletePaymentService,
   getPaymentReportService,
 } from "../services/payment.service.js";
@@ -22,6 +23,30 @@ export const createPayment = async (req, res) => {
   });
 };
 
+export const initiateEsewaPayment = async (req, res) => {
+  const result = await initiateEsewaPaymentService({
+    studentId: req.user._id,
+    courseId: req.body.courseId,
+  });
+
+  return res.status(201).json({
+    success: true,
+    message: "eSewa payment initiated successfully.",
+    ...result,
+  });
+};
+
+export const verifyEsewaPayment = async (req, res) => {
+  const payment = await verifyEsewaPaymentService({
+    data: req.body.data,
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "eSewa payment verified successfully.",
+    payment,
+  });
+};
 // Admin gets all payments
 export const getPayments = async (req, res) => {
   const { status, paymentMethod, page, limit } = req.query;
@@ -66,37 +91,6 @@ export const getMyPayments = async (req, res) => {
   });
 };
 
-// Admin updates payment status
-export const updatePaymentStatus = async (req, res) => {
-  const { paymentStatus } = req.body;
-
-  const allowedStatuses = ["Pending", "Paid", "Failed"];
-
-  if (!allowedStatuses.includes(paymentStatus)) {
-    const error = new Error("Invalid payment status.");
-
-    error.statusCode = 400;
-    throw error;
-  }
-
-  const payment = await updatePaymentStatusService(
-    req.params.id,
-    paymentStatus,
-  );
-
-  if (!payment) {
-    const error = new Error("Payment not found.");
-
-    error.statusCode = 404;
-    throw error;
-  }
-
-  return res.status(200).json({
-    success: true,
-    message: "Payment status updated successfully.",
-    payment,
-  });
-};
 
 // Admin deletes payment
 export const deletePayment = async (req, res) => {

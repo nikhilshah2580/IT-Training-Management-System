@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import Payment from "../models/payment.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
@@ -5,22 +6,72 @@ import Enrollment from "../models/enrollment.model.js";
 
 const generateInvoiceNumber = () => {
   const timestamp = Date.now();
-
   const random = Math.floor(1000 + Math.random() * 9000);
 
   return `INV-${timestamp}-${random}`;
 };
 
-// Create payment
-export const createPaymentService = async ({
-  studentId,
-  courseId,
-  amount,
-  paymentMethod,
-  transactionId,
-  paymentStatus,
-  notes,
-}) => {
+const generateEsewaTransactionUuid = (studentId) => {
+  const timestamp = Date.now();
+  const random = crypto.randomBytes(6).toString("hex");
+
+  return `ESEWA-${timestamp}-${studentId.toString().slice(-6)}-${random}`;
+};
+
+const getEsewaConfig = () => ({
+  endpoint:
+    process.env.ESEWA_PAYMENT_URL ||
+    "https://rc-epay.esewa.com.np/api/epay/main/v2/form",
+  productCode: process.env.ESEWA_PRODUCT_CODE || "EPAYTEST",
+  secretKey: process.env.ESEWA_SECRET_KEY || "8gBm/:&EnhH.1/q",
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+});
+
+const signEsewaPayload = ({ totalAmount, transactionUuid, productCode }) => {
+  const { secretKey } = getEsewaConfig();
+  const message = `total_amount=${totalAmount},transaction_uuid=${transactionUuid},product_code=${productCode}`;
+
+  return crypto.createHmac("sha256", secretKey).update(message).digest("base64");
+};
+
+const decodeEsewaData = (data) => {
+  try {
+    return JSON.parse(Buffer.from(data, "base64").toString("utf8"));
+  } catch {
+    const error = new Error("Invalid eSewa response data.");
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
+const verifyEsewaResponseSignature = (responseData) => {
+  const { secretKey } = getEsewaConfig();
+  const signedFieldNames = responseData.signed_field_names;
+  const signature = responseData.signature;
+
+  if (!signedFieldNames || !signature) {
+    const error = new Error("eSewa signature data is missing.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const message = signedFieldNames
+    .split(",")
+    .map((fieldName) => `${fieldName}=${responseData[fieldName] ?? ""}`)
+    .join(",");
+  const expectedSignature = crypto
+    .createHmac("sha256", secretKey)
+    .update(message)
+    .digest("base64");
+
+  if (signature !== expectedSignature) {
+    const error = new Error("Invalid eSewa payment signature.");
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
+const assertStudentCanPayCourse = async ({ studentId, courseId }) => {
   const student = await User.findById(studentId);
 
   if (!student) {
@@ -31,7 +82,6 @@ export const createPaymentService = async ({
 
   if (student.role !== "student") {
     const error = new Error("Only students can make course payments.");
-
     error.statusCode = 403;
     throw error;
   }
@@ -46,19 +96,6 @@ export const createPaymentService = async ({
 
   if (course.status !== "Active") {
     const error = new Error("Payment cannot be made for an inactive course.");
-
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (!transactionId?.trim()) {
-    const error = new Error("Transaction ID is required.");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (Number(amount) !== Number(course.fee)) {
-    const error = new Error("Payment amount must match the course fee.");
     error.statusCode = 400;
     throw error;
   }
@@ -82,22 +119,43 @@ export const createPaymentService = async ({
     throw error;
   }
 
+  return { course, enrollment, student };
+};
+
+// Create payment
+export const createPaymentService = async ({
+  studentId,
+  courseId,
+  amount,
+  paymentMethod,
+  transactionId,
+  notes,
+}) => {
+  const { course } = await assertStudentCanPayCourse({ studentId, courseId });
+
+  if (!transactionId?.trim()) {
+    const error = new Error("Transaction ID is required.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (Number(amount) !== Number(course.fee)) {
+    const error = new Error("Payment amount must match the course fee.");
+    error.statusCode = 400;
+    throw error;
+  }
+
   const existingTransaction = await Payment.findOne({
     transactionId: transactionId.trim(),
   });
 
   if (existingTransaction) {
     const error = new Error("Transaction ID already exists.");
-
     error.statusCode = 400;
     throw error;
   }
 
   const invoiceNumber = generateInvoiceNumber();
-
-  // Payment is pending until an actual gateway/admin confirmation.
-  const finalPaymentStatus = "Pending";
-  const paidAt = null;
 
   const payment = await Payment.create({
     student: studentId,
@@ -105,15 +163,105 @@ export const createPaymentService = async ({
     amount,
     paymentMethod,
     transactionId,
-    paymentStatus: finalPaymentStatus,
+    paymentStatus: "Pending",
     invoiceNumber,
-    paidAt,
+    paidAt: null,
     notes,
   });
 
   return await Payment.findById(payment._id)
     .populate("student", "fullName email phone photo")
     .populate("course", "title fee duration instructor");
+};
+
+export const initiateEsewaPaymentService = async ({ studentId, courseId }) => {
+  const { course } = await assertStudentCanPayCourse({ studentId, courseId });
+  const amount = Number(course.fee || 0);
+  const { endpoint, productCode, frontendUrl } = getEsewaConfig();
+  const totalAmount = amount.toFixed(2);
+
+  const paidPayment = await Payment.findOne({
+    student: studentId,
+    course: courseId,
+    paymentStatus: "Paid",
+  });
+
+  if (paidPayment) {
+    const error = new Error("This course payment is already completed.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const transactionUuid = generateEsewaTransactionUuid(studentId);
+  const invoiceNumber = generateInvoiceNumber();
+
+  const payment = await Payment.create({
+    student: studentId,
+    course: courseId,
+    amount,
+    paymentMethod: "eSewa",
+    transactionId: transactionUuid,
+    paymentStatus: "Pending",
+    invoiceNumber,
+    notes: "eSewa payment initiated.",
+  });
+
+  const formData = {
+    amount: totalAmount,
+    tax_amount: "0",
+    total_amount: totalAmount,
+    transaction_uuid: transactionUuid,
+    product_code: productCode,
+    product_service_charge: "0",
+    product_delivery_charge: "0",
+    success_url: `${frontendUrl}/student/payment/success`,
+    failure_url: `${frontendUrl}/student/payment/failure?paymentId=${payment._id}`,
+    signed_field_names: "total_amount,transaction_uuid,product_code",
+    signature: signEsewaPayload({
+      totalAmount,
+      transactionUuid,
+      productCode,
+    }),
+  };
+
+  return {
+    payment,
+    esewa: {
+      endpoint,
+      formData,
+    },
+  };
+};
+export const verifyEsewaPaymentService = async ({ data }) => {
+  if (!data) {
+    const error = new Error("eSewa response data is required.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const responseData = decodeEsewaData(data);
+  verifyEsewaResponseSignature(responseData);
+
+  const transactionId = responseData.transaction_uuid;
+  const status = String(responseData.status || "").toUpperCase();
+
+  if (!transactionId) {
+    const error = new Error("Transaction UUID missing from eSewa response.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const payment = await Payment.findOne({ transactionId });
+
+  if (!payment) {
+    const error = new Error("Payment not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const nextStatus = status === "COMPLETE" ? "Paid" : "Failed";
+
+  return await updatePaymentStatusService(payment._id, nextStatus);
 };
 
 // Get all payments
@@ -134,9 +282,7 @@ export const getPaymentsService = async ({
   }
 
   const pageNumber = Math.max(Number(page) || 1, 1);
-
   const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 100);
-
   const skip = (pageNumber - 1) * limitNumber;
 
   const [payments, total] = await Promise.all([
@@ -269,3 +415,7 @@ export const getPaymentReportService = async () => {
     totalRevenue: revenueResult[0]?.totalRevenue || 0,
   };
 };
+
+
+
+

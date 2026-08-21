@@ -248,47 +248,6 @@ export const updateEnrollmentStatusService = async (id, status) => {
   return enrollment;
 };
 
-//UPDATE PAYMENT STATUS
-
-export const updateEnrollmentPaymentStatusService = async (
-  id,
-  paymentStatus,
-) => {
-  const allowedStatuses = ["Pending", "Paid", "Failed"];
-
-  if (!allowedStatuses.includes(paymentStatus)) {
-    const error = new Error("Invalid payment status");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  const updates = {
-    paymentStatus,
-  };
-
-  /*
-   * Automatically activate enrollment
-   * after successful payment.
-   */
-  if (paymentStatus === "Paid") {
-    updates.status = "Active";
-  }
-
-  const enrollment = await Enrollment.findByIdAndUpdate(id, updates, {
-    returnDocument: "after",
-    runValidators: true,
-  })
-    .populate("student", "fullName email phone photo")
-    .populate("course", "title duration fee instructor");
-
-  if (!enrollment) {
-    const error = new Error("Enrollment not found");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  return enrollment;
-};
 
 //UPDATE COURSE PROGRESS
 

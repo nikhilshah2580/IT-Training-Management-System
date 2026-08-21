@@ -7,7 +7,6 @@ import {
   getMyEnrollments,
   getInstructorEnrollments,
   updateEnrollmentStatus,
-  updateEnrollmentPaymentStatus,
   updateEnrollmentProgress,
   cancelEnrollment,
 } from "../controllers/enrollment.controller.js";
@@ -61,13 +60,6 @@ enrollmentRoutes.patch(
   updateEnrollmentStatus,
 );
 
-// Admin updates payment status
-enrollmentRoutes.patch(
-  "/:id/payment-status",
-  verifyToken,
-  authorizeRoles("admin"),
-  updateEnrollmentPaymentStatus,
-);
 
 // Admin + Instructor can update progress
 // Instructor ownership is checked inside the service
@@ -87,3 +79,5 @@ enrollmentRoutes.patch(
 );
 
 export default enrollmentRoutes;
+
+

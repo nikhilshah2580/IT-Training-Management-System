@@ -5,7 +5,6 @@ import {
   getMyEnrollmentsService,
   getInstructorEnrollmentsService,
   updateEnrollmentStatusService,
-  updateEnrollmentPaymentStatusService,
   updateEnrollmentProgressService,
   cancelEnrollmentService,
 } from "../services/enrollment.service.js";
@@ -90,19 +89,6 @@ export const updateEnrollmentStatus = async (req, res) => {
   });
 };
 
-// ADMIN UPDATE PAYMENT STATUS
-export const updateEnrollmentPaymentStatus = async (req, res) => {
-  const enrollment = await updateEnrollmentPaymentStatusService(
-    req.params.id,
-    req.body.paymentStatus,
-  );
-
-  return res.status(200).json({
-    success: true,
-    message: "Enrollment payment status updated successfully",
-    enrollment,
-  });
-};
 
 // UPDATE COURSE PROGRESS
 export const updateEnrollmentProgress = async (req, res) => {

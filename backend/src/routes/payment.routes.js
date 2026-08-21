@@ -2,10 +2,11 @@ import express from "express";
 
 import {
   createPayment,
+  initiateEsewaPayment,
+  verifyEsewaPayment,
   getPayments,
   getPayment,
   getMyPayments,
-  updatePaymentStatus,
   deletePayment,
   getPaymentReport,
 } from "../controllers/payment.controller.js";
@@ -17,6 +18,18 @@ const paymentRoutes = express.Router();
 
 // Student creates payment
 paymentRoutes.post("/", verifyToken, authorizeRoles("student"), createPayment);
+paymentRoutes.post(
+  "/esewa/initiate",
+  verifyToken,
+  authorizeRoles("student"),
+  initiateEsewaPayment,
+);
+paymentRoutes.post(
+  "/esewa/verify",
+  verifyToken,
+  authorizeRoles("student"),
+  verifyEsewaPayment,
+);
 // Student gets own payments
 paymentRoutes.get(
   "/my-payments",
@@ -35,13 +48,6 @@ paymentRoutes.get(
 paymentRoutes.get("/", verifyToken, authorizeRoles("admin"), getPayments);
 // Admin gets single payment
 paymentRoutes.get("/:id", verifyToken, authorizeRoles("admin"), getPayment);
-// Admin updates payment status
-paymentRoutes.patch(
-  "/:id/status",
-  verifyToken,
-  authorizeRoles("admin"),
-  updatePaymentStatus,
-);
 // Admin deletes payment
 paymentRoutes.delete(
   "/:id",
@@ -51,3 +57,5 @@ paymentRoutes.delete(
 );
 
 export default paymentRoutes;
+
+
