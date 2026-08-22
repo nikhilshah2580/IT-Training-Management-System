@@ -70,6 +70,7 @@ const notificationSchema = new mongoose.Schema(
         "Contact",
         "Testimonial",
         "Review",
+        "JobApplication",
         null,
       ],
       default: null,

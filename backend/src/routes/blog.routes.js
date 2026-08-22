@@ -14,6 +14,7 @@ import {
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
+import upload from "../middlewares/upload.middleware.js";
 
 const blogRoutes = express.Router();
 
@@ -54,6 +55,7 @@ blogRoutes.post(
   "/",
   verifyToken,
   authorizeRoles("admin", "instructor"),
+  upload.single("photo"),
   createBlog,
 );
 
@@ -62,6 +64,7 @@ blogRoutes.put(
   "/:id",
   verifyToken,
   authorizeRoles("admin", "instructor"),
+  upload.single("photo"),
   updateBlog,
 );
 

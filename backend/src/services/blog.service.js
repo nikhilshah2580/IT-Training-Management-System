@@ -2,7 +2,7 @@ import Blog from "../models/blog.model.js";
 import mongoose from "mongoose";
 
 // Create blog
-export const createBlogService = async (data, authorId) => {
+export const createBlogService = async (data = {}, authorId) => {
   const {
     title,
     slug,
@@ -14,6 +14,14 @@ export const createBlogService = async (data, authorId) => {
     status,
     isFeatured,
   } = data;
+
+  if (!title || !slug || !excerpt || !content) {
+    const error = new Error(
+      "Title, slug, excerpt, and content are required for a blog.",
+    );
+    error.statusCode = 400;
+    throw error;
+  }
 
   const existingBlog = await Blog.findOne({ slug });
 
@@ -201,7 +209,7 @@ export const getBlogAdminService = async (id) => {
 };
 
 // Update blog
-export const updateBlogService = async (id, data, userId, userRole) => {
+export const updateBlogService = async (id, data = {}, userId, userRole) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const error = new Error("Invalid blog ID.");
     error.statusCode = 400;
@@ -227,9 +235,11 @@ export const updateBlogService = async (id, data, userId, userRole) => {
     throw error;
   }
 
-  if (data.slug && data.slug !== blog.slug) {
+  const updates = { ...data };
+
+  if (updates.slug && updates.slug !== blog.slug) {
     const existingBlog = await Blog.findOne({
-      slug: data.slug,
+      slug: updates.slug,
       _id: { $ne: id },
     });
 
@@ -241,11 +251,11 @@ export const updateBlogService = async (id, data, userId, userRole) => {
     }
   }
 
-  if (data.status === "Published" && blog.status !== "Published") {
-    data.publishedAt = new Date();
+  if (updates.status === "Published" && blog.status !== "Published") {
+    updates.publishedAt = new Date();
   }
 
-  return await Blog.findByIdAndUpdate(id, data, {
+  return await Blog.findByIdAndUpdate(id, updates, {
     returnDocument: "after",
     runValidators: true,
   }).populate("author", "fullName email photo role");

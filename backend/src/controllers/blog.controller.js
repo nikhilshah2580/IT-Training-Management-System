@@ -9,10 +9,47 @@ import {
   updateBlogService,
   deleteBlogService,
 } from "../services/blog.service.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
+
+const prepareBlogPayload = async (req) => {
+  const payload = { ...req.body };
+
+  if (typeof payload.tags === "string") {
+    try {
+      payload.tags = JSON.parse(payload.tags);
+    } catch {
+      payload.tags = payload.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+    }
+  }
+
+  if (typeof payload.isFeatured === "string") {
+    payload.isFeatured = payload.isFeatured === "true";
+  }
+
+  if (req.file) {
+    const image = await uploadOnCloudinary(req.file.path);
+
+    if (!image?.secure_url) {
+      const error = new Error("Blog image upload failed.");
+      error.statusCode = 500;
+      throw error;
+    }
+
+    payload.featuredImage = image.secure_url;
+  }
+
+  return payload;
+};
 
 // CREATE BLOG
 export const createBlog = async (req, res) => {
-  const blog = await createBlogService(req.body, req.user._id);
+  const blog = await createBlogService(
+    await prepareBlogPayload(req),
+    req.user._id,
+  );
 
   return res.status(201).json({
     success: true,
@@ -122,7 +159,7 @@ export const getBlogAdmin = async (req, res) => {
 export const updateBlog = async (req, res) => {
   const blog = await updateBlogService(
     req.params.id,
-    req.body,
+    await prepareBlogPayload(req),
     req.user._id,
     req.user.role,
   );

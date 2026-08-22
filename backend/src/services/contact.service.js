@@ -3,12 +3,13 @@ import User from "../models/user.model.js";
 
 // CREATE CONTACT
 export const createContactService = async (data) => {
-  const { user, name, email, subject, message } = data;
+  const { user, name, email, phone, subject, message } = data;
 
   const contact = await Contact.create({
     user: user || null,
     name,
     email,
+    phone,
     subject,
     message,
   });
@@ -33,6 +34,7 @@ export const getContactsService = async ({
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
       { email: { $regex: search, $options: "i" } },
+      { phone: { $regex: search, $options: "i" } },
       { subject: { $regex: search, $options: "i" } },
     ];
   }

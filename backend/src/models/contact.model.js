@@ -22,6 +22,13 @@ const contactSchema = new mongoose.Schema(
       trim: true,
     },
 
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 30,
+    },
+
     subject: {
       type: String,
       required: true,

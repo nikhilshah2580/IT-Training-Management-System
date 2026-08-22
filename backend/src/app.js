@@ -23,6 +23,7 @@ import notificationRoutes from "./routes/notification.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import auditLogRoutes from "./routes/auditLog.routes.js";
+import jobApplicationRoutes from "./routes/jobApplication.routes.js";
 import { apiLimiter } from "./middlewares/rateLimit.middleware.js";
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:5174",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -63,6 +65,7 @@ app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/job-placements", jobPlacementRoutes);
 app.use("/api/job-listings", jobListingRoutes);
+app.use("/api/job-applications", jobApplicationRoutes);
 app.use("/api/instructor-profiles", instructorProfileRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/contacts", contactRoutes);

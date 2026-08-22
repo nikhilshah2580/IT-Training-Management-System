@@ -8,6 +8,7 @@ import {
 } from "../services/contact.service.js";
 
 import { getIO } from "../socket/socket.js";
+import { notifyAdmins } from "../utils/notificationEvents.js";
 
 // CREATE CONTACT
 export const createContact = async (req, res) => {
@@ -17,8 +18,18 @@ export const createContact = async (req, res) => {
     user: userId,
     name: req.body.name,
     email: req.body.email,
+    phone: req.body.phone,
     subject: req.body.subject,
     message: req.body.message,
+  });
+
+  await notifyAdmins({
+    sender: userId,
+    title: "New contact inquiry",
+    message: `${contact.name} sent a new inquiry: ${contact.subject}.`,
+    type: "contact",
+    referenceId: contact._id,
+    referenceModel: "Contact",
   });
 
   // Notify all connected admins

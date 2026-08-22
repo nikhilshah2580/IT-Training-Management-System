@@ -34,6 +34,7 @@ export const getDashboardService = async () => {
     completedEnrollments,
     totalPayments,
     successfulPayments,
+    totalEarningsResult,
     pendingPayments,
     failedPayments,
     totalCertificates,
@@ -104,6 +105,10 @@ export const getDashboardService = async () => {
 
     Payment.countDocuments(),
     Payment.countDocuments({ paymentStatus: "Paid" }),
+    Payment.aggregate([
+      { $match: { paymentStatus: "Paid" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]),
     Payment.countDocuments({ paymentStatus: "Pending" }),
     Payment.countDocuments({ paymentStatus: "Failed" }),
 
@@ -194,6 +199,7 @@ export const getDashboardService = async () => {
     payments: {
       total: totalPayments,
       successful: successfulPayments,
+      earnings: totalEarningsResult[0]?.total || 0,
       pending: pendingPayments,
       failed: failedPayments,
     },
@@ -295,6 +301,7 @@ export const getInstructorDashboardService = async (instructorId) => {
     totalSubmissions,
     pendingSubmissions,
     gradedSubmissions,
+    totalEarningsResult,
     recentSubmissions,
   ] = await Promise.all([
     Enrollment.countDocuments({
@@ -321,6 +328,15 @@ export const getInstructorDashboardService = async (instructorId) => {
       assignment: { $in: assignmentIds },
       status: "Graded",
     }),
+    Payment.aggregate([
+      {
+        $match: {
+          course: { $in: courseIds },
+          paymentStatus: "Paid",
+        },
+      },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]),
     Submission.find({ assignment: { $in: assignmentIds } })
       .populate("student", "fullName email photo")
       .populate({
@@ -353,6 +369,7 @@ export const getInstructorDashboardService = async (instructorId) => {
       totalSubmissions,
       pendingSubmissions,
       gradedSubmissions,
+      totalEarnings: totalEarningsResult[0]?.total || 0,
     },
     recentCourses: courses.slice(0, 5),
     recentSubmissions,
