@@ -153,19 +153,18 @@ const CertificateDetails = () => {
           />
         </div>
 
-        {certificate.certificateUrl && (
-          <div className="pt-4 border-t border-slate-100 flex justify-end">
-            <a
-              href={certificate.certificateUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-indigo-600 to-blue-600 px-6 py-3.5 text-xs md:text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <Download size={16} /> Download Certificate{" "}
-              <ExternalLink size={14} />
-            </a>
-          </div>
-        )}
+        <div className="pt-4 border-t border-slate-100 flex justify-end">
+          <a
+            href={`${import.meta.env.VITE_API_URL || "http://localhost:9100/api"}/certificates/${certificate._id || certificate.id}/download`}
+            target="_blank"
+            rel="noreferrer"
+            download
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-indigo-600 to-blue-600 px-6 py-3.5 text-xs md:text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <Download size={16} /> Download Certificate{" "}
+            <ExternalLink size={14} />
+          </a>
+        </div>
       </section>
     </motion.main>
   );

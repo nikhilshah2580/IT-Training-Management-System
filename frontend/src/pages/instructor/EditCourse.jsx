@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { getCourseById, updateCourse } from "../../api/course.services";
-
 import CourseForm from "../../components/course/CourseForm";
+import { getErrorMessage } from "../../utils/toast";
 
 const EditCourse = () => {
   const { id } = useParams();
@@ -49,7 +49,7 @@ const EditCourse = () => {
     onError: (error) => {
       console.error("Update course:", error?.response?.data);
 
-      toast.error(error?.response?.data?.message || "Failed to update course");
+      toast.error(getErrorMessage(error, "Failed to update course"));
     },
   });
 
@@ -81,9 +81,7 @@ const EditCourse = () => {
         </h2>
 
         <p className="mt-2 text-gray-500">
-          {error?.response?.data?.message ||
-            error?.message ||
-            "Course not found"}
+          {getErrorMessage(error, "Course not found")}
         </p>
 
         <button

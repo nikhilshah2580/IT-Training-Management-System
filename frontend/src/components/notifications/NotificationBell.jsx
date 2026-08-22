@@ -110,13 +110,25 @@ const NotificationBell = ({ className = "" }) => {
     const socket = io(getSocketUrl(), {
       withCredentials: true,
       transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionAttempts: 3,
+      timeout: 5000,
     });
 
-    socket.emit("join", user._id);
+    const onConnect = () => {
+      socket.emit("join", user._id);
 
-    if (user.role === "admin") {
-      socket.emit("joinAdmin");
-    }
+      if (user.role === "admin") {
+        socket.emit("joinAdmin");
+      }
+    };
+
+    const onConnectError = () => {
+      // Ignore connection failures while backend is restarting or port is busy.
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("connect_error", onConnectError);
 
     socket.on("notification", (notification) => {
       queryClient.setQueryData(queryKey, (current) => {
@@ -148,6 +160,8 @@ const NotificationBell = ({ className = "" }) => {
     });
 
     return () => {
+      socket.off("connect", onConnect);
+      socket.off("connect_error", onConnectError);
       socket.disconnect();
     };
   }, [isAuthenticated, queryClient, queryKey, user?._id, user?.role]);

@@ -24,6 +24,7 @@ const SubmitAssignment = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [file, setFile] = useState(null);
+  const [description, setDescription] = useState("");
 
   const assignmentQuery = useQuery({
     queryKey: ["assignment", id],
@@ -78,6 +79,7 @@ const SubmitAssignment = () => {
     const payload = new FormData();
     payload.append("assignment", id);
     payload.append("file", file);
+    payload.append("description", description.trim());
     submitMutation.mutate(payload);
   };
 
@@ -106,7 +108,6 @@ const SubmitAssignment = () => {
       transition={{ duration: 0.4 }}
       className="mx-auto max-w-3xl space-y-8 pb-12"
     >
-      {/* NAVIGATION BACK */}
       <button
         type="button"
         onClick={() => navigate(-1)}
@@ -115,7 +116,6 @@ const SubmitAssignment = () => {
         <ArrowLeft size={16} /> Back to Assignment
       </button>
 
-      {/* HEADER BANNER */}
       <div className="relative overflow-hidden rounded-2xl bg-linear-to-r from-indigo-900 via-purple-900 to-blue-900 p-6 md:p-8 text-white shadow-xl">
         <div className="absolute right-0 top-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -135,7 +135,6 @@ const SubmitAssignment = () => {
         </div>
       </div>
 
-      {/* SUBMISSION FORM CARD */}
       <section className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 shadow-xs">
         {alreadySubmitted ? (
           <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-6 text-center space-y-3">
@@ -190,6 +189,23 @@ const SubmitAssignment = () => {
                   </button>
                 </div>
               )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                Submission Description
+              </label>
+              <textarea
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                rows={4}
+                maxLength={1000}
+                placeholder="Write a short note about your file, what you completed, setup instructions, or anything your instructor should know."
+                className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-xs md:text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+              />
+              <p className="text-right text-[11px] font-medium text-slate-400">
+                {description.length}/1000
+              </p>
             </div>
 
             <div className="pt-4 border-t border-slate-100 flex justify-end">

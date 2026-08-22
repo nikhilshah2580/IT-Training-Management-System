@@ -9,11 +9,49 @@ import {
   Loader2,
   AlertCircle,
   Sparkles,
-  ExternalLink,
   CheckCircle2,
 } from "lucide-react";
 
 import { getMyCertificates } from "../../api/certificate.services";
+
+// Array of vibrant color schemes for the certificates
+const cardColorThemes = [
+  {
+    gradient: "from-indigo-600 via-purple-600 to-pink-600",
+    lightBg: "bg-indigo-50/50",
+    badgeColor: "text-indigo-600",
+    borderHover: "hover:border-indigo-300",
+    shadowColor: "hover:shadow-indigo-500/10",
+  },
+  {
+    gradient: "from-blue-600 via-cyan-600 to-teal-600",
+    lightBg: "bg-cyan-50/50",
+    badgeColor: "text-cyan-600",
+    borderHover: "hover:border-cyan-300",
+    shadowColor: "hover:shadow-cyan-500/10",
+  },
+  {
+    gradient: "from-violet-600 via-fuchsia-600 to-rose-600",
+    lightBg: "bg-fuchsia-50/50",
+    badgeColor: "text-fuchsia-600",
+    borderHover: "hover:border-fuchsia-300",
+    shadowColor: "hover:shadow-fuchsia-500/10",
+  },
+  {
+    gradient: "from-emerald-600 via-teal-600 to-indigo-600",
+    lightBg: "bg-emerald-50/50",
+    badgeColor: "text-emerald-600",
+    borderHover: "hover:border-emerald-300",
+    shadowColor: "hover:shadow-emerald-500/10",
+  },
+  {
+    gradient: "from-amber-500 via-orange-600 to-red-600",
+    lightBg: "bg-amber-50/50",
+    badgeColor: "text-amber-600",
+    borderHover: "hover:border-amber-300",
+    shadowColor: "hover:shadow-amber-500/10",
+  },
+];
 
 const MyCertificates = () => {
   const { data, isLoading, isError, error } = useQuery({
@@ -108,7 +146,8 @@ const MyCertificates = () => {
         /* CERTIFICATE GRID */
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {certificates.map((certificate, idx) => {
-            const isIssued = certificate.status === "Issued";
+            // Assign a rotating colorful theme based on the index
+            const theme = cardColorThemes[idx % cardColorThemes.length];
 
             return (
               <motion.article
@@ -116,12 +155,19 @@ const MyCertificates = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: idx * 0.05 }}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-6 shadow-xs transition-all hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5"
+                className={`group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white shadow-xs transition-all hover:-translate-y-1 ${theme.borderHover} hover:shadow-xl ${theme.shadowColor} overflow-hidden`}
               >
-                <div>
+                {/* Colorful Top Accent Banner */}
+                <div
+                  className={`h-2.5 w-full bg-linear-to-r ${theme.gradient}`}
+                />
+
+                <div className="p-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 mb-1">
+                      <span
+                        className={`inline-flex items-center gap-1.5 text-xs font-semibold ${theme.badgeColor} mb-1`}
+                      >
                         <Award size={14} />{" "}
                         {certificate.course?.title || "Completed Course"}
                       </span>
@@ -132,7 +178,9 @@ const MyCertificates = () => {
                     <StatusBadge status={certificate.status} />
                   </div>
 
-                  <div className="mt-5 space-y-2.5 rounded-xl bg-slate-50/70 p-3.5 border border-slate-100 text-xs text-slate-600">
+                  <div
+                    className={`mt-5 space-y-2.5 rounded-xl ${theme.lightBg} p-3.5 border border-slate-100/80 text-xs text-slate-600 backdrop-blur-xs`}
+                  >
                     <p className="flex items-center gap-2">
                       <CalendarDays size={15} className="text-slate-400" />
                       <span>
@@ -154,24 +202,23 @@ const MyCertificates = () => {
                   </div>
                 </div>
 
-                <div className="mt-6 flex gap-3 pt-4 border-t border-slate-100">
+                <div className="px-6 pb-6 pt-2 flex gap-3 border-t border-slate-100 bg-slate-50/30">
                   <Link
                     to={`/student/certificates/${certificate._id || certificate.id}`}
                     className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-center text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 transition flex items-center justify-center gap-1.5"
                   >
                     View Details
                   </Link>
-                  {certificate.certificateUrl && (
-                    <a
-                      href={certificate.certificateUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      title="Download Certificate"
-                      className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-white hover:bg-indigo-700 transition shadow-xs shadow-indigo-500/20"
-                    >
-                      <Download size={16} />
-                    </a>
-                  )}
+                  <a
+                    href={`${import.meta.env.VITE_API_URL || "http://localhost:9100/api"}/certificates/${certificate._id || certificate.id}/download`}
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                    title="Download Certificate"
+                    className={`inline-flex items-center justify-center rounded-xl bg-linear-to-r ${theme.gradient} px-4 py-2.5 text-white hover:opacity-95 transition shadow-xs`}
+                  >
+                    <Download size={16} />
+                  </a>
                 </div>
               </motion.article>
             );

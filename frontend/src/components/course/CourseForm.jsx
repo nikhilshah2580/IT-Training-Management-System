@@ -149,6 +149,7 @@ const CourseForm = ({
     payload.append("syllabus", formData.syllabus.trim());
     payload.append("duration", formData.duration.trim());
     payload.append("fee", Number(formData.fee));
+    payload.append("price", Number(formData.fee));
     payload.append("prerequisites", formData.prerequisites.trim());
     payload.append("enrollmentDeadline", formData.enrollmentDeadline || "");
     payload.append("resources", JSON.stringify(formData.resources));
@@ -515,3 +516,5 @@ const CourseForm = ({
 };
 
 export default CourseForm;
+
+

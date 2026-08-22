@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import { createCourse } from "../../api/course.services";
 import CourseForm from "../../components/course/CourseForm";
+import { getErrorMessage } from "../../utils/toast";
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const CreateCourse = () => {
     },
 
     onError: (error) => {
-      toast.error(error?.response?.data?.message || "Failed to create course");
+      toast.error(getErrorMessage(error, "Failed to create course"));
     },
   });
 

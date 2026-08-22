@@ -16,6 +16,12 @@ import {
   gradeSubmission,
 } from "../../api/submission.services";
 
+// Helper function to point to the secure backend file download/open route
+const getSubmissionFileUrl = (submissionId) => {
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  return `${apiUrl}/submissions/${submissionId}/file`;
+};
+
 const formatDate = (value) => (value ? new Date(value).toLocaleString() : "-");
 
 const AssignmentSubmissions = () => {
@@ -154,6 +160,9 @@ const AssignmentSubmissions = () => {
                   File
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Student Note
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                   Status
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
@@ -171,7 +180,7 @@ const AssignmentSubmissions = () => {
               {submissions.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="7"
+                    colSpan="8"
                     className="px-6 py-12 text-center text-gray-500"
                   >
                     No students have submitted this assignment yet.
@@ -196,7 +205,7 @@ const AssignmentSubmissions = () => {
                       </td>
                       <td className="px-6 py-4">
                         <a
-                          href={submission.file}
+                          href={getSubmissionFileUrl(submission._id)}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
@@ -204,6 +213,11 @@ const AssignmentSubmissions = () => {
                           <ExternalLink size={16} />
                           Open File
                         </a>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        <p className="max-w-70 whitespace-pre-line">
+                          {submission.description || "-"}
+                        </p>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
                         {submission.status || "-"}
@@ -235,7 +249,7 @@ const AssignmentSubmissions = () => {
                               event.target.value,
                             )
                           }
-                          className="min-h-18 w-64 rounded-lg border px-3 py-2 text-sm"
+                          className="min-h-17.5 w-64 rounded-lg border px-3 py-2 text-sm"
                           placeholder="Feedback"
                         />
                       </td>

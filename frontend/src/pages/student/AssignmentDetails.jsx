@@ -20,6 +20,12 @@ import {
 import { getAssignmentById } from "../../api/assignment.services";
 import { getMySubmissions } from "../../api/submission.services";
 
+// Helper function to point to the secure backend file download/open route
+const getSubmissionFileUrl = (submissionId) => {
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:9100/api";
+  return `${apiUrl}/submissions/${submissionId}/file`;
+};
+
 const AssignmentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,6 +45,7 @@ const AssignmentDetails = () => {
     assignmentQuery.data?.assignment ||
     assignmentQuery.data?.data?.assignment ||
     assignmentQuery.data;
+
   const submissionsList =
     submissionsQuery.data?.submissions ||
     submissionsQuery.data?.data?.submissions ||
@@ -202,12 +209,23 @@ const AssignmentDetails = () => {
                       </p>
                     </div>
                   )}
+
+                  {submission.description && (
+                    <div className="pt-2 border-t border-emerald-100">
+                      <span className="flex items-center gap-1.5 text-slate-400 font-medium mb-1">
+                        <MessageSquare size={14} /> Your Note:
+                      </span>
+                      <p className="whitespace-pre-line text-slate-600 leading-relaxed bg-white/60 p-2.5 rounded-lg border border-emerald-100">
+                        {submission.description}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {submission.file && (
                   <div className="pt-2">
                     <a
-                      href={submission.file}
+                      href={getSubmissionFileUrl(submission._id)}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:underline"
