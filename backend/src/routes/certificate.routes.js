@@ -9,6 +9,7 @@ import {
   updateCertificate,
   revokeCertificate,
   deleteCertificate,
+  downloadCertificate,
 } from "../controllers/certificate.controller.js";
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
@@ -50,6 +51,13 @@ certificateRoutes.get(
 );
 
 // Get single certificate
+certificateRoutes.get(
+  "/:id/download",
+  verifyToken,
+  authorizeRoles("student", "admin", "instructor"),
+  downloadCertificate,
+);
+
 certificateRoutes.get(
   "/:id",
   verifyToken,

@@ -1,6 +1,7 @@
 import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
+import { notifyAdmins, notifyCourseInstructor, notifyUser } from "../utils/notificationEvents.js";
 
 //CREATE ENROLLMENT
 
@@ -69,9 +70,39 @@ export const createEnrollmentService = async (studentId, courseId) => {
     await course.save();
   }
 
-  return await Enrollment.findById(enrollment._id)
+  const populatedEnrollment = await Enrollment.findById(enrollment._id)
     .populate("student", "fullName email phone photo")
     .populate("course", "title description duration fee instructor");
+
+  await notifyAdmins({
+    sender: studentId,
+    title: "New course enrollment",
+    message: `${student.fullName} enrolled in ${course.title}.`,
+    type: "enrollment",
+    referenceId: enrollment._id,
+    referenceModel: "Enrollment",
+  });
+
+  await notifyCourseInstructor({
+    course,
+    sender: studentId,
+    title: "New student enrolled",
+    message: `${student.fullName} enrolled in your course ${course.title}.`,
+    type: "enrollment",
+    referenceId: enrollment._id,
+    referenceModel: "Enrollment",
+  });
+
+  await notifyUser({
+    userId: studentId,
+    title: "Enrollment created",
+    message: `You enrolled in ${course.title}. Complete payment to activate access.`,
+    type: "enrollment",
+    referenceId: enrollment._id,
+    referenceModel: "Enrollment",
+  });
+
+  return populatedEnrollment;
 };
 
 //GET ALL ENROLLMENTS
@@ -244,6 +275,15 @@ export const updateEnrollmentStatusService = async (id, status) => {
     error.statusCode = 404;
     throw error;
   }
+
+  await notifyUser({
+    userId: enrollment.student?._id || enrollment.student,
+    title: "Enrollment status updated",
+    message: `Your enrollment for ${enrollment.course?.title || "a course"} is now ${status}.`,
+    type: "enrollment",
+    referenceId: enrollment._id,
+    referenceModel: "Enrollment",
+  });
 
   return enrollment;
 };

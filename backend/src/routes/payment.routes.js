@@ -7,6 +7,7 @@ import {
   getPayments,
   getPayment,
   getMyPayments,
+  downloadPaymentInvoice,
   deletePayment,
   getPaymentReport,
 } from "../controllers/payment.controller.js";
@@ -44,6 +45,13 @@ paymentRoutes.get(
   authorizeRoles("admin"),
   getPaymentReport,
 );
+paymentRoutes.get(
+  "/:id/invoice",
+  verifyToken,
+  authorizeRoles("student", "admin"),
+  downloadPaymentInvoice,
+);
+
 // Admin gets all payments
 paymentRoutes.get("/", verifyToken, authorizeRoles("admin"), getPayments);
 // Admin gets single payment

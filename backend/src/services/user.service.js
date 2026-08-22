@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 
 import User from "../models/user.model.js";
+import { notifyAdmins, notifyUser } from "../utils/notificationEvents.js";
 
 // SAFE USER FIELDS
 const safeUserFields =
@@ -194,7 +195,27 @@ export const createUserService = async (data) => {
     isVerified: true,
   });
 
-  return await User.findById(user._id).select(safeUserFields);
+  const createdUser = await User.findById(user._id).select(safeUserFields);
+
+  await notifyUser({
+    userId: user._id,
+    title: "Account created",
+    message: `Your ${role} account has been created by admin.`,
+    type: "system",
+    referenceId: user._id,
+    referenceModel: null,
+  });
+
+  await notifyAdmins({
+    sender: user._id,
+    title: "User account created",
+    message: `${fullName} was added as ${role}.`,
+    type: "system",
+    referenceId: user._id,
+    referenceModel: null,
+  });
+
+  return createdUser;
 };
 
 // ADMIN UPDATE USER

@@ -1,57 +1,51 @@
-import express from "express";
-
+import { Router } from "express";
 import {
-  createSubmission,
+  submitAssignment,
   getMySubmissions,
-  getSubmission,
   getSubmissionsByAssignment,
+  getSubmission,
+  getSubmissionFile,
   gradeSubmission,
-  deleteSubmission,
-  getAllSubmissions,
 } from "../controllers/submission.controller.js";
-
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
 import upload from "../middlewares/upload.middleware.js";
 
-const submissionRoutes = express.Router();
+const submissionRoutes = Router();
 
-// Submit assignment
+// Student - Submit assignment
 submissionRoutes.post(
-  "/",
+  "/:assignmentId",
   verifyToken,
   authorizeRoles("student"),
   upload.single("file"),
-  createSubmission,
+  submitAssignment,
 );
-// Get logged-in student's submissions
+
+// Student - Get my submissions
 submissionRoutes.get(
   "/my",
   verifyToken,
   authorizeRoles("student"),
   getMySubmissions,
 );
-// View submissions for an assignment
+
+// Instructor/Admin - Get submissions for an assignment
 submissionRoutes.get(
   "/assignment/:assignmentId",
   verifyToken,
   authorizeRoles("instructor", "admin"),
   getSubmissionsByAssignment,
 );
-// Grade submission
-submissionRoutes.patch(
-  "/:id/grade",
-  verifyToken,
-  authorizeRoles("instructor", "admin"),
-  gradeSubmission,
-);
-// Get all submissions
+
+// Open/Download submitted file
 submissionRoutes.get(
-  "/",
+  "/:id/file",
   verifyToken,
-  authorizeRoles("admin"),
-  getAllSubmissions,
+  authorizeRoles("student", "instructor", "admin"),
+  getSubmissionFile,
 );
+
 // Get single submission
 submissionRoutes.get(
   "/:id",
@@ -59,12 +53,13 @@ submissionRoutes.get(
   authorizeRoles("student", "instructor", "admin"),
   getSubmission,
 );
-// Delete own submission
-submissionRoutes.delete(
-  "/:id",
+
+// Instructor - Grade submission
+submissionRoutes.patch(
+  "/:id/grade",
   verifyToken,
-  authorizeRoles("student"),
-  deleteSubmission,
+  authorizeRoles("instructor", "admin"),
+  gradeSubmission,
 );
 
 export default submissionRoutes;

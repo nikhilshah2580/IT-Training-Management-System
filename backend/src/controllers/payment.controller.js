@@ -5,8 +5,10 @@ import {
   getPaymentsService,
   getPaymentService,
   getMyPaymentsService,
+  getPaymentInvoiceService,
   deletePaymentService,
   getPaymentReportService,
+  generateInvoicePdf,
 } from "../services/payment.service.js";
 
 // Student creates payment
@@ -91,6 +93,28 @@ export const getMyPayments = async (req, res) => {
   });
 };
 
+export const downloadPaymentInvoice = async (req, res) => {
+  const payment = await getPaymentInvoiceService(req.params.id, req.user);
+
+  const pdfBuffer = await generateInvoicePdf({
+    invoiceNumber: payment.invoiceNumber,
+    student: payment.student,
+    course: payment.course,
+    amount: payment.amount,
+    paymentMethod: payment.paymentMethod,
+    transactionId: payment.transactionId,
+    paymentStatus: payment.paymentStatus,
+    paidAt: payment.paidAt,
+  });
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="invoice-${payment.invoiceNumber || payment._id}.pdf"`,
+  );
+
+  return res.send(pdfBuffer);
+};
 
 // Admin deletes payment
 export const deletePayment = async (req, res) => {

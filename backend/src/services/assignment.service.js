@@ -1,6 +1,7 @@
 import Assignment from "../models/assignment.model.js";
 import Course from "../models/course.model.js";
 import Enrollment from "../models/enrollment.model.js";
+import { notifyAdmins, notifyUser } from "../utils/notificationEvents.js";
 
 // Create assignment
 export const createAssignmentService = async (instructorId, data) => {
@@ -31,13 +32,43 @@ export const createAssignmentService = async (instructorId, data) => {
     throw error;
   }
 
-  return await Assignment.create({
+  const assignment = await Assignment.create({
     course,
     title,
     description,
     dueDate,
     attachment: attachment || "",
   });
+
+  const enrollments = await Enrollment.find({
+    course,
+    status: { $in: ["Active", "Completed"] },
+  }).select("student");
+
+  await Promise.allSettled(
+    enrollments.map((enrollment) =>
+      notifyUser({
+        userId: enrollment.student,
+        sender: instructorId,
+        title: "New assignment posted",
+        message: `${title} was posted in ${courseData.title}.`,
+        type: "assignment",
+        referenceId: assignment._id,
+        referenceModel: "Assignment",
+      }),
+    ),
+  );
+
+  await notifyAdmins({
+    sender: instructorId,
+    title: "Assignment created",
+    message: `${title} was created for ${courseData.title}.`,
+    type: "assignment",
+    referenceId: assignment._id,
+    referenceModel: "Assignment",
+  });
+
+  return assignment;
 };
 
 // Get all assignments

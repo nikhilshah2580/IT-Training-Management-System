@@ -2,12 +2,14 @@ import Submission from "../models/submission.model.js";
 import Assignment from "../models/assignment.model.js";
 import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
+import { notifyAdmins, notifyCourseInstructor, notifyUser } from "../utils/notificationEvents.js";
 
 // Create Submission
 export const createSubmissionService = async ({
   assignmentId,
   studentId,
   file,
+  description = "",
 }) => {
   if (!file) {
     const error = new Error("Assignment file is required.");
@@ -66,13 +68,39 @@ export const createSubmissionService = async ({
     assignment: assignmentId,
     student: studentId,
     file,
+    description: description.trim(),
     submittedAt: now,
     status,
   });
 
-  return await Submission.findById(submission._id)
+  const populatedSubmission = await Submission.findById(submission._id)
     .populate("student", "fullName email photo")
     .populate("assignment", "title description dueDate course");
+
+  const submissionCourse = await Course.findById(assignment.course).select(
+    "title instructor",
+  );
+
+  await notifyCourseInstructor({
+    course: submissionCourse,
+    sender: studentId,
+    title: "Assignment submitted",
+    message: `${populatedSubmission.student?.fullName || "A student"} submitted ${assignment.title}.`,
+    type: "submission",
+    referenceId: submission._id,
+    referenceModel: "Submission",
+  });
+
+  await notifyAdmins({
+    sender: studentId,
+    title: "Assignment submitted",
+    message: `${populatedSubmission.student?.fullName || "A student"} submitted ${assignment.title}.`,
+    type: "submission",
+    referenceId: submission._id,
+    referenceModel: "Submission",
+  });
+
+  return populatedSubmission;
 };
 
 // Get Student's Submissions
@@ -215,10 +243,22 @@ export const gradeSubmissionService = async (
 
   await submission.save();
 
-  return await Submission.findById(id)
+  const gradedSubmission = await Submission.findById(id)
     .populate("student", "fullName email phone photo")
     .populate("assignment", "title description dueDate course")
     .populate("gradedBy", "fullName email");
+
+  await notifyUser({
+    userId: submission.student,
+    sender: instructorId,
+    title: "Submission graded",
+    message: `${gradedSubmission.assignment?.title || "Your assignment"} was graded: ${numericGrade}/100.`,
+    type: "submission",
+    referenceId: submission._id,
+    referenceModel: "Submission",
+  });
+
+  return gradedSubmission;
 };
 
 // Delete Submission
@@ -284,3 +324,4 @@ export const getAllSubmissionsService = async ({
     },
   };
 };
+

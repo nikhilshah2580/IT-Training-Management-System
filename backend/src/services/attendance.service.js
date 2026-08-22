@@ -1,6 +1,7 @@
 import Attendance from "../models/attendance.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
+import { notifyUser } from "../utils/notificationEvents.js";
 
 // Create Attendance
 export const createAttendanceService = async ({
@@ -72,10 +73,22 @@ export const createAttendanceService = async ({
     remarks,
   });
 
-  return await Attendance.findById(attendance._id)
+  const populatedAttendance = await Attendance.findById(attendance._id)
     .populate("course", "title")
     .populate("student", "fullName email photo")
     .populate("markedBy", "fullName email");
+
+  await notifyUser({
+    userId: student,
+    sender: markedBy,
+    title: "Attendance marked",
+    message: `Your attendance for ${populatedAttendance.course?.title || "a course"} was marked ${status}.`,
+    type: "attendance",
+    referenceId: attendance._id,
+    referenceModel: "Attendance",
+  });
+
+  return populatedAttendance;
 };
 
 // Get All Attendance

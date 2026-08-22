@@ -1,8 +1,46 @@
 import crypto from "crypto";
+import PDFDocument from "pdfkit";
 import Payment from "../models/payment.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
 import Enrollment from "../models/enrollment.model.js";
+import { notifyAdmins, notifyCourseInstructor, notifyUser } from "../utils/notificationEvents.js";
+
+export const generateInvoicePdf = async ({
+  invoiceNumber,
+  student,
+  course,
+  amount,
+  paymentMethod,
+  transactionId,
+  paymentStatus,
+  paidAt,
+}) => {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    const chunks = [];
+
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    doc.fontSize(26).text("Invoice", { align: "center" });
+    doc.moveDown(1.2);
+    doc.fontSize(12).text(`Invoice No: ${invoiceNumber || "N/A"}`);
+    doc.text(`Status: ${paymentStatus || "Pending"}`);
+    doc.text(`Student: ${student?.fullName || "Student"}`);
+    doc.text(`Course: ${course?.title || "Course"}`);
+    doc.text(`Payment Method: ${paymentMethod || "N/A"}`);
+    doc.text(`Transaction ID: ${transactionId || "N/A"}`);
+    doc.text(`Amount: Rs. ${Number(amount || 0).toFixed(2)}`);
+    doc.text(
+      `Paid At: ${paidAt ? new Date(paidAt).toLocaleString() : "Not paid yet"}`,
+    );
+    doc.moveDown(1.5);
+    doc.text("Thank you for your payment." , { align: "center" });
+    doc.end();
+  });
+};
 
 const generateInvoiceNumber = () => {
   const timestamp = Date.now();
@@ -331,6 +369,7 @@ export const updatePaymentStatusService = async (id, paymentStatus) => {
     return null;
   }
 
+  payment.invoiceNumber = payment.invoiceNumber || generateInvoiceNumber();
   payment.paymentStatus = paymentStatus;
 
   if (paymentStatus === "Paid") {
@@ -357,12 +396,69 @@ export const updatePaymentStatusService = async (id, paymentStatus) => {
     await enrollment.save();
   }
 
-  return await Payment.findById(id)
+  const populatedPayment = await Payment.findById(id)
     .populate("student", "fullName email phone photo")
-    .populate("course", "title fee duration");
+    .populate("course", "title fee duration instructor");
+
+  const studentName = populatedPayment?.student?.fullName || "A student";
+  const courseTitle = populatedPayment?.course?.title || "a course";
+  const statusText = paymentStatus === "Paid" ? "successful" : "failed";
+
+  await notifyUser({
+    userId: payment.student,
+    title: paymentStatus === "Paid" ? "Payment successful" : "Payment failed",
+    message: `Your payment for ${courseTitle} was ${statusText}.`,
+    type: "payment",
+    referenceId: payment._id,
+    referenceModel: "Payment",
+  });
+
+  await notifyAdmins({
+    sender: payment.student,
+    title: paymentStatus === "Paid" ? "Payment received" : "Payment failed",
+    message: `${studentName}'s payment for ${courseTitle} was ${statusText}.`,
+    type: "payment",
+    referenceId: payment._id,
+    referenceModel: "Payment",
+  });
+
+  await notifyCourseInstructor({
+    course: populatedPayment?.course,
+    sender: payment.student,
+    title: paymentStatus === "Paid" ? "Student payment completed" : "Student payment failed",
+    message: `${studentName}'s payment for ${courseTitle} was ${statusText}.`,
+    type: "payment",
+    referenceId: payment._id,
+    referenceModel: "Payment",
+  });
+
+  return populatedPayment;
 };
 
 // Delete payment
+export const getPaymentInvoiceService = async (id, actor) => {
+  const payment = await Payment.findById(id)
+    .populate("student", "fullName email photo")
+    .populate("course", "title fee duration")
+    .populate("course.instructor", "fullName");
+
+  if (!payment) {
+    const error = new Error("Payment not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (actor?.role === "student") {
+    if (payment.student._id.toString() !== actor._id.toString()) {
+      const error = new Error("You can only view your own payment invoice.");
+      error.statusCode = 403;
+      throw error;
+    }
+  }
+
+  return payment;
+};
+
 export const deletePaymentService = async (id) => {
   return await Payment.findByIdAndDelete(id);
 };

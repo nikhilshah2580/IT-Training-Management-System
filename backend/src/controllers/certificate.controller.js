@@ -7,6 +7,8 @@ import {
   updateCertificateService,
   revokeCertificateService,
   deleteCertificateService,
+  getCertificateDownloadService,
+  generateCertificatePdf,
 } from "../services/certificate.service.js";
 
 // Create certificate
@@ -62,6 +64,35 @@ export const getMyCertificates = async (req, res) => {
     success: true,
     certificates,
   });
+};
+
+export const downloadCertificate = async (req, res) => {
+  const certificate = await getCertificateDownloadService(req.params.id, req.user);
+
+  if (!certificate) {
+    const error = new Error("Certificate not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const pdfBuffer = await generateCertificatePdf({
+    certificateNumber: certificate.certificateNumber,
+    verificationCode: certificate.verificationCode,
+    student: certificate.student,
+    course: certificate.course,
+    issuedBy: certificate.issuedBy,
+    issueDate: certificate.issueDate,
+    completionDate: certificate.completionDate,
+    grade: certificate.grade,
+  });
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="certificate-${certificate.certificateNumber}.pdf"`,
+  );
+
+  return res.send(pdfBuffer);
 };
 
 // Public certificate verification

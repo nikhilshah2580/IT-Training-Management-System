@@ -16,7 +16,16 @@ export const createCourseValidation = {
         message: "Skill level must be Beginner, Intermediate, or Advanced",
       },
     ],
-    price: [{ name: "required", message: "Course price is required" }],
+    syllabus: [{ name: "required", message: "Syllabus is required" }],
+    duration: [{ name: "required", message: "Course duration is required" }],
+    fee: [
+      { name: "required", message: "Course fee is required" },
+      {
+        name: "numberRange",
+        options: { min: 0 },
+        message: "Course fee must be a valid non-negative number",
+      },
+    ],
   },
 };
 
@@ -31,6 +40,16 @@ export const updateCourseValidation = {
         name: "enum",
         options: skillLevels,
         message: "Skill level must be Beginner, Intermediate, or Advanced",
+      },
+    ],
+    syllabus: [{ name: "optional" }],
+    duration: [{ name: "optional" }],
+    fee: [
+      { name: "optional" },
+      {
+        name: "numberRange",
+        options: { min: 0 },
+        message: "Course fee must be a valid non-negative number",
       },
     ],
   },

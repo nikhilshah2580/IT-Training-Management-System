@@ -6,6 +6,7 @@ import { OAuth2Client } from "google-auth-library";
 import User from "../models/user.model.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.js";
 import sendEmail from "../utils/sendEmail.js";
+import { notifyAdmins } from "../utils/notificationEvents.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 

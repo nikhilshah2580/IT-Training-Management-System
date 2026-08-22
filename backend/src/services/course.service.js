@@ -1,5 +1,6 @@
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
+import { notifyAdmins, notifyUser } from "../utils/notificationEvents.js";
 
 // CREATE COURSE
 export const createCourseService = async (data, instructorId) => {
@@ -24,10 +25,30 @@ export const createCourseService = async (data, instructorId) => {
     isApproved: false,
   });
 
-  return await Course.findById(course._id).populate(
+  const populatedCourse = await Course.findById(course._id).populate(
     "instructor",
     "fullName email phone photo",
   );
+
+  await notifyAdmins({
+    sender: instructorId,
+    title: "New course submitted",
+    message: `${instructor.fullName} submitted ${course.title} for approval.`,
+    type: "course",
+    referenceId: course._id,
+    referenceModel: "Course",
+  });
+
+  await notifyUser({
+    userId: instructorId,
+    title: "Course submitted",
+    message: `${course.title} is waiting for admin approval.`,
+    type: "course",
+    referenceId: course._id,
+    referenceModel: "Course",
+  });
+
+  return populatedCourse;
 };
 
 // GET ALL COURSES
@@ -229,9 +250,21 @@ export const approveCourseService = async (id, adminId) => {
 
   await course.save();
 
-  return await Course.findById(course._id)
+  const approvedCourse = await Course.findById(course._id)
     .populate("instructor", "fullName email phone photo")
     .populate("approvedBy", "fullName email");
+
+  await notifyUser({
+    userId: course.instructor,
+    sender: adminId,
+    title: "Course approved",
+    message: `${course.title} is now active and visible to students.`,
+    type: "course",
+    referenceId: course._id,
+    referenceModel: "Course",
+  });
+
+  return approvedCourse;
 };
 
 // REJECT COURSE
@@ -248,6 +281,15 @@ export const rejectCourseService = async (id) => {
   course.isApproved = false;
 
   await course.save();
+
+  await notifyUser({
+    userId: course.instructor,
+    title: "Course rejected",
+    message: `${course.title} was rejected by admin.`,
+    type: "course",
+    referenceId: course._id,
+    referenceModel: "Course",
+  });
 
   return course;
 };

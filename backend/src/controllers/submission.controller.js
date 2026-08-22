@@ -1,3 +1,4 @@
+import path from "path";
 import {
   createSubmissionService,
   getMySubmissionsService,
@@ -21,6 +22,7 @@ export const createSubmission = async (req, res) => {
     assignmentId: req.body.assignment,
     studentId: req.user._id,
     file: req.file.path,
+    description: req.body.description,
   });
 
   return res.status(201).json({
@@ -29,6 +31,8 @@ export const createSubmission = async (req, res) => {
     submission,
   });
 };
+
+export const submitAssignment = createSubmission;
 
 // Student - Get My Submissions
 export const getMySubmissions = async (req, res) => {
@@ -57,6 +61,33 @@ export const getSubmission = async (req, res) => {
   });
 };
 
+// Download/Open Submission File
+export const getSubmissionFile = async (req, res) => {
+  const submission = await getSubmissionService(req.params.id, req.user);
+
+  if (!submission) {
+    const error = new Error("Submission not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (!submission.file) {
+    const error = new Error("Submission file not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const filePath =
+    /^([A-Za-z]:[\\/]|\/)/.test(submission.file) || submission.file.startsWith(".")
+      ? submission.file
+      : path.resolve(submission.file);
+
+  return res.sendFile(filePath, {
+    headers: {
+      "Content-Disposition": "inline",
+    },
+  });
+};
 // Instructor - Get Assignment Submissions
 export const getSubmissionsByAssignment = async (req, res) => {
   const submissions = await getSubmissionsByAssignmentService(
@@ -113,3 +144,5 @@ export const getAllSubmissions = async (req, res) => {
     ...result,
   });
 };
+
+
