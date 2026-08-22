@@ -143,7 +143,7 @@ const About = () => {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1 text-xs font-bold text-blue-700 mb-4 shadow-2xs">
               <Sparkles size={13} className="text-blue-600 animate-pulse" />{" "}
-              Sipalaya InfoTech • Kathmandu, Nepal
+              GyanTech • Kathmandu, Nepal
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight text-slate-900">
               Practical IT Education Built Around{" "}
@@ -212,12 +212,12 @@ const About = () => {
 
       {/* OUR STORY SECTION */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-6">
+        <h2 className="text-3xl sm:text-3xl font-black text-slate-900 tracking-tight mb-6">
           Our Story
         </h2>
         <div className="space-y-4 text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
           <p>
-            Sipalaya InfoTech was founded with a clear vision: to make practical
+            GyanTech was founded with a clear vision: to make practical
             programming, development, and IT education completely accessible to
             students and career transitioners in Kathmandu and throughout Nepal.
           </p>
@@ -357,7 +357,7 @@ const About = () => {
             Core Strengths
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Why Choose <span className="text-blue-600">Sipalaya InfoTech</span>
+            Why Choose <span className="text-blue-600">GyanTech</span>
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-600 font-medium">
             Training that respects the learner and aligns directly with current

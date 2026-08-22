@@ -22,7 +22,7 @@ import {
   CheckCircle2,
   Users,
   Building2,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 import { getCourses } from "../../api/course.services";
 
@@ -70,7 +70,7 @@ const Courses = () => {
         setError(null);
       } catch (err) {
         setError(
-          "Failed to load courses from the server. Please try again later."
+          "Failed to load courses from the server. Please try again later.",
         );
       } finally {
         setLoading(false);
@@ -126,7 +126,8 @@ const Courses = () => {
             transition={{ duration: 0.3 }}
             className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/80 px-4 py-1.5 text-xs font-bold text-blue-700 shadow-2xs"
           >
-            <Sparkles size={14} className="text-blue-600 animate-pulse" /> Sipalaya InfoTech • Kathmandu, Nepal
+            <Sparkles size={14} className="text-blue-600 animate-pulse" />{" "}
+            GyanTech • Kathmandu, Nepal
           </motion.div>
 
           <motion.h1
@@ -144,7 +145,11 @@ const Courses = () => {
             transition={{ duration: 0.4, delay: 0.2 }}
             className="text-sm sm:text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed"
           >
-            Practical programming and digital skills for students, graduates, and career switchers — from Python and AI to MERN, React, Flutter, Django, UI/UX, and digital marketing. Learn with mentors, build real projects, earn a certificate, and continue into internship pathways when you are ready.
+            Practical programming and digital skills for students, graduates,
+            and career switchers — from Python and AI to MERN, React, Flutter,
+            Django, UI/UX, and digital marketing. Learn with mentors, build real
+            projects, earn a certificate, and continue into internship pathways
+            when you are ready.
           </motion.p>
 
           <motion.div
@@ -153,14 +158,22 @@ const Courses = () => {
             transition={{ duration: 0.4, delay: 0.25 }}
             className="text-xs sm:text-sm font-semibold text-slate-500 pt-1"
           >
-            Filter the catalog below by category or search by name. Prefer guidance first?{" "}
-            <Link to="/counselling" className="text-blue-600 font-bold hover:underline">
+            Filter the catalog below by category or search by name. Prefer
+            guidance first?{" "}
+            <Link
+              to="/counselling"
+              className="text-blue-600 font-bold hover:underline"
+            >
               Book free counseling
             </Link>{" "}
             or{" "}
-            <Link to="/about" className="text-blue-600 font-bold hover:underline">
+            <Link
+              to="/about"
+              className="text-blue-600 font-bold hover:underline"
+            >
               learn more about our institute
-            </Link>.
+            </Link>
+            .
           </motion.div>
 
           {/* Feature Badges Grid */}
@@ -177,7 +190,8 @@ const Courses = () => {
               <Building2 size={14} className="text-blue-600" /> Real projects
             </div>
             <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200/85 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-2xs">
-              <CheckCircle2 size={14} className="text-emerald-600" /> Certificates
+              <CheckCircle2 size={14} className="text-emerald-600" />{" "}
+              Certificates
             </div>
             <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200/85 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-2xs">
               <BookOpen size={14} className="text-blue-600" /> Internships
@@ -214,6 +228,7 @@ const Courses = () => {
         {/* Search & Filter Top Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-slate-50/80 p-4 rounded-2xl border border-slate-200 shadow-2xs">
           {/* Search Input */}
+          {/* Search Input */}
           <div className="relative w-full md:w-96 group">
             <Search
               size={16}
@@ -224,7 +239,7 @@ const Courses = () => {
               placeholder="Search courses..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white text-xs text-slate-900 border border-slate-200 rounded-xl pl-10 pr-4 py-3 shadow-2xs hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-blue-600/10"
+              className="w-full bg-white text-base sm:text-xs text-slate-900 border border-slate-200 rounded-xl pl-10 pr-4 py-3 shadow-2xs hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-blue-600/10"
             />
           </div>
 
@@ -232,10 +247,11 @@ const Courses = () => {
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
             <div className="flex items-center gap-2 bg-white px-3 py-2.5 rounded-xl border border-slate-200 shadow-2xs hover:border-slate-300 transition-all">
               <SlidersHorizontal size={14} className="text-slate-400" />
+              {/* Replace className on line 186 */}
               <select
                 value={skillLevel}
                 onChange={(e) => setSkillLevel(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer"
+                className="bg-transparent text-base sm:text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer"
               >
                 <option value="All">All Types / Levels</option>
                 <option value="Beginner">Beginner</option>
@@ -244,10 +260,11 @@ const Courses = () => {
               </select>
             </div>
 
+            {/* Replace className on line 197 */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white text-xs font-semibold text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 shadow-2xs hover:border-slate-300 transition-all focus:outline-none cursor-pointer"
+              className="bg-white text-base sm:text-xs font-semibold text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 shadow-2xs hover:border-slate-300 transition-all focus:outline-none cursor-pointer"
             >
               <option value="newest">Sort: Newest First</option>
               <option value="popularity">Sort: Popularity</option>
@@ -257,8 +274,8 @@ const Courses = () => {
           </div>
         </div>
 
-        {/* Categories Filter Tabs with Custom Icons and Colorful Animation styling */}
-        <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
+        {/* Categories Horizontal Scrollable Bar on Mobile (↔️) */}
+        <div className="flex flex-nowrap overflow-x-auto gap-2.5 mb-10 pb-3 scrollbar-none [-ms-overflow-style:none] [and-webkit-scrollbar:display:none]">
           {categories.map((cat) => {
             const config = categoryConfig[cat] || categoryConfig["Other"];
             const IconComponent = config.icon;
@@ -270,7 +287,7 @@ const Courses = () => {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setSelectedCategory(cat)}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-xs ${
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-xs shrink-0 ${
                   isSelected
                     ? "bg-blue-600 text-white shadow-md shadow-blue-600/25 ring-2 ring-blue-600/20"
                     : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900"
@@ -278,7 +295,9 @@ const Courses = () => {
               >
                 <span
                   className={`flex h-6 w-6 items-center justify-center rounded-lg text-xs ${
-                    isSelected ? "bg-white/20 text-white" : "bg-blue-50 text-blue-600"
+                    isSelected
+                      ? "bg-white/20 text-white"
+                      : "bg-blue-50 text-blue-600"
                   }`}
                 >
                   <IconComponent size={13} />
@@ -390,13 +409,14 @@ const Courses = () => {
         {/* Empty State */}
         {!loading && !error && processedCourses.length === 0 && (
           <div className="text-center py-20 bg-slate-50 rounded-3xl border border-slate-200 text-slate-500 text-sm mb-16 font-medium">
-            No courses match your filtering criteria. Try resetting filters or search terms.
+            No courses match your filtering criteria. Try resetting filters or
+            search terms.
           </div>
         )}
       </div>
 
       {/* Bottom Free Counselling Banner */}
-     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
         <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-900 via-blue-600 to-indigo-800 p-8 sm:p-12 text-center shadow-2xl border border-blue-500/30">
           <div className="absolute -top-16 -left-16 h-64 w-64 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
@@ -406,7 +426,8 @@ const Courses = () => {
               Not Sure Which Course to Pick?
             </h2>
             <p className="text-xs sm:text-sm text-blue-100 font-medium leading-relaxed max-w-lg mx-auto">
-              Our career counsellors are here to help. Book a free session and get personalized guidance for your goals.
+              Our career counsellors are here to help. Book a free session and
+              get personalized guidance for your goals.
             </p>
             <div className="pt-3">
               <Link

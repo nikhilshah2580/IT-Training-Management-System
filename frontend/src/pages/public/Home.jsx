@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import {
-  Search,
-  ChevronLeft,
   ChevronRight,
   BookOpen,
   Award,
@@ -16,18 +14,38 @@ import {
   ArrowRight,
   Mail,
   MapPin,
-  MessageSquare,
   Phone,
-  Send,
   ChevronDown,
   Database,
+  MessageSquare,
+  Send,
+  Users,
+  Target,
+  Briefcase,
+  CheckCircle,
+  BarChart3,
+  BrainCircuit,
+  Sparkles,
+  ScanText,
+  Server,
+  Code2,
+  Layers,
+  Cloud,
 } from "lucide-react";
-
-import { FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
 
 import { getApprovedTestimonials } from "../../api/testimonial.services";
 import { getCourses } from "../../api/course.services";
 import { createContact } from "../../api/contact.services";
+
+// Helper component for Contact Form
+const Field = ({ label, children }) => (
+  <div>
+    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+      {label}
+    </label>
+    {children}
+  </div>
+);
 
 // Contact form initial state & options
 const initialForm = {
@@ -65,10 +83,68 @@ const contactItems = [
   {
     icon: Mail,
     label: "Email",
-    value: "infotech@sipalaya.com",
+    value: "gyantech@sipalaya.com",
     href: "mailto:infotech@sipalaya.com",
     color:
       "from-blue-500/10 to-indigo-500/10 text-indigo-600 border-indigo-200/60",
+  },
+];
+
+// Why Choose GyanTech values
+const values = [
+  {
+    icon: Target,
+    title: "Practical Focus",
+    text: "We prioritize real-world projects and hands-on experience over purely theoretical lectures.",
+    accent: "hover:border-blue-400 hover:shadow-blue-500/10",
+    iconBg:
+      "bg-blue-50 group-hover:bg-blue-600 group-hover:text-white border-blue-100",
+    iconColor: "text-blue-600",
+  },
+  {
+    icon: Users,
+    title: "Expert Mentors",
+    text: "Learn directly from active industry software engineers and data scientists.",
+    accent: "hover:border-indigo-400 hover:shadow-indigo-500/10",
+    iconBg:
+      "bg-indigo-50 group-hover:bg-indigo-600 group-hover:text-white border-indigo-100",
+    iconColor: "text-indigo-600",
+  },
+  {
+    icon: Briefcase,
+    title: "Placement Support",
+    text: "Resume preparation, interview preparation, and direct job recommendations with partner firms.",
+    accent: "hover:border-emerald-400 hover:shadow-emerald-500/10",
+    iconBg:
+      "bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white border-emerald-100",
+    iconColor: "text-emerald-600",
+  },
+  {
+    icon: CheckCircle,
+    title: "Updated Curriculum",
+    text: "Courses constantly adapted to match shifting market trends and modern tech stacks.",
+    accent: "hover:border-amber-400 hover:shadow-amber-500/10",
+    iconBg:
+      "bg-amber-50 group-hover:bg-amber-500 group-hover:text-white border-amber-100",
+    iconColor: "text-amber-600",
+  },
+  {
+    icon: BookOpen,
+    title: "Small Class Sizes",
+    text: "Ensuring individual guidance, regular code reviews, and personal attention for each student.",
+    accent: "hover:border-purple-400 hover:shadow-purple-500/10",
+    iconBg:
+      "bg-purple-50 group-hover:bg-purple-600 group-hover:text-white border-purple-100",
+    iconColor: "text-purple-600",
+  },
+  {
+    icon: Award,
+    title: "Recognized Certificate",
+    text: "Gain course completion credentials valued by hiring partners across Nepal.",
+    accent: "hover:border-rose-400 hover:shadow-rose-500/10",
+    iconBg:
+      "bg-rose-50 group-hover:bg-rose-600 group-hover:text-white border-rose-100",
+    iconColor: "text-rose-600",
   },
 ];
 
@@ -113,7 +189,7 @@ const faqCategories = [
     name: "General",
     faqs: [
       {
-        question: "Where is Sipalaya InfoTech located?",
+        question: "Where is GyanTech located?",
         answer: "We are located at Narephat-32, Koteshwor, Kathmandu, Nepal.",
       },
       {
@@ -151,16 +227,6 @@ const faqCategories = [
 ];
 
 const Home = () => {
-  const navigate = useNavigate();
-
-  // Search State
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedLevel, setSelectedLevel] = useState("All");
-
-  // Banner Carousel State
-  const [currentSlide, setCurrentSlide] = useState(0);
-
   // FAQ Active Category and Open Accordion States
   const [activeFaqCategory, setActiveFaqCategory] =
     useState("Courses & Learning");
@@ -193,79 +259,7 @@ const Home = () => {
     },
   });
 
-  const testimonials = testimonialData?.testimonials || [];
-  const courses = courseData?.courses?.slice(0, 6) || [];
-
-  // Banner slides configured with standard bold text
-  const bannerSlides = [
-    {
-      badge: "Nepal's Data Science Specialists",
-      titleFirst: "Data Science Training in Nepal — ",
-      titleHighlight: "and the data products",
-      titleRest: " we build for clients",
-      description:
-        "Python, machine learning, data engineering and generative AI — taught by engineers who build the same systems for clients. One domain, done to depth, with internship and placement support in Kathmandu.",
-      primaryCtaText: "Explore Courses",
-      primaryCtaLink: "/courses",
-      secondaryCtaText: "Hire Our Data Team",
-      secondaryCtaLink: "/contact",
-      inquiryText: "Free Inquiry",
-    },
-    {
-      badge: "Nepal's Software Engineering Hub",
-      titleFirst: "Full Stack Development — ",
-      titleHighlight: "and the web applications",
-      titleRest: " we build for clients",
-      description:
-        "React, Node.js, Cloud deployment and DevOps — practical learning guided by senior developers building scalable client applications.",
-      primaryCtaText: "Explore Courses",
-      primaryCtaLink: "/courses",
-      secondaryCtaText: "Hire Our Tech Team",
-      secondaryCtaLink: "/contact",
-      inquiryText: "Free Inquiry",
-    },
-    {
-      badge: "Career & Certification Program",
-      titleFirst: "Professional Certification — ",
-      titleHighlight: "and career pathways",
-      titleRest: " for your future",
-      description:
-        "Get guidance on industry-recognized professional certifications with complete placement assistance in Kathmandu.",
-      primaryCtaText: "Explore Courses",
-      primaryCtaLink: "/courses",
-      secondaryCtaText: "Schedule a Demo",
-      secondaryCtaLink: "/contact",
-      inquiryText: "Free Inquiry",
-    },
-  ];
-
-  // Auto run banner slider every 5 seconds (5000 ms)
-  useEffect(() => {
-    const slideTimer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % bannerSlides.length);
-    }, 5000);
-
-    return () => clearInterval(slideTimer);
-  }, [bannerSlides.length]);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide(
-      (prev) => (prev - 1 + bannerSlides.length) % bannerSlides.length,
-    );
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    navigate(
-      `/courses?query=${encodeURIComponent(searchQuery)}&category=${selectedCategory}&level=${selectedLevel}`,
-    );
-  };
-
-  const updateContactField = (event) => {
+  const updateField = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
   };
@@ -275,47 +269,51 @@ const Home = () => {
     contactMutation.mutate(form);
   };
 
+  const testimonials = testimonialData?.testimonials || [];
+  const courses = courseData?.courses?.slice(0, 6) || [];
+
   const currentCategoryObj =
     faqCategories.find((cat) => cat.name === activeFaqCategory) ||
     faqCategories[0];
 
-  const slide = bannerSlides[currentSlide];
-
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      {/* 1. Clean Banner Section (Auto-runs every 5 sec) */}
-      <section className="relative overflow-hidden bg-white text-slate-900 py-16 lg:py-24 transition-all duration-500 border-b border-gray-100">
+      {/* 1. Clean Static Banner Section */}
+      <section className="relative overflow-hidden bg-white text-slate-900 py-16 lg:py-24 border-b border-gray-100">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/60 px-4 py-1.5 text-xs font-semibold text-blue-600 mb-6">
-              <Award size={14} /> {slide.badge}
+              <Award size={14} /> Nepal's Data Science Specialists
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-[1.15]">
-              {slide.titleFirst}
-              <span className="text-blue-600">{slide.titleHighlight}</span>
-              {slide.titleRest}
+              Data Science Training in Nepal —{" "}
+              <span className="text-blue-600">and the data products</span> we
+              build for clients
             </h1>
 
-            <p className="mt-6 text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-3xl">
-              {slide.description}
+            <p className="mt-6 text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-3xl mx-auto">
+              Python, machine learning, data engineering and generative AI —
+              taught by engineers who build the same systems for clients. One
+              domain, done to depth, with internship and placement support in
+              Kathmandu.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Link
-                to={slide.primaryCtaLink}
+                to="/courses"
                 className="rounded-xl bg-orange-500 hover:bg-orange-600 px-7 py-3.5 font-bold text-white shadow-md shadow-orange-500/20 transition-all text-sm flex items-center gap-2"
               >
-                {slide.primaryCtaText} <ChevronRight size={16} />
+                Explore Courses <ChevronRight size={16} />
               </Link>
               <Link
-                to={slide.secondaryCtaLink}
+                to="/contact"
                 className="rounded-xl bg-blue-600 hover:bg-blue-700 px-7 py-3.5 font-bold text-white shadow-md shadow-blue-500/20 transition-all text-sm flex items-center gap-2"
               >
-                {slide.secondaryCtaText} <Database size={16} />
+                Hire Our Data Team <Database size={16} />
               </Link>
-              <Link
-                to="#contact-section"
+              <a
+                href="#contact-section"
                 onClick={(e) => {
                   e.preventDefault();
                   document
@@ -324,123 +322,21 @@ const Home = () => {
                 }}
                 className="rounded-xl border border-blue-600 hover:bg-blue-50/50 px-7 py-3.5 font-bold text-blue-600 transition-all text-sm"
               >
-                {slide.inquiryText}
-              </Link>
+                Free Inquiry
+              </a>
             </div>
           </div>
         </div>
-
-        {/* Carousel Indicators & Controls */}
-        <div className="absolute right-6 bottom-6 flex items-center gap-2">
-          <button
-            onClick={prevSlide}
-            className="p-2.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-xs transition-colors"
-            aria-label="Previous Slide"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <span className="text-xs font-semibold text-slate-500 px-2">
-            {currentSlide + 1} / {bannerSlides.length}
-          </span>
-          <button
-            onClick={nextSlide}
-            className="p-2.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-xs transition-colors"
-            aria-label="Next Slide"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
       </section>
 
-      {/* Search Functionality Bar */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
-        <form
-          onSubmit={handleSearch}
-          className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 sm:p-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-center"
-        >
-          <div className="relative md:col-span-1">
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-              Keyword
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                <Search size={16} />
-              </span>
-              <input
-                type="text"
-                placeholder="e.g. Python, Web..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-9 pr-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-            >
-              <option value="All">All Categories</option>
-              <option value="Programming">Programming</option>
-              <option value="Design">Design</option>
-              <option value="Data Science">Data Science & Analytics</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-              Skill Level
-            </label>
-            <select
-              value={selectedLevel}
-              onChange={(e) => setSelectedLevel(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-            >
-              <option value="All">All Levels</option>
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
-            </select>
-          </div>
-
-          <div className="flex items-end h-full">
-            <button
-              type="submit"
-              className="w-full mt-5 md:mt-0 rounded-xl bg-blue-600 py-2.5 font-semibold text-white hover:bg-blue-700 transition-all text-sm shadow-sm flex items-center justify-center gap-2"
-            >
-              <Search size={16} /> Search Courses
-            </button>
-          </div>
-        </form>
-      </section>
-
-      {/* Popular IT Courses Section */}
+      {/* 2. Popular IT Courses Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-            <div className="max-w-2xl">
-              <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-                Top Rated Programs
-              </span>
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 mt-2">
-                Popular IT Courses in Nepal
-              </h2>
-              <p className="mt-2 text-gray-600 text-sm">
-                Industry-focused tech training designed to jumpstart your career
-                in Kathmandu and beyond.
-              </p>
-            </div>
-            <Link
-              to="/courses"
-              className="mt-4 md:mt-0 inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700"
-            >
-              View all courses <ArrowRight size={16} />
-            </Link>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mt-2">
+              Popular IT Courses
+            </h2>
+            <div className="w-40 h-1 bg-emerald-700 mx-auto mt-3 rounded-full"></div>
           </div>
 
           {coursesLoading ? (
@@ -448,72 +344,82 @@ const Home = () => {
               Loading popular courses...
             </div>
           ) : courses.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {courses.map((course) => (
-                <div
-                  key={course._id}
-                  className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-blue-200 transition-all duration-300 group"
-                >
-                  <div>
-                    <div className="w-full h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                      {course.courseImage ? (
-                        <img
-                          src={course.courseImage}
-                          alt={course.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="text-center p-4">
-                          <span className="text-white font-bold text-base block">
-                            {course.title}
-                          </span>
-                        </div>
-                      )}
-                      <span className="absolute top-3 left-3 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-gray-800 shadow-sm">
-                        {course.category || "IT Training"}
-                      </span>
-                    </div>
-
-                    <div className="p-6">
-                      <div className="flex items-center justify-between text-xs font-semibold text-gray-500 mb-2">
-                        <div className="flex items-center gap-1">
-                          <Clock size={14} className="text-blue-600" />
-                          <span>{course.duration || "8 Weeks"}</span>
-                        </div>
-                        {course.skillLevel && (
-                          <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-[11px]">
-                            {course.skillLevel}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
-                        {course.title}
-                      </h3>
-                      <p className="text-gray-600 text-xs leading-relaxed line-clamp-2">
-                        {course.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-6 pt-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {courses.map((course) => (
+                  <div
+                    key={course._id}
+                    className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-blue-200 transition-all duration-300 group text-left"
+                  >
                     <div>
-                      <span className="text-[10px] text-gray-400 block font-bold uppercase tracking-wider">
-                        Investment
-                      </span>
-                      <span className="text-sm font-bold text-gray-900">
-                        NPR {course.fee?.toLocaleString()}
-                      </span>
+                      <div className="w-full h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                        {course.courseImage ? (
+                          <img
+                            src={course.courseImage}
+                            alt={course.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="text-center p-4">
+                            <span className="text-white font-bold text-base block">
+                              {course.title}
+                            </span>
+                          </div>
+                        )}
+                        <span className="absolute top-3 left-3 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-gray-800 shadow-sm">
+                          {course.category || "IT Training"}
+                        </span>
+                      </div>
+
+                      <div className="p-6">
+                        <div className="flex items-center justify-between text-xs font-semibold text-gray-500 mb-2">
+                          <div className="flex items-center gap-1">
+                            <Clock size={14} className="text-blue-600" />
+                            <span>{course.duration || "8 Weeks"}</span>
+                          </div>
+                          {course.skillLevel && (
+                            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-[11px]">
+                              {course.skillLevel}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+                          {course.title}
+                        </h3>
+                        <p className="text-gray-600 text-xs leading-relaxed line-clamp-2">
+                          {course.description}
+                        </p>
+                      </div>
                     </div>
-                    <Link
-                      to={`/course/${course._id}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-xl shadow-sm transition-colors"
-                    >
-                      View Details <ChevronRight size={14} />
-                    </Link>
+
+                    <div className="p-6 pt-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+                      <div>
+                        <span className="text-[10px] text-gray-400 block font-bold uppercase tracking-wider">
+                          Investment
+                        </span>
+                        <span className="text-sm font-bold text-gray-900">
+                          NPR {course.fee?.toLocaleString()}
+                        </span>
+                      </div>
+                      <Link
+                        to={`/course/${course._id}`}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-xl shadow-sm transition-colors"
+                      >
+                        View Details <ChevronRight size={14} />
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+              <div className="mt-10 text-center">
+                <Link
+                  to="/courses"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 border border-blue-200 rounded-xl px-5 py-2.5 hover:bg-blue-50 transition-colors"
+                >
+                  View all courses <ArrowRight size={16} />
+                </Link>
+              </div>
+            </>
           ) : (
             <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl border border-gray-100 text-sm">
               No active courses available right now. Please check back later!
@@ -522,13 +428,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* 3. Core Services & Excellence Section */}
       <section className="py-20 bg-gray-50/50 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mt-2">
               Core Services & Excellence
             </h2>
+            <div className="w-40 h-1 bg-emerald-700 mx-auto mt-3 rounded-full"></div>
             <p className="mt-4 text-gray-600">
               Everything you need to accelerate your career in the technology
               sector in Nepal.
@@ -536,8 +443,9 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-md transition-shadow">
-              <div className="inline-flex p-3 rounded-xl bg-blue-100 text-blue-600 mb-6">
+            {/* Card 1: IT Training (Blue Theme) */}
+            <div className="group rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-400 hover:-translate-y-2 transition-all duration-300 text-center flex flex-col items-center">
+              <div className="inline-flex p-3 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
                 <BookOpen size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -549,8 +457,9 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-md transition-shadow">
-              <div className="inline-flex p-3 rounded-xl bg-indigo-100 text-indigo-600 mb-6">
+            {/* Card 2: Certification Prep (Indigo Theme) */}
+            <div className="group rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-400 hover:-translate-y-2 transition-all duration-300 text-center flex flex-col items-center">
+              <div className="inline-flex p-3 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
                 <Award size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -562,8 +471,9 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-md transition-shadow">
-              <div className="inline-flex p-3 rounded-xl bg-emerald-100 text-emerald-600 mb-6">
+            {/* Card 3: Corporate Workshops (Emerald Theme) */}
+            <div className="group rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-400 hover:-translate-y-2 transition-all duration-300 text-center flex flex-col items-center">
+              <div className="inline-flex p-3 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
                 <Building2 size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -578,7 +488,406 @@ const Home = () => {
         </div>
       </section>
 
-      {/* IT Training FAQs Section */}
+      {/* 4. Why Choose GyanTech Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-gray-100">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-2">
+            Why Choose <span className="text-blue-600">GyanTech ?</span>
+          </h2>
+          <div className="w-50 h-1 bg-emerald-700 mx-auto mt-3 rounded-full"></div>
+          <p className="mt-3 text-sm sm:text-base text-slate-600 font-medium">
+            Training that respects the learner and aligns directly with current
+            workplace demands.
+          </p>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {values.map((item, idx) => {
+            const IconComponent = item.icon;
+            return (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: idx * 0.05 }}
+                className={`group relative rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between text-left ${item.accent}`}
+              >
+                <div>
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all duration-300 mb-5 ${item.iconBg} ${item.iconColor}`}
+                  >
+                    <IconComponent size={22} />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-slate-900 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-slate-600 font-medium">
+                    {item.text}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 4. Data & AI Services Section */}
+      <section className="py-20 bg-slate-900 text-white border-t border-slate-800 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Enterprise Solutions
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mt-4">
+              Data & AI Services
+            </h2>
+            <div className="w-24 h-1 bg-emerald-500 mx-auto mt-3 rounded-full"></div>
+            <p className="mt-4 text-slate-300 text-base sm:text-lg leading-relaxed">
+              We build data products for businesses. The engineers who teach our
+              courses deliver production data work for clients — machine
+              learning models, data pipelines, BI dashboards, generative-AI
+              systems, websites, mobile apps, and custom software.
+            </p>
+          </div>
+
+          {/* Services Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* 1. Data Analytics & BI Dashboards */}
+            <div className="group rounded-2xl border border-slate-800 bg-slate-800/50 p-7 hover:bg-slate-800/80 hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="inline-flex p-3 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-5 group-hover:bg-cyan-500 group-hover:text-slate-900 transition-colors duration-300">
+                  <BarChart3 size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
+                  Data Analytics & BI Dashboards
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  Turn scattered business data into dashboards your team
+                  actually uses to decide.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700/50">
+                {["SQL", "Power BI", "Tableau", "Python"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/50"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. Machine Learning Solutions */}
+            <div className="group rounded-2xl border border-slate-800 bg-slate-800/50 p-7 hover:bg-slate-800/80 hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="inline-flex p-3 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-5 group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-300">
+                  <BrainCircuit size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
+                  Machine Learning Solutions
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  Predictive models for churn, credit risk, demand forecasting
+                  and recommendations.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700/50">
+                {["Python", "scikit-learn", "PyTorch", "MLflow"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/50"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* 3. Data Engineering & Pipelines */}
+            <div className="group rounded-2xl border border-slate-800 bg-slate-800/50 p-7 hover:bg-slate-800/80 hover:border-amber-500/50 hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="inline-flex p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-5 group-hover:bg-amber-500 group-hover:text-slate-900 transition-colors duration-300">
+                  <Database size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
+                  Data Engineering & Pipelines
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  Reliable ETL pipelines and warehouses so your reporting stops
+                  breaking.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700/50">
+                {["Airflow", "dbt", "PostgreSQL", "Spark"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/50"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. Generative AI & LLM Applications */}
+            <div className="group rounded-2xl border border-slate-800 bg-slate-800/50 p-7 hover:bg-slate-800/80 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="inline-flex p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-5 group-hover:bg-purple-500 group-hover:text-white transition-colors duration-300">
+                  <Sparkles size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
+                  Generative AI & LLM Applications
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  RAG chatbots and document automation built on your own data,
+                  not generic models.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700/50">
+                {["OpenAI", "LangChain", "Vector DBs", "Python"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/50"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* 5. Computer Vision & NLP */}
+            <div className="group rounded-2xl border border-slate-800 bg-slate-800/50 p-7 hover:bg-slate-800/80 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="inline-flex p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-5 group-hover:bg-emerald-500 group-hover:text-slate-900 transition-colors duration-300">
+                  <ScanText size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                  Computer Vision & NLP
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  Extract structure from images, scanned documents and
+                  unstructured text.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700/50">
+                {["PyTorch", "OpenCV", "spaCy", "Transformers"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/50"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* 6. MLOps & Model Deployment */}
+            <div className="group rounded-2xl border border-slate-800 bg-slate-800/50 p-7 hover:bg-slate-800/80 hover:border-rose-500/50 hover:shadow-2xl hover:shadow-rose-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="inline-flex p-3 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 mb-5 group-hover:bg-rose-500 group-hover:text-white transition-colors duration-300">
+                  <Server size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-rose-400 transition-colors">
+                  MLOps & Model Deployment
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  Get models out of notebooks and into production where they
+                  stay monitored.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700/50">
+                {["Docker", "MLflow", "Railway", "GitHub Actions"].map(
+                  (tech) => (
+                    <span
+                      key={tech}
+                      className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/50"
+                    >
+                      {tech}
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Full-Stack Career Outcomes Section */}
+      <section className="py-20 bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
+              Career Support
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-3">
+              Full-Stack Jobs & Career Paths in Nepal
+            </h2>
+            <div className="w-24 h-1 bg-emerald-600 mx-auto mt-3 rounded-full"></div>
+            <p className="mt-4 text-slate-600 text-base sm:text-lg">
+              Software companies, IT hubs, fintechs, and global remote agencies
+              across Kathmandu are actively hiring software developers. These
+              are the core full-stack roles our graduates move into.
+            </p>
+          </div>
+
+          {/* Roles Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {/* 1. Frontend Development */}
+            <div className="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-400 hover:-translate-y-2 transition-all duration-300">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                <Code2 size={22} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
+                Frontend Development
+              </h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  React / Next.js Developer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  Frontend Engineer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  UI Software Engineer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  Web Application Developer
+                </li>
+              </ul>
+            </div>
+
+            {/* 2. Backend Engineering */}
+            <div className="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-400 hover:-translate-y-2 transition-all duration-300">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 mb-5 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                <Server size={22} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                Backend Engineering
+              </h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  Node.js / Express Developer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  Backend Engineer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  REST API Developer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  Database Engineer
+                </li>
+              </ul>
+            </div>
+
+            {/* 3. Full-Stack Engineering */}
+            <div className="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-400 hover:-translate-y-2 transition-all duration-300">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 mb-5 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+                <Layers size={22} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors">
+                Full-Stack Engineering
+              </h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  MERN Stack Engineer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Full-Stack Developer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  SaaS Product Developer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Software Engineer
+                </li>
+              </ul>
+            </div>
+
+            {/* 4. DevOps & Cloud Web Systems */}
+            <div className="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs hover:shadow-2xl hover:shadow-purple-500/10 hover:border-purple-400 hover:-translate-y-2 transition-all duration-300">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 border border-purple-100 mb-5 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+                <Cloud size={22} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-purple-600 transition-colors">
+                DevOps & Cloud Web
+              </h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                  Deployment Specialist
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                  Junior Cloud Architect
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                  Web DevOps Engineer
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                  QA / Automation Engineer
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Placement CTA Banner */}
+          <div className="rounded-3xl bg-linear-to-br from-blue-900 via-blue-950 to-slate-900 text-white p-8 sm:p-12 border border-blue-800/50 shadow-2xl shadow-blue-950/40 flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
+            {/* Background glow highlight */}
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="max-w-2xl text-center lg:text-left relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold mb-4 backdrop-blur-sm">
+                <Briefcase size={14} /> 95% Job Placement Support in Nepal
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3 text-white">
+                Launch your software development career
+              </h3>
+              <p className="text-blue-100/80 text-sm sm:text-base leading-relaxed">
+                Our placement team connects you directly with software houses,
+                fintech startups, IT consultancies, and remote hiring partners.
+                From internship prep to full-time engineering roles — we support
+                every step.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto shrink-0 relative z-10">
+              <Link
+                to="/jobs"
+                className="px-6 py-3.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-sm transition-all duration-200 shadow-lg shadow-blue-500/25 text-center flex items-center justify-center gap-2 cursor-pointer"
+              >
+                View Software Engineering Jobs <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/counselling"
+                className="px-6 py-3.5 rounded-xl bg-transparent border border-blue-500 hover:bg-blue-500 hover:text-slate-950 text-blue-500 font-bold text-sm transition-all duration-200 shadow-lg shadow-blue-500/25 text-center flex items-center justify-center gap-2 cursor-pointer"
+              >
+                Free Career Counselling
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. IT Training FAQs Section */}
       <section className="py-20 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -586,14 +895,13 @@ const Home = () => {
               IT Training FAQs
             </h2>
             <div className="w-48 h-1 bg-emerald-700 mx-auto mt-2 mb-3 rounded-full"></div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-900">
               Common questions about courses, certificates, internships, and
-              counseling at Sipalaya InfoTech in Nepal.
+              counseling at GyanTech in Nepal.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-            {/* FAQ Category Sidebar */}
             <div className="bg-white border border-gray-200 rounded-2xl p-3 shadow-xs space-y-1">
               {faqCategories.map((cat) => {
                 const isActive = activeFaqCategory === cat.name;
@@ -616,7 +924,6 @@ const Home = () => {
               })}
             </div>
 
-            {/* FAQ Accordion List */}
             <div className="lg:col-span-3 space-y-4">
               <div className="flex justify-end mb-2">
                 <button
@@ -660,28 +967,18 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* 6. Stories from Our Learners Section */}
       {testimonials.length > 0 && (
         <section className="bg-gray-50/50 py-20 border-t border-gray-100">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-                  Student Testimonials
-                </p>
-                <h2 className="mt-2 text-3xl font-bold text-gray-900">
-                  Stories from our learners
-                </h2>
-              </div>
-              <Link
-                to="/student/testimonials/create"
-                className="inline-flex w-fit items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
-              >
-                <MessageSquareQuote size={16} /> Share Your Story
-              </Link>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 mt-2">
+                Testimonials from Our Learners
+              </h2>
+              <div className="w-40 h-1 bg-emerald-700 mx-auto mt-3 rounded-full"></div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="flex overflow-x-auto gap-6 pb-4 sm:pb-0 snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-3 scrollbar-none">
               {testimonials.map((item) => {
                 const studentName = item.student?.fullName || "Student";
                 const initials = studentName
@@ -694,7 +991,7 @@ const Home = () => {
                 return (
                   <article
                     key={item._id}
-                    className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm"
+                    className="min-w-[85%] sm:min-w-0 snap-center rounded-xl border border-gray-100 bg-white p-6 shadow-sm text-left shrink-0 sm:shrink"
                   >
                     <div className="flex items-center gap-3">
                       {item.student?.photo ? (
@@ -733,38 +1030,42 @@ const Home = () => {
                 );
               })}
             </div>
+
+            <div className="mt-10 text-center">
+              <Link
+                to="/student/testimonials/create"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-xs transition-colors"
+              >
+                <MessageSquareQuote size={16} /> Share Your Story
+              </Link>
+            </div>
           </div>
         </section>
       )}
 
-      {/* Contact Section at the Bottom */}
+      {/* 7. Get in Touch & Contact Section */}
       <div
         id="contact-section"
         className="bg-slate-50/50 text-slate-900 border-t border-gray-100 py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-12">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">
-              Get in Touch
-            </span>
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 mt-2">
-              Ask about courses, admissions, workshops, or support.
+              Get in Touch
             </h2>
-            <p className="mt-2 text-slate-600 text-sm">
-              Send your inquiry and the Sipalaya InfoTech team will follow up
-              with course guidance, demo details, or technical help.
-            </p>
+            <div className="w-30 h-1 bg-emerald-700 mx-auto mt-3 rounded-full"></div>
           </div>
         </div>
 
         {/* MAIN CONTACT GRID */}
-        <section className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-          {/* LEFT COLUMN: INFO & MAP */}
+        <section className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 text-left">
+          {/* LEFT COLUMN: DIRECT CONTACT */}
           <div className="space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
               className="rounded-3xl border border-slate-200/80 bg-white p-6 md:p-8 shadow-xs hover:shadow-xl transition-shadow duration-300"
             >
               <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">
@@ -804,52 +1105,14 @@ const Home = () => {
                 )}
               </div>
             </motion.div>
-
-            {/* SOCIAL LINKS */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="rounded-3xl border border-slate-200/80 bg-white p-6 md:p-8 shadow-xs hover:shadow-xl transition-shadow duration-300"
-            >
-              <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight mb-4">
-                Social links
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                <SocialLink href="https://facebook.com" icon={FaFacebookF}>
-                  Facebook
-                </SocialLink>
-                <SocialLink href="https://instagram.com" icon={FaInstagram}>
-                  Instagram
-                </SocialLink>
-                <SocialLink href="https://tiktok.com" icon={FaTiktok}>
-                  TikTok
-                </SocialLink>
-              </div>
-            </motion.div>
-
-            {/* MAP CONTAINER */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-              className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xs p-2 hover:shadow-xl transition-shadow duration-300"
-            >
-              <iframe
-                title="Sipalaya InfoTech location"
-                src="https://www.google.com/maps?q=Narephat%2032%20Koteshwor%20Kathmandu&output=embed"
-                className="h-72 w-full rounded-2xl contrast-125 hover:grayscale-0 transition duration-500"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </motion.div>
           </div>
 
           {/* RIGHT COLUMN: CONTACT FORM */}
           <motion.form
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             onSubmit={handleContactSubmit}
             className="rounded-3xl border border-slate-200/80 bg-white p-6 md:p-10 shadow-xl shadow-indigo-500/5 space-y-6"
           >
@@ -873,8 +1136,8 @@ const Home = () => {
                   required
                   name="name"
                   value={form.name}
-                  onChange={updateContactField}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                  onChange={updateField}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
                   placeholder="Your name"
                 />
               </Field>
@@ -885,8 +1148,8 @@ const Home = () => {
                   type="email"
                   name="email"
                   value={form.email}
-                  onChange={updateContactField}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                  onChange={updateField}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
                   placeholder="you@example.com"
                 />
               </Field>
@@ -895,8 +1158,8 @@ const Home = () => {
                 <select
                   name="subject"
                   value={form.subject}
-                  onChange={updateContactField}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                  onChange={updateField}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
                 >
                   {purposes.map((purpose) => (
                     <option key={purpose} value={purpose}>
@@ -911,50 +1174,32 @@ const Home = () => {
                   required
                   name="message"
                   value={form.message}
-                  onChange={updateContactField}
+                  onChange={updateField}
                   rows={5}
-                  className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                  placeholder="Tell us what you need help with..."
+                  className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                  placeholder="Tell us about your questions..."
                 />
               </Field>
-            </div>
 
-            <button
-              type="submit"
-              disabled={contactMutation.isPending}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-[1.01] hover:shadow-pink-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              <Send size={17} />
-              {contactMutation.isPending
-                ? "Sending message..."
-                : "Send Message"}
-            </button>
+              <button
+                type="submit"
+                disabled={contactMutation.isPending}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700 active:scale-[0.99] disabled:opacity-50"
+              >
+                {contactMutation.isPending ? (
+                  "Sending..."
+                ) : (
+                  <>
+                    <Send size={18} /> Send Message
+                  </>
+                )}
+              </button>
+            </div>
           </motion.form>
         </section>
       </div>
     </div>
   );
 };
-
-const Field = ({ label, children }) => (
-  <label className="block">
-    <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
-      {label}
-    </span>
-    {children}
-  </label>
-);
-
-const SocialLink = ({ href, icon: Icon, children }) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noreferrer"
-    className="group inline-flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-slate-50/50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:bg-indigo-50/30 hover:text-indigo-600 active:scale-95"
-  >
-    <Icon size={17} className="transition group-hover:scale-110" />
-    {children}
-  </a>
-);
 
 export default Home;

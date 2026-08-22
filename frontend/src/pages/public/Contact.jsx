@@ -11,11 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import {
-  FaFacebookF,
-  FaTiktok, 
-  FaInstagram,
-} from "react-icons/fa";
+import { FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
 
 import { createContact } from "../../api/contact.services";
 
@@ -54,7 +50,7 @@ const contactItems = [
   {
     icon: Mail,
     label: "Email",
-    value: "infotech@sipalaya.com",
+    value: "gyantech@sipalaya.com",
     href: "mailto:infotech@sipalaya.com",
     color:
       "from-blue-500/10 to-indigo-500/10 text-indigo-600 border-indigo-200/60",

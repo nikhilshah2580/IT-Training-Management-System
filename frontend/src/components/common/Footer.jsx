@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-8 border-b border-gray-800 pb-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
-            <h2 className="text-xl font-bold text-white">Sipalaya InfoTech</h2>
+            <h2 className="text-xl font-bold text-white">GyanTech</h2>
 
             <p className="text-xs font-semibold uppercase tracking-wide text-blue-400">
               Empowering Talent. Building Digital Excellence
@@ -153,4 +153,3 @@ const SocialLink = ({ href, label, children }) => (
 );
 
 export default Footer;
-
