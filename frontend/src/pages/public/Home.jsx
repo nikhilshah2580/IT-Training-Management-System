@@ -969,16 +969,20 @@ const Home = () => {
 
       {/* 6. Stories from Our Learners Section */}
       {testimonials.length > 0 && (
-        <section className="bg-gray-50/50 py-20 border-t border-gray-100">
+        <section className="bg-slate-50/60 py-12 sm:py-16 md:py-20 border-t border-slate-200/60">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 mt-2">
-                Testimonials from Our Learners
+            {/* Header */}
+            <div className="text-center max-w-xl mx-auto mb-8 sm:mb-12">
+              <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 border border-slate-200/60 mb-2">
+                Wall of Love
+              </span>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+                Stories from Our Learners
               </h2>
-              <div className="w-40 h-1 bg-emerald-700 mx-auto mt-3 rounded-full"></div>
             </div>
 
-            <div className="flex overflow-x-auto gap-6 pb-4 sm:pb-0 snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-3 scrollbar-none">
+            {/* Testimonials Container */}
+            <div className="flex overflow-x-auto gap-4 sm:gap-6 pb-4 sm:pb-0 snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-3 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
               {testimonials.map((item) => {
                 const studentName = item.student?.fullName || "Student";
                 const initials = studentName
@@ -991,52 +995,58 @@ const Home = () => {
                 return (
                   <article
                     key={item._id}
-                    className="min-w-[85%] sm:min-w-0 snap-center rounded-xl border border-gray-100 bg-white p-6 shadow-sm text-left shrink-0 sm:shrink"
+                    className="w-70 sm:w-auto snap-center rounded-xl border border-slate-200/70 bg-white p-4 sm:p-6 shadow-2xs text-left shrink-0 sm:shrink flex flex-col justify-between"
                   >
-                    <div className="flex items-center gap-3">
-                      {item.student?.photo ? (
-                        <img
-                          src={item.student.photo}
-                          alt={studentName}
-                          className="h-12 w-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-                          {initials || "ST"}
+                    <div>
+                      {/* Author Info */}
+                      <div className="flex items-center gap-3">
+                        {item.student?.photo ? (
+                          <img
+                            src={item.student.photo}
+                            alt={studentName}
+                            className="h-10 w-10 sm:h-11 sm:w-11 rounded-full object-cover border border-slate-100 shrink-0"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700 shrink-0 border border-slate-200/60">
+                            {initials || "ST"}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-xs sm:text-sm text-slate-900 truncate">
+                            {studentName}
+                          </h3>
+                          <p className="text-[11px] sm:text-xs text-slate-500 truncate">
+                            {item.course?.title || "Verified learner"}
+                          </p>
                         </div>
-                      )}
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {studentName}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {item.course?.title || "Verified learner"}
-                        </p>
                       </div>
-                    </div>
 
-                    <div className="mt-4 flex items-center gap-1 text-yellow-500">
-                      {Array.from({ length: Number(item.rating || 0) }).map(
-                        (_, index) => (
-                          <Star key={index} size={16} fill="currentColor" />
-                        ),
-                      )}
-                    </div>
+                      {/* Rating Stars */}
+                      <div className="mt-3 flex items-center gap-0.5 text-amber-400">
+                        {Array.from({ length: Number(item.rating || 5) }).map(
+                          (_, index) => (
+                            <Star key={index} size={14} fill="currentColor" />
+                          ),
+                        )}
+                      </div>
 
-                    <p className="mt-4 text-sm leading-6 text-gray-600">
-                      {item.message}
-                    </p>
+                      {/* Message */}
+                      <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-slate-600 line-clamp-4">
+                        "{item.message}"
+                      </p>
+                    </div>
                   </article>
                 );
               })}
             </div>
 
-            <div className="mt-10 text-center">
+            {/* Call to Action */}
+            <div className="mt-8 sm:mt-10 text-center">
               <Link
                 to="/student/testimonials/create"
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-xs transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-slate-800 shadow-2xs transition-colors"
               >
-                <MessageSquareQuote size={16} /> Share Your Story
+                <MessageSquareQuote size={15} /> Share Your Story
               </Link>
             </div>
           </div>

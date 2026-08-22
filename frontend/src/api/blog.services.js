@@ -1,9 +1,27 @@
 import api from "./apiClient";
 
+const toBlogFormData = (data = {}) => {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    formData.append(
+      key,
+      value instanceof Blob
+        ? value
+        : Array.isArray(value)
+          ? JSON.stringify(value)
+          : String(value),
+    );
+  });
+  return formData;
+};
+
 // CREATE BLOG
 // Admin / Instructor
 export const createBlog = async (data) => {
-  const response = await api.post("/blogs", data);
+  const response = await api.post("/blogs", toBlogFormData(data), {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
   return response.data;
 };
@@ -34,8 +52,10 @@ export const getBlogById = async (id) => {
 };
 
 // UPDATE BLOG
-export const updateBlog = async (id, data) => {
-  const response = await api.put(`/blogs/${id}`, data);
+export const updateBlog = async (id, data = {}) => {
+  const response = await api.put(`/blogs/${id}`, toBlogFormData(data), {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
   return response.data;
 };

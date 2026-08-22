@@ -14,13 +14,25 @@ const getValidationErrorMessage = (errors) => {
   return String(errors);
 };
 
+const formatMessage = (message) => {
+  if (!message) return "";
+  if (typeof message === "string") return message;
+  if (Array.isArray(message)) return message.filter(Boolean).join(", ");
+  if (typeof message === "object") {
+    return Object.values(message).filter(Boolean).join(", ");
+  }
+  return String(message);
+};
+
 export const getErrorMessage = (error, fallback = "Something went wrong") => {
   const data = error?.response?.data;
   const validationMessage = getValidationErrorMessage(data?.errors);
 
   if (validationMessage) return validationMessage;
 
-  return data?.message || error?.message || fallback;
+  return (
+    formatMessage(data?.message) || formatMessage(error?.message) || fallback
+  );
 };
 
 export const showSuccess = (message) => {

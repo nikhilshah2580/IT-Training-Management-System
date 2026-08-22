@@ -12,6 +12,7 @@ import Contact from "../pages/public/Contact";
 import Instructors from "../pages/public/Instructors";
 import Jobs from "../pages/public/Jobs";
 import JobDetails from "../pages/public/JobDetails";
+import BuildJobs from "../pages/public/buildjobs";
 import DemoClass from "../pages/public/DemoClass";
 import Counselling from "../pages/public/Counselling";
 
@@ -48,6 +49,7 @@ import DemoClassManagement from "../pages/admin/DemoClassManagement";
 import ReviewManagement from "../pages/admin/ReviewManagement";
 import TestimonialManagement from "../pages/admin/TestimonialManagement";
 import AuditLogManagement from "../pages/admin/AuditLogManagement";
+import JobInquiryManagement from "../pages/admin/JobInquiryManagement";
 
 // INSTRUCTOR
 import InstructorDashboard from "../pages/instructor/InstructorDashboard";
@@ -132,6 +134,7 @@ const AppRoutes = () => {
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/demo-classes" element={<DemoClass />} />
           <Route path="/job/:id" element={<JobDetails />} />
+          <Route path="/buildjobs" element={<BuildJobs />} />
           <Route path="/counselling" element={<Counselling />} />
         </Route>
 
@@ -159,6 +162,7 @@ const AppRoutes = () => {
             <Route path="contacts" element={<ContactManagement />} />
             <Route path="instructors" element={<InstructorManagement />} />
             <Route path="jobs" element={<JobManagement />} />
+            <Route path="job-inquiries" element={<JobInquiryManagement />} />
             <Route path="jobs/create" element={<CreateJob />} />
             <Route path="jobs/:id/edit" element={<EditJob />} />
             <Route path="job-placements" element={<JobPlacementManagement />} />

@@ -95,17 +95,17 @@ const AssignmentSubmissions = () => {
 
   if (isError) {
     return (
-      <div className="rounded-xl border bg-white p-8 text-center shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
         <h2 className="text-xl font-semibold text-red-600">
           Failed to load assignment submissions
         </h2>
-        <p className="mt-2 text-gray-500">
+        <p className="mt-2 text-sm text-gray-500">
           {error?.response?.data?.message || error?.message}
         </p>
         <button
           type="button"
           onClick={() => refetch()}
-          className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
+          className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           <RefreshCw size={17} />
           Try Again
@@ -116,16 +116,17 @@ const AssignmentSubmissions = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header Section */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <Link
             to="/instructor/submissions"
-            className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+            className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
           >
             <ArrowLeft size={16} />
             Back to submissions
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             {assignment?.title || "Assignment Submissions"}
           </h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -138,50 +139,51 @@ const AssignmentSubmissions = () => {
           type="button"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border bg-white px-4 py-2.5 font-medium hover:bg-gray-50 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:opacity-50"
         >
           <RefreshCw size={17} className={isFetching ? "animate-spin" : ""} />
           Refresh
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
+      {/* Submissions Table Card */}
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-250">
+          <table className="w-full min-w-250 border-collapse text-left">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Student
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Submitted
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   File
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Student Note
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Grade
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Feedback
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-gray-200">
               {submissions.length === 0 ? (
                 <tr>
                   <td
                     colSpan="8"
-                    className="px-6 py-12 text-center text-gray-500"
+                    className="px-6 py-12 text-center text-sm text-gray-500"
                   >
                     No students have submitted this assignment yet.
                   </td>
@@ -191,8 +193,11 @@ const AssignmentSubmissions = () => {
                   const draft = grades[submission._id] || {};
 
                   return (
-                    <tr key={submission._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
+                    <tr
+                      key={submission._id}
+                      className="transition-colors hover:bg-gray-50/80"
+                    >
+                      <td className="px-6 py-4 align-middle">
                         <p className="font-semibold text-gray-900">
                           {submission.student?.fullName || "Unknown student"}
                         </p>
@@ -200,29 +205,31 @@ const AssignmentSubmissions = () => {
                           {submission.student?.email || ""}
                         </p>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
+                      <td className="px-6 py-4 align-middle text-sm text-gray-700">
                         {formatDate(submission.submittedAt)}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 align-middle">
                         <a
                           href={getSubmissionFileUrl(submission._id)}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+                          className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
                         >
                           <ExternalLink size={16} />
                           Open File
                         </a>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        <p className="max-w-70 whitespace-pre-line">
+                      <td className="px-6 py-4 align-middle text-sm text-gray-600">
+                        <p className="max-w-70 whitespace-pre-line leading-relaxed">
                           {submission.description || "-"}
                         </p>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {submission.status || "-"}
+                      <td className="px-6 py-4 align-middle text-sm text-gray-700">
+                        <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800">
+                          {submission.status || "-"}
+                        </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 align-middle">
                         <input
                           type="number"
                           min="0"
@@ -235,11 +242,11 @@ const AssignmentSubmissions = () => {
                               event.target.value,
                             )
                           }
-                          className="w-24 rounded-lg border px-3 py-2 text-sm"
+                          className="w-24 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                           placeholder="0-100"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 align-middle">
                         <textarea
                           value={draft.feedback ?? submission.feedback ?? ""}
                           onChange={(event) =>
@@ -249,16 +256,16 @@ const AssignmentSubmissions = () => {
                               event.target.value,
                             )
                           }
-                          className="min-h-17.5 w-64 rounded-lg border px-3 py-2 text-sm"
+                          className="min-h-17.5 w-64 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                           placeholder="Feedback"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 align-middle">
                         <button
                           type="button"
                           onClick={() => submitGrade(submission)}
                           disabled={gradeMutation.isPending}
-                          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
                         >
                           <Save size={16} />
                           Save

@@ -16,12 +16,13 @@ import {
   GraduationCap,
   UserCheck,
   ShieldAlert,
+  UserPlus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { getErrorMessage } from "../../utils/toast";
-import { getUsers, deleteUser } from "../../api/user.services";
+import { createUserByAdmin, getUsers, deleteUser } from "../../api/user.services";
 
 const UserManagement = () => {
   const queryClient = useQueryClient();
@@ -33,6 +34,14 @@ const UserManagement = () => {
   const [viewMode, setViewMode] = useState("list"); // 'list' | 'grid'
   const [page, setPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [createForm, setCreateForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    role: "student",
+    phone: "",
+    address: "",
+  });
 
   const limit = 10;
 
@@ -51,6 +60,25 @@ const UserManagement = () => {
     },
     onError: (err) => {
       toast.error(getErrorMessage(err, "Failed to delete user"));
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createUserByAdmin,
+    onSuccess: (response) => {
+      toast.success(response?.message || "User created successfully");
+      setCreateForm({
+        fullName: "",
+        email: "",
+        password: "",
+        role: "student",
+        phone: "",
+        address: "",
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+    onError: (err) => {
+      toast.error(getErrorMessage(err, "Failed to create user"));
     },
   });
 
@@ -102,6 +130,11 @@ const UserManagement = () => {
     setRoleFilter("all");
     setActiveTab("all");
     setPage(1);
+  };
+
+  const handleCreateSubmit = (event) => {
+    event.preventDefault();
+    createMutation.mutate(createForm);
   };
 
   const handleDelete = (user) => {
@@ -189,6 +222,91 @@ const UserManagement = () => {
           <p className="mt-1 text-2xl font-black">{stats.verified}</p>
         </div>
       </div>
+
+      <form
+        onSubmit={handleCreateSubmit}
+        className="rounded-2xl border border-indigo-200 bg-linear-to-br from-indigo-50 via-white to-cyan-50 p-5 shadow-xs"
+      >
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-xs">
+            <UserPlus size={19} />
+          </div>
+          <div>
+            <h2 className="font-bold text-indigo-950">Create User Account</h2>
+            <p className="text-xs text-slate-500">
+              Add a new administrator or student account.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <input
+            required
+            value={createForm.fullName}
+            onChange={(event) =>
+              setCreateForm({ ...createForm, fullName: event.target.value })
+            }
+            placeholder="Full name"
+            className="rounded-xl border border-indigo-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+          />
+          <input
+            required
+            type="email"
+            value={createForm.email}
+            onChange={(event) =>
+              setCreateForm({ ...createForm, email: event.target.value })
+            }
+            placeholder="Email address"
+            className="rounded-xl border border-indigo-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+          />
+          <input
+            required
+            minLength={6}
+            type="password"
+            value={createForm.password}
+            onChange={(event) =>
+              setCreateForm({ ...createForm, password: event.target.value })
+            }
+            placeholder="Temporary password"
+            className="rounded-xl border border-indigo-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+          />
+          <select
+            value={createForm.role}
+            onChange={(event) =>
+              setCreateForm({ ...createForm, role: event.target.value })
+            }
+            className="rounded-xl border border-indigo-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+          >
+            <option value="student">Student</option>
+            <option value="instructor">Instructor</option>
+            <option value="admin">Admin</option>
+          </select>
+          <input
+            value={createForm.phone}
+            onChange={(event) =>
+              setCreateForm({ ...createForm, phone: event.target.value })
+            }
+            placeholder="Phone (optional)"
+            className="rounded-xl border border-indigo-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+          />
+          <input
+            value={createForm.address}
+            onChange={(event) =>
+              setCreateForm({ ...createForm, address: event.target.value })
+            }
+            placeholder="Address (optional)"
+            className="rounded-xl border border-indigo-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={createMutation.isPending}
+          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <UserPlus size={15} />
+          {createMutation.isPending ? "Creating..." : "Create Account"}
+        </button>
+      </form>
 
       {/* 3. SEARCH & FILTERS TOOLBAR */}
       <div className="space-y-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-xs">

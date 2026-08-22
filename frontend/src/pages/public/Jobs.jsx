@@ -207,14 +207,12 @@ const JobCard = ({ job, index }) => (
         View Details <ArrowRight size={16} />
       </Link>
       {job.applicationUrl && (
-        <a
-          href={job.applicationUrl}
-          target="_blank"
-          rel="noreferrer"
+        <Link
+          to={`/job/${job._id}`}
           className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-indigo-500/20 transition hover:scale-[1.02] active:scale-95"
         >
           Apply Now <ExternalLink size={16} />
-        </a>
+        </Link>
       )}
     </div>
   </motion.article>

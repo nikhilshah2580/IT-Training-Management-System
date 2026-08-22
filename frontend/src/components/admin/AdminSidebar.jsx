@@ -70,6 +70,11 @@ const menuItems = [
     icon: Briefcase,
   },
   {
+    name: "Job Inquiries",
+    path: "/admin/job-inquiries",
+    icon: Mail,
+  },
+  {
     name: "Job Placements",
     path: "/admin/job-placements",
     icon: Briefcase,

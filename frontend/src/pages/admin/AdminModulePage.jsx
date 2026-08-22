@@ -1,6 +1,20 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit3, Loader2, Plus, RefreshCw, Save, Trash2, X } from "lucide-react";
+import {
+  Edit3,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Save,
+  Trash2,
+  X,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  UploadCloud,
+  FileText,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "react-toastify";
 
 import ConfirmDialog from "../../components/common/ConfirmDialog";
@@ -22,6 +36,7 @@ const readList = (data, keys) => {
 
 const formatDate = (value) =>
   value ? new Date(value).toLocaleDateString() : "-";
+
 const matchesSearch = (row, search) =>
   !search.trim() ||
   JSON.stringify(row).toLowerCase().includes(search.toLowerCase().trim());
@@ -56,6 +71,7 @@ const AdminModulePage = ({
     queryKey: [queryKey],
     queryFn: listFn,
   });
+
   const allRows = readList(data, listKeys);
   const filteredRows = allRows.filter((row) => matchesSearch(row, search));
   const totalPages = Math.max(Math.ceil(filteredRows.length / pageSize), 1);
@@ -65,7 +81,7 @@ const AdminModulePage = ({
     mutationFn: (payload) =>
       editing ? updateFn(editing._id, payload) : createFn(payload),
     onSuccess: (response) => {
-      toast.success(response?.message || `${title} saved`);
+      toast.success(response?.message || `${title} saved successfully`);
       setEditing(null);
       setForm(emptyValues(fields));
       queryClient.invalidateQueries({ queryKey: [queryKey] });
@@ -100,6 +116,7 @@ const AdminModulePage = ({
   });
 
   const startEdit = (row) => {
+    if (!row) return;
     setEditing(row);
     setForm(
       fields.reduce((values, field) => {
@@ -135,26 +152,34 @@ const AdminModulePage = ({
 
   if (isLoading)
     return (
-      <div className="flex min-h-100 items-center justify-center">
-        <Loader2 className="animate-spin text-blue-600" size={40} />
+      <div className="flex h-96 w-full items-center justify-center rounded-2xl border border-slate-100 bg-white/60 backdrop-blur-md">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="animate-spin text-indigo-600" size={36} />
+          <p className="text-xs font-medium text-slate-500">
+            Loading resources...
+          </p>
+        </div>
       </div>
     );
 
   if (isError) {
     return (
-      <div className="rounded-xl border bg-white p-8 text-center shadow-sm">
-        <h2 className="text-xl font-semibold text-red-600">
+      <div className="mx-auto max-w-lg rounded-2xl border border-rose-100 bg-rose-50/50 p-8 text-center shadow-sm backdrop-blur-sm">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+          <AlertCircle size={24} />
+        </div>
+        <h2 className="mt-4 text-lg font-bold text-slate-900">
           Failed to load {title.toLowerCase()}
         </h2>
-        <p className="mt-2 text-gray-500">
-          {getErrorMessage(error, "Something went wrong")}
+        <p className="mt-1 text-sm text-slate-500">
+          {getErrorMessage(error, "Something went wrong while fetching data.")}
         </p>
         <button
           type="button"
           onClick={() => refetch()}
-          className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 shadow-sm"
         >
-          <RefreshCw size={17} />
+          <RefreshCw size={15} />
           Try Again
         </button>
       </div>
@@ -162,247 +187,360 @@ const AdminModulePage = ({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="mx-auto max-w-7xl space-y-8 p-2 sm:p-6">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-          <p className="mt-1 text-sm text-gray-500">{description}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            {title}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">{description}</p>
         </div>
         <button
           type="button"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border bg-white px-4 py-2.5 font-medium hover:bg-gray-50 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 shadow-sm disabled:opacity-50"
         >
-          <RefreshCw size={17} className={isFetching ? "animate-spin" : ""} />
-          Refresh
+          <RefreshCw
+            size={15}
+            className={
+              isFetching ? "animate-spin text-indigo-600" : "text-slate-400"
+            }
+          />
+          <span>Refresh</span>
         </button>
       </div>
 
+      {/* Form Card */}
       {showForm && createFn && (
         <form
           onSubmit={handleSubmit}
-          className="rounded-xl border bg-white p-5 shadow-sm"
+          className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all"
         >
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900">
-              {editing ? `Edit ${title}` : createLabel}
-            </h2>
+          <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900">
+                {editing ? `Edit ${title}` : createLabel}
+              </h2>
+              <p className="text-xs text-slate-400">
+                Fill in the fields below to update management details.
+              </p>
+            </div>
             {editing && (
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
               >
-                <X size={16} />
-                Cancel
+                <X size={14} />
+                Cancel Editing
               </button>
             )}
           </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {fields.map((field) => {
               if (field.type === "textarea")
                 return (
-                  <textarea
+                  <div
                     key={field.name}
-                    required={field.required}
-                    placeholder={field.label}
-                    value={form[field.name]}
-                    onChange={(e) =>
-                      setForm({ ...form, [field.name]: e.target.value })
-                    }
-                    className="min-h-28 rounded-lg border px-3 py-2 xl:col-span-2"
-                  />
+                    className="flex flex-col gap-1.5 xl:col-span-2"
+                  >
+                    <label className="text-xs font-semibold text-slate-700">
+                      {field.label}{" "}
+                      {field.required && (
+                        <span className="text-rose-500">*</span>
+                      )}
+                    </label>
+                    <textarea
+                      required={field.required}
+                      placeholder={`Enter ${field.label.toLowerCase()}...`}
+                      value={form[field.name]}
+                      onChange={(e) =>
+                        setForm({ ...form, [field.name]: e.target.value })
+                      }
+                      className="min-h-28 rounded-xl border border-slate-200 bg-slate-50/30 px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10"
+                    />
+                  </div>
                 );
+
               if (field.type === "select")
                 return (
-                  <select
+                  <div key={field.name} className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-slate-700">
+                      {field.label}{" "}
+                      {field.required && (
+                        <span className="text-rose-500">*</span>
+                      )}
+                    </label>
+                    <select
+                      required={field.required}
+                      value={form[field.name]}
+                      onChange={(e) =>
+                        setForm({ ...form, [field.name]: e.target.value })
+                      }
+                      className="rounded-xl border border-slate-200 bg-slate-50/30 px-3.5 py-2.5 text-sm text-slate-800 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10"
+                    >
+                      <option value="" disabled>
+                        Select {field.label}
+                      </option>
+                      {field.options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                );
+
+              if (field.type === "checkbox")
+                return (
+                  <div key={field.name} className="flex items-center pt-6">
+                    <label className="inline-flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50/30 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(form[field.name])}
+                        onChange={(e) =>
+                          setForm({ ...form, [field.name]: e.target.checked })
+                        }
+                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      {field.label}
+                    </label>
+                  </div>
+                );
+
+              if (field.type === "file")
+                return (
+                  <div
                     key={field.name}
+                    className="flex flex-col gap-1.5 xl:col-span-3"
+                  >
+                    <label className="text-xs font-semibold text-slate-700">
+                      {field.label}{" "}
+                      {field.required && !editing && (
+                        <span className="text-rose-500">*</span>
+                      )}
+                    </label>
+                    <div className="relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 transition hover:bg-slate-100/50">
+                      <UploadCloud className="mb-2 text-slate-400" size={28} />
+                      <p className="text-xs font-medium text-slate-600">
+                        Click or drag to upload featured image
+                      </p>
+                      <p className="text-[11px] text-slate-400">
+                        PNG, JPG, WEBP up to 5MB
+                      </p>
+                      <input
+                        required={field.required && !editing}
+                        type="file"
+                        accept={field.accept}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            [field.name]: e.target.files?.[0] || null,
+                          })
+                        }
+                        className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
+                      />
+                    </div>
+                    {editing && !form[field.name] && field.read?.(editing) && (
+                      <div className="mt-1 flex items-center gap-1.5 text-xs text-indigo-600">
+                        <FileText size={13} />
+                        <span>
+                          Existing attachment preserved unless overwritten.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+
+              return (
+                <div key={field.name} className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-700">
+                    {field.label}{" "}
+                    {field.required && <span className="text-rose-500">*</span>}
+                  </label>
+                  <input
                     required={field.required}
+                    type={field.type || "text"}
+                    placeholder={`Enter ${field.label.toLowerCase()}...`}
                     value={form[field.name]}
                     onChange={(e) =>
                       setForm({ ...form, [field.name]: e.target.value })
                     }
-                    className="rounded-lg border px-3 py-2"
-                  >
-                    <option value="">{field.label}</option>
-                    {field.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                );
-              if (field.type === "checkbox")
-                return (
-                  <label
-                    key={field.name}
-                    className="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={Boolean(form[field.name])}
-                      onChange={(e) =>
-                        setForm({ ...form, [field.name]: e.target.checked })
-                      }
-                    />
-                    {field.label}
-                  </label>
-                );
-              return (
-                <input
-                  key={field.name}
-                  required={field.required}
-                  type={field.type || "text"}
-                  placeholder={field.label}
-                  value={form[field.name]}
-                  onChange={(e) =>
-                    setForm({ ...form, [field.name]: e.target.value })
-                  }
-                  className="rounded-lg border px-3 py-2"
-                />
+                    className="rounded-xl border border-slate-200 bg-slate-50/30 px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10"
+                  />
+                </div>
               );
             })}
           </div>
-          <button
-            type="submit"
-            disabled={saveMutation.isPending}
-            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            {editing ? <Save size={17} /> : <Plus size={17} />}
-            {editing ? "Save Changes" : createLabel}
-          </button>
+
+          <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
+            <button
+              type="submit"
+              disabled={saveMutation.isPending}
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 transition hover:bg-indigo-700 disabled:opacity-50"
+            >
+              {saveMutation.isPending ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : editing ? (
+                <Save size={16} />
+              ) : (
+                <Plus size={16} />
+              )}
+              {editing ? "Save Changes" : createLabel}
+            </button>
+          </div>
         </form>
       )}
 
-      <div className="rounded-xl border bg-white p-4 shadow-sm">
-        <input
-          type="text"
-          value={search}
-          onChange={handleSearch}
-          placeholder={`Search ${title.toLowerCase()}...`}
-          className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
-        />
-      </div>
+      {/* Main Table View */}
+      <div className="space-y-4">
+        {/* Search Bar */}
+        <div className="relative max-w-md">
+          <Search
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+            size={18}
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={handleSearch}
+            placeholder={`Search ${title.toLowerCase()}...`}
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10"
+          />
+        </div>
 
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-4xl">
-            <thead className="bg-gray-50">
-              <tr>
-                {columns.map((column) => (
-                  <th
-                    key={column.label}
-                    className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
-                  >
-                    {column.label}
-                  </th>
-                ))}
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {rows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length + 1}
-                    className="px-6 py-12 text-center text-gray-500"
-                  >
-                    No records found.
-                  </td>
+        {/* Table Container */}
+        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                  {columns.map((column) => (
+                    <th key={column.label} className="px-6 py-3.5">
+                      {column.label}
+                    </th>
+                  ))}
+                  <th className="px-6 py-3.5 text-right">Actions</th>
                 </tr>
-              ) : (
-                rows.map((row) => (
-                  <tr key={row._id} className="hover:bg-gray-50">
-                    {columns.map((column) => (
-                      <td
-                        key={column.label}
-                        className="px-6 py-4 text-sm text-gray-700"
-                      >
-                        {column.render(row, formatDate)}
-                      </td>
-                    ))}
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap items-center gap-2">
-                        {statusFn &&
-                          statusOptions.map((option) => (
-                            <button
-                              key={option.value}
-                              type="button"
-                              onClick={() =>
-                                statusMutation.mutate({
-                                  id: row._id,
-                                  status: option.value,
-                                })
-                              }
-                              className={`rounded-lg px-3 py-2 text-xs font-semibold ${option.className || "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-                            >
-                              {option.label}
-                            </button>
-                          ))}
-                        {allowEdit && updateFn && (
-                          <button
-                            type="button"
-                            title="Edit"
-                            onClick={() => startEdit(row)}
-                            className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
-                          >
-                            <Edit3 size={17} />
-                          </button>
-                        )}
-                        {allowDelete && deleteFn && (
-                          <button
-                            type="button"
-                            title="Delete"
-                            onClick={() => setDeleteTarget(row)}
-                            disabled={deleteMutation.isPending}
-                            className="rounded-lg p-2 text-red-600 hover:bg-red-50 disabled:opacity-50"
-                          >
-                            <Trash2 size={17} />
-                          </button>
-                        )}
-                      </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-sm">
+                {rows.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={columns.length + 1}
+                      className="px-6 py-12 text-center text-slate-400"
+                    >
+                      No records matched your lookup.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  rows.map((row) => (
+                    <tr
+                      key={row._id}
+                      className="transition hover:bg-slate-50/80"
+                    >
+                      {columns.map((column) => (
+                        <td
+                          key={column.label}
+                          className="px-6 py-4 font-medium text-slate-700"
+                        >
+                          {column.render(row, formatDate)}
+                        </td>
+                      ))}
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {statusFn &&
+                            statusOptions.map((option) => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                onClick={() =>
+                                  statusMutation.mutate({
+                                    id: row._id,
+                                    status: option.value,
+                                  })
+                                }
+                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                                  option.className ||
+                                  "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                }`}
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          {allowEdit && updateFn && (
+                            <button
+                              type="button"
+                              title="Edit"
+                              onClick={() => startEdit(row)}
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition"
+                            >
+                              <Edit3 size={16} />
+                            </button>
+                          )}
+                          {allowDelete && deleteFn && (
+                            <button
+                              type="button"
+                              title="Delete"
+                              onClick={() => setDeleteTarget(row)}
+                              disabled={deleteMutation.isPending}
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition disabled:opacity-50"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Footer */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/40 px-6 py-3.5 text-xs text-slate-500">
+              <span>
+                Page{" "}
+                <strong className="font-semibold text-slate-900">{page}</strong>{" "}
+                of{" "}
+                <strong className="font-semibold text-slate-900">
+                  {totalPages}
+                </strong>
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={page === 1}
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-40"
+                >
+                  <ChevronLeft size={14} /> Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={page === totalPages}
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-40"
+                >
+                  Next <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between rounded-xl border bg-white px-5 py-4 text-sm text-gray-500 shadow-sm">
-          <span>
-            Page <strong className="text-gray-800">{page}</strong> of{" "}
-            <strong className="text-gray-800">{totalPages}</strong>
-          </span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-              className="rounded-lg border px-3 py-2 disabled:opacity-40"
-            >
-              Previous
-            </button>
-            <button
-              type="button"
-              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={page === totalPages}
-              className="rounded-lg border px-3 py-2 disabled:opacity-40"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
       <ConfirmDialog
         open={Boolean(deleteTarget)}
-        title="Delete record"
-        message="Delete this record? This action cannot be undone."
+        title="Delete Record"
+        message="Are you sure you want to delete this record? This action cannot be undone."
         confirmLabel="Delete"
         loading={deleteMutation.isPending}
         onConfirm={() => deleteMutation.mutate(deleteTarget._id)}

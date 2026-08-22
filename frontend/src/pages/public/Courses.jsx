@@ -69,10 +69,10 @@ const Courses = () => {
           .map((c) =>
             typeof c.instructor === "object"
               ? c.instructor?.fullName
-              : c.instructor
+              : c.instructor,
           )
-          .filter(Boolean)
-      )
+          .filter(Boolean),
+      ),
     ),
   ];
 
@@ -81,7 +81,8 @@ const Courses = () => {
     .filter((course) => {
       // Price Type Filter
       if (priceType === "Free" && course.fee > 0) return false;
-      if (priceType === "Paid" && (course.fee === 0 || !course.fee)) return false;
+      if (priceType === "Paid" && (course.fee === 0 || !course.fee))
+        return false;
       if (course.fee > maxPrice) return false;
 
       // Instructor Filter
@@ -96,7 +97,8 @@ const Courses = () => {
       return true;
     })
     .sort((a, b) => {
-      if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortBy === "newest")
+        return new Date(b.createdAt) - new Date(a.createdAt);
       if (sortBy === "price-low") return (a.fee || 0) - (b.fee || 0);
       if (sortBy === "price-high") return (b.fee || 0) - (a.fee || 0);
       if (sortBy === "popularity")
@@ -130,7 +132,6 @@ const Courses = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Grid: Left Filters Sidebar + Right Course Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-          
           {/* LEFT SIDEBAR: FILTERS */}
           <aside
             className={`fixed inset-0 z-50 bg-white p-6 overflow-y-auto lg:static lg:z-auto lg:p-0 lg:bg-transparent ${
@@ -210,7 +211,10 @@ const Courses = () => {
                 </h3>
                 <div className="space-y-2 text-xs font-medium text-slate-600">
                   {["All", "Free", "Paid"].map((type) => (
-                    <label key={type} className="flex items-center gap-2 cursor-pointer">
+                    <label
+                      key={type}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name="priceType"
@@ -251,18 +255,23 @@ const Courses = () => {
                   Level
                 </h3>
                 <div className="space-y-2 text-xs font-medium text-slate-600">
-                  {["All", "Beginner", "Intermediate", "Advanced"].map((lvl) => (
-                    <label key={lvl} className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="level"
-                        checked={selectedLevel === lvl}
-                        onChange={() => setSelectedLevel(lvl)}
-                        className="accent-purple-600"
-                      />
-                      <span>{lvl}</span>
-                    </label>
-                  ))}
+                  {["All", "Beginner", "Intermediate", "Advanced"].map(
+                    (lvl) => (
+                      <label
+                        key={lvl}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name="level"
+                          checked={selectedLevel === lvl}
+                          onChange={() => setSelectedLevel(lvl)}
+                          className="accent-purple-600"
+                        />
+                        <span>{lvl}</span>
+                      </label>
+                    ),
+                  )}
                 </div>
               </div>
 
@@ -290,7 +299,11 @@ const Courses = () => {
                   <SlidersHorizontal size={14} /> Filters
                 </button>
                 <span className="text-xs font-semibold text-slate-500">
-                  Showing <strong className="text-slate-900">{filteredCourses.length}</strong> results
+                  Showing{" "}
+                  <strong className="text-slate-900">
+                    {filteredCourses.length}
+                  </strong>{" "}
+                  results
                 </span>
               </div>
 
@@ -301,7 +314,9 @@ const Courses = () => {
                     type="button"
                     onClick={() => setViewMode("grid")}
                     className={`p-1.5 rounded-lg transition ${
-                      viewMode === "grid" ? "bg-white text-purple-600 shadow-2xs" : "text-slate-400"
+                      viewMode === "grid"
+                        ? "bg-white text-purple-600 shadow-2xs"
+                        : "text-slate-400"
                     }`}
                   >
                     <Grid size={15} />
@@ -310,7 +325,9 @@ const Courses = () => {
                     type="button"
                     onClick={() => setViewMode("list")}
                     className={`p-1.5 rounded-lg transition ${
-                      viewMode === "list" ? "bg-white text-purple-600 shadow-2xs" : "text-slate-400"
+                      viewMode === "list"
+                        ? "bg-white text-purple-600 shadow-2xs"
+                        : "text-slate-400"
                     }`}
                   >
                     <List size={15} />
@@ -331,7 +348,10 @@ const Courses = () => {
 
                 {/* Search Bar */}
                 <div className="relative w-40 sm:w-48">
-                  <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-2.5 text-slate-400"
+                  />
                   <input
                     type="text"
                     placeholder="Search..."
@@ -367,10 +387,6 @@ const Courses = () => {
                 }
               >
                 {filteredCourses.map((course, idx) => {
-                  const instructorObj = typeof course.instructor === "object" ? course.instructor : null;
-                  const instructorName = instructorObj?.fullName || course.instructor || "Instructor";
-                  const instructorPhoto = instructorObj?.profilePhoto || instructorObj?.photo || "";
-
                   return (
                     <motion.div
                       key={course._id}
@@ -378,13 +394,17 @@ const Courses = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: idx * 0.03 }}
                       className={`group border border-slate-200/80 bg-white rounded-2xl overflow-hidden shadow-2xs hover:shadow-md hover:border-purple-200 transition-all ${
-                        viewMode === "list" ? "flex flex-col sm:flex-row items-center p-3 gap-4" : ""
+                        viewMode === "list"
+                          ? "flex flex-col sm:flex-row items-center p-3 gap-4"
+                          : ""
                       }`}
                     >
                       {/* Course Image */}
                       <div
                         className={`relative overflow-hidden bg-slate-100 ${
-                          viewMode === "list" ? "w-full sm:w-48 h-36 rounded-xl shrink-0" : "h-44 w-full"
+                          viewMode === "list"
+                            ? "w-full sm:w-48 h-36 rounded-xl shrink-0"
+                            : "h-44 w-full"
                         }`}
                       >
                         {course.courseImage ? (
@@ -401,33 +421,19 @@ const Courses = () => {
                       </div>
 
                       {/* Course Info Details */}
-                      <div className={`p-4 flex flex-col justify-between ${viewMode === "list" ? "flex-1 p-0" : ""}`}>
+                      <div
+                        className={`p-4 flex flex-col justify-between ${viewMode === "list" ? "flex-1 p-0" : ""}`}
+                      >
                         <div>
-                          {/* Instructor & Category Row */}
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <div className="flex items-center gap-2">
-                              {instructorPhoto ? (
-                                <img
-                                  src={instructorPhoto}
-                                  alt={instructorName}
-                                  className="h-6 w-6 rounded-full object-cover border border-slate-200"
-                                />
-                              ) : (
-                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-purple-700 text-[10px] font-bold">
-                                  {instructorName[0]}
-                                </div>
-                              )}
-                              <span className="text-[11px] font-semibold text-slate-600 truncate max-w-25">
-                                {instructorName}
-                              </span>
-                            </div>
-                            <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-700">
+                          {/* Category Badge Row */}
+                          <div className="mb-2">
+                            <span className="inline-block rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-700">
                               {course.category || "General"}
                             </span>
                           </div>
 
                           {/* Course Title */}
-                          <h2 className="text-xs sm:text-sm font-extrabold text-slate-900 group-hover:text-purple-600 transition line-clamp-2 leading-snug">
+                          <h2 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-600 transition line-clamp-2 leading-snug">
                             {course.title}
                           </h2>
                         </div>
@@ -435,7 +441,9 @@ const Courses = () => {
                         {/* Bottom Row: Price & View Button */}
                         <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-100">
                           <span className="text-sm font-black text-rose-500">
-                            {course.fee ? `NPR ${course.fee.toLocaleString()}` : "FREE"}
+                            {course.fee
+                              ? `NPR ${course.fee.toLocaleString()}`
+                              : "FREE"}
                           </span>
 
                           <Link
@@ -455,9 +463,12 @@ const Courses = () => {
             {/* Empty Results State */}
             {!loading && !error && filteredCourses.length === 0 && (
               <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-slate-500 shadow-2xs">
-                <p className="text-sm font-bold text-slate-800">No courses match your active filters.</p>
+                <p className="text-sm font-bold text-slate-800">
+                  No courses match your active filters.
+                </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  Try clearing sidebar criteria or searching for another keyword.
+                  Try clearing sidebar criteria or searching for another
+                  keyword.
                 </p>
                 <button
                   type="button"

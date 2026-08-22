@@ -15,6 +15,7 @@ import {
   GraduationCap,
   Clock,
   TrendingUp,
+  DollarSign,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -82,6 +83,12 @@ const InstructorDashboard = () => {
   const statsData = dashboard?.stats || {};
   const courses = dashboard?.recentCourses || [];
   const submissions = dashboard?.recentSubmissions || [];
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat("en-NP", {
+      style: "currency",
+      currency: "NPR",
+      maximumFractionDigits: 2,
+    }).format(Number(value) || 0);
 
   // Color-coded stats items with individual gradients for a real-world SaaS feel
   const stats = [
@@ -114,6 +121,16 @@ const InstructorDashboard = () => {
       lightBg: "bg-violet-50/70",
       textColor: "text-violet-600",
       borderColor: "hover:border-violet-200",
+    },
+    {
+      title: "My Total Earnings",
+      value: formatCurrency(statsData.totalEarnings),
+      icon: DollarSign,
+      path: "/instructor/courses",
+      gradient: "from-rose-500 to-orange-600",
+      lightBg: "bg-rose-50/70",
+      textColor: "text-rose-600",
+      borderColor: "hover:border-rose-200",
     },
     {
       title: "Assignments",

@@ -34,6 +34,7 @@ const BlogManagement = () => (
     updateFn={updateBlog}
     deleteFn={deleteBlog}
     createLabel="Create Blog"
+    colorful
     fields={[
       { name: "title", label: "Title", required: true },
       { name: "slug", label: "Slug", required: true, transform: slugify },
@@ -54,7 +55,13 @@ const BlogManagement = () => (
           label: value,
         })),
       },
-      { name: "featuredImage", label: "Featured image URL" },
+      {
+        name: "photo",
+        label: "Featured image",
+        type: "file",
+        accept: "image/*",
+        read: (row) => row.featuredImage,
+      },
       {
         name: "tags",
         label: "Tags comma separated",
@@ -70,6 +77,19 @@ const BlogManagement = () => (
       { name: "content", label: "Content", type: "textarea", required: true },
     ]}
     columns={[
+      {
+        label: "Image",
+        render: (row) =>
+          row.featuredImage ? (
+            <img
+              src={row.featuredImage}
+              alt=""
+              className="h-12 w-20 rounded-lg object-cover ring-2 ring-indigo-100"
+            />
+          ) : (
+            <span className="text-xs text-gray-400">No image</span>
+          ),
+      },
       { label: "Title", render: (row) => row.title || "-" },
       { label: "Category", render: (row) => row.category || "-" },
       { label: "Status", render: (row) => row.status || "-" },

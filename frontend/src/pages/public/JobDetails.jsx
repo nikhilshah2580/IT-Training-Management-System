@@ -1,4 +1,5 @@
-﻿import { useQuery } from "@tanstack/react-query";
+﻿import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,9 +16,11 @@ import {
 } from "lucide-react";
 
 import { getJobListing } from "../../api/jobListing.services";
+import BuildJobs from "./buildjobs";
 
 const JobDetails = () => {
   const { id } = useParams();
+  const [isApplyOpen, setIsApplyOpen] = useState(false);
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["job-listing", id],
     queryFn: () => getJobListing(id),
@@ -162,14 +165,13 @@ const JobDetails = () => {
           </div>
 
           {job.applicationUrl ? (
-            <a
-              href={job.applicationUrl}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={() => setIsApplyOpen(true)}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition hover:scale-[1.01] active:scale-95"
             >
               Apply Now <ExternalLink size={17} />
-            </a>
+            </button>
           ) : (
             <div className="flex items-start gap-3 rounded-2xl bg-amber-50/80 border border-amber-200/60 p-4 text-xs font-medium text-amber-800">
               <AlertCircle
@@ -184,6 +186,10 @@ const JobDetails = () => {
           )}
         </motion.aside>
       </section>
+
+      {isApplyOpen && (
+        <BuildJobs job={job} onClose={() => setIsApplyOpen(false)} />
+      )}
     </div>
   );
 };

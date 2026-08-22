@@ -19,6 +19,7 @@ import {
   BookOpen,
   Briefcase,
   CreditCard,
+  DollarSign,
   GraduationCap,
   Loader2,
   RefreshCw,
@@ -70,6 +71,12 @@ const AdminDashboard = () => {
   }
 
   const dashboardData = data?.dashboard || {};
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat("en-NP", {
+      style: "currency",
+      currency: "NPR",
+      maximumFractionDigits: 2,
+    }).format(Number(value) || 0);
 
   const topStats = [
     [
@@ -112,6 +119,13 @@ const AdminDashboard = () => {
       dashboardData?.payments?.successful ?? 0,
       CreditCard,
       "from-green-500 to-emerald-600",
+      "/admin/enrollments",
+    ],
+    [
+      "Total Earnings",
+      formatCurrency(dashboardData?.payments?.earnings),
+      DollarSign,
+      "from-rose-500 to-orange-600",
       "/admin/enrollments",
     ],
     [

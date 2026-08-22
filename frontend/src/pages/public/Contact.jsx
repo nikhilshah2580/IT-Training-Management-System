@@ -18,6 +18,7 @@ import { createContact } from "../../api/contact.services";
 const initialForm = {
   name: "",
   email: "",
+  phone: "",
   subject: "Course Inquiry",
   message: "",
 };
@@ -117,7 +118,7 @@ const Contact = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="rounded-3xl border border-slate-200/80 bg-white p-6 md:p-8 shadow-xs hover:shadow-xl transition-shadow duration-300"
+            className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-6 md:p-8 shadow-xs hover:shadow-xl transition-shadow duration-300"
           >
             <h2 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">
               Reach us directly
@@ -133,19 +134,19 @@ const Contact = () => {
                   >
                     <Icon size={20} />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                       {label}
                     </p>
                     {href ? (
                       <a
                         href={href}
-                        className="text-sm md:text-base font-bold text-slate-800 transition hover:text-indigo-600"
+                        className="text-sm md:text-base font-bold text-slate-800 transition hover:text-indigo-600 block truncate"
                       >
                         {value}
                       </a>
                     ) : (
-                      <p className="text-sm md:text-base font-bold text-slate-800">
+                      <p className="text-sm md:text-base font-bold text-slate-800 wrap-break-word">
                         {value}
                       </p>
                     )}
@@ -155,12 +156,12 @@ const Contact = () => {
             </div>
           </motion.div>
 
-          {/* SOCIAL LINKS CARD (EXTERNAL LINKS) */}
+          {/* SOCIAL LINKS CARD */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="rounded-3xl border border-slate-200/80 bg-white p-6 md:p-8 shadow-xs hover:shadow-xl transition-shadow duration-300"
+            className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-6 md:p-8 shadow-xs hover:shadow-xl transition-shadow duration-300"
           >
             <h2 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight mb-4">
               Social links
@@ -188,7 +189,7 @@ const Contact = () => {
             <iframe
               title="Sipalaya InfoTech location"
               src="https://www.google.com/maps?q=Narephat%2032%20Koteshwor%20Kathmandu&output=embed"
-              className="h-72 w-full rounded-2xl contrast-125 hover:grayscale-0 transition duration-500"
+              className="h-72 w-full rounded-2xl hover:grayscale-0 transition duration-500"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
@@ -201,10 +202,10 @@ const Contact = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
           onSubmit={handleSubmit}
-          className="rounded-3xl border border-slate-200/80 bg-white p-6 md:p-10 shadow-xl shadow-indigo-500/5 space-y-6"
+          className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-8 md:p-10 shadow-xl shadow-indigo-500/5 space-y-6"
         >
           <div className="flex items-center gap-4 border-b border-slate-100 pb-5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white shadow-md shadow-indigo-500/20">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white shadow-md shadow-indigo-500/20">
               <MessageSquare size={22} />
             </div>
             <div>
@@ -224,7 +225,7 @@ const Contact = () => {
                 name="name"
                 value={form.name}
                 onChange={updateField}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
                 placeholder="Your name"
               />
             </Field>
@@ -236,8 +237,20 @@ const Contact = () => {
                 name="email"
                 value={form.email}
                 onChange={updateField}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
                 placeholder="you@example.com"
+              />
+            </Field>
+
+            <Field label="Phone number">
+              <input
+                required
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={updateField}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                placeholder="Your phone number"
               />
             </Field>
 
@@ -246,7 +259,7 @@ const Contact = () => {
                 name="subject"
                 value={form.subject}
                 onChange={updateField}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
               >
                 {purposes.map((purpose) => (
                   <option key={purpose} value={purpose}>
@@ -263,7 +276,7 @@ const Contact = () => {
                 value={form.message}
                 onChange={updateField}
                 rows={5}
-                className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-base sm:text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
                 placeholder="Tell us what you need help with..."
               />
             </Field>

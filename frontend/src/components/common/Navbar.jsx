@@ -111,7 +111,7 @@ const Navbar = () => {
           <span className="text-black">y</span>
           <span className="text-black">a</span>
           <span className="text-black">n</span>
-          <span className="text-red-600">T</span>
+          <span className="text-green-600">T</span>
           <span className="text-green-600">e</span>
           <span className="text-green-600">c</span>
           <span className="text-green-600">h</span>

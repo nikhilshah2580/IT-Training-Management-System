@@ -7,6 +7,7 @@ import {
 } from "../../api/contact.services";
 import {
   Mail,
+  Phone,
   MessageSquare,
   CheckCircle2,
   XCircle,
@@ -40,22 +41,10 @@ const ContactManagement = () => (
             "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60 font-semibold",
         },
         {
-          value: "In Progress",
-          label: "In Progress",
-          className:
-            "bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200/60 font-semibold",
-        },
-        {
           value: "Resolved",
           label: "Resolved",
           className:
             "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60 font-semibold",
-        },
-        {
-          value: "Rejected",
-          label: "Reject",
-          className:
-            "bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/60 font-semibold",
         },
       ]}
       columns={[
@@ -83,6 +72,18 @@ const ContactManagement = () => (
             <span className="font-semibold text-gray-800 max-w-45 truncate block">
               {row.subject || "General Inquiry"}
             </span>
+          ),
+        },
+        {
+          label: "Phone",
+          render: (row) => (
+            <a
+              href={row.phone ? `tel:${row.phone}` : undefined}
+              className="inline-flex items-center gap-1.5 font-semibold text-indigo-600 hover:text-indigo-800"
+            >
+              <Phone size={14} />
+              {row.phone || "No phone"}
+            </a>
           ),
         },
         {
