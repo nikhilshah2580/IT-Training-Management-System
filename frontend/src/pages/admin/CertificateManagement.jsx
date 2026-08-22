@@ -9,7 +9,15 @@ import {
 } from "../../api/certificate.services";
 import { getAdminCourses } from "../../api/course.services";
 import { getUsers } from "../../api/user.services";
-import { Award, CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import {
+  Award,
+  CheckCircle2,
+  XCircle,
+  Sparkles,
+  FileBadge2,
+  GraduationCap,
+  Ban,
+} from "lucide-react";
 
 const getId = (value) => (typeof value === "object" ? value?._id : value);
 
@@ -22,26 +30,56 @@ const readArray = (data, keys) => {
 };
 
 const CertificateManagement = () => {
+  // FETCH STUDENTS FOR SELECT OPTIONS
   const { data: usersData } = useQuery({
     queryKey: ["certificate-student-options"],
     queryFn: getUsers,
   });
 
+  // FETCH COURSES FOR SELECT OPTIONS
   const { data: coursesData } = useQuery({
     queryKey: ["certificate-course-options"],
     queryFn: () => getAdminCourses({ limit: 100 }),
   });
 
+  // FETCH CERTIFICATES FOR STATS SUMMARY
+  const { data: certificatesData } = useQuery({
+    queryKey: ["admin-certificates-stats"],
+    queryFn: () => getCertificates({ limit: 500 }),
+  });
+
   const students = useMemo(
-    () => readArray(usersData, ["users"]).filter((user) => user.role === "student"),
-    [usersData],
+    () =>
+      readArray(usersData, ["users"]).filter(
+        (user) => user.role === "student"
+      ),
+    [usersData]
   );
 
   const courses = useMemo(
     () => readArray(coursesData, ["courses"]),
-    [coursesData],
+    [coursesData]
   );
 
+  const rawCertificates = useMemo(
+    () => readArray(certificatesData, ["certificates"]),
+    [certificatesData]
+  );
+
+  // OVERVIEW STATS
+  const stats = useMemo(() => {
+    const total = rawCertificates.length;
+    const issued = rawCertificates.filter(
+      (c) => (c.status || "Issued") === "Issued"
+    ).length;
+    const revoked = rawCertificates.filter(
+      (c) => c.status === "Revoked"
+    ).length;
+
+    return { total, issued, revoked };
+  }, [rawCertificates]);
+
+  // FORM FIELDS CONFIGURATION
   const fields = useMemo(
     () => [
       {
@@ -82,16 +120,56 @@ const CertificateManagement = () => {
         })),
       },
     ],
-    [courses, students],
+    [courses, students]
   );
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="space-y-6 pb-12"
+      transition={{ duration: 0.3 }}
+      className="space-y-6 pb-12 font-sans text-slate-800"
     >
+      {/* 1. OVERVIEW STAT CARDS */}
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
+        <div className="flex items-center justify-between rounded-2xl bg-indigo-600 p-4 text-white shadow-xs">
+          <div>
+            <p className="text-xs font-semibold text-indigo-100">
+              Total Certificates
+            </p>
+            <p className="mt-1 text-2xl font-black">{stats.total}</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-xs">
+            <FileBadge2 size={20} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between rounded-2xl bg-emerald-500 p-4 text-white shadow-xs">
+          <div>
+            <p className="text-xs font-semibold text-emerald-100">
+              Active / Issued
+            </p>
+            <p className="mt-1 text-2xl font-black">{stats.issued}</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-xs">
+            <Award size={20} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between rounded-2xl bg-rose-500 p-4 text-white shadow-xs">
+          <div>
+            <p className="text-xs font-semibold text-rose-100">
+              Revoked Records
+            </p>
+            <p className="mt-1 text-2xl font-black">{stats.revoked}</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-xs">
+            <Ban size={20} />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. MAIN MODULE DATA WRAPPER */}
       <AdminModulePage
         title="Certificate Management"
         description="Issue, track, and manage official academic completion certificates for students."
@@ -109,14 +187,14 @@ const CertificateManagement = () => {
             label: "Certificate ID",
             render: (row) => (
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-purple-500 to-indigo-600 text-white shadow-md shadow-indigo-500/20">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-purple-600 to-indigo-600 text-white shadow-xs">
                   <Award size={18} />
                 </div>
                 <div>
-                  <span className="font-bold text-gray-900 font-mono text-xs block">
+                  <span className="block font-mono text-xs font-bold text-slate-900">
                     {row.certificateNumber || "N/A"}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-md mt-0.5 border border-purple-100">
+                  <span className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-purple-100 bg-purple-50 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700">
                     <Sparkles size={10} /> Verified Record
                   </span>
                 </div>
@@ -126,20 +204,25 @@ const CertificateManagement = () => {
           {
             label: "Student",
             render: (row) => (
-              <div>
-                <p className="font-bold text-gray-900">
-                  {row.student?.fullName || "Unknown Student"}
-                </p>
-                <p className="text-xs text-gray-400">
-                  {row.student?.email || ""}
-                </p>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-slate-500">
+                  <GraduationCap size={15} />
+                </div>
+                <div>
+                  <p className="font-bold text-slate-900">
+                    {row.student?.fullName || "Unknown Student"}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {row.student?.email || "—"}
+                  </p>
+                </div>
               </div>
             ),
           },
           {
             label: "Course",
             render: (row) => (
-              <span className="font-semibold text-gray-700 max-w-50 truncate block">
+              <span className="block max-w-52 truncate font-semibold text-slate-700">
                 {row.course?.title || "Unknown Course"}
               </span>
             ),
@@ -147,13 +230,13 @@ const CertificateManagement = () => {
           {
             label: "Status",
             render: (row) => {
-              const isIssued = row.status === "Issued";
+              const isIssued = (row.status || "Issued") === "Issued";
               return (
                 <span
                   className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-xs ${
                     isIssued
-                      ? "bg-linear-to-r from-emerald-500/10 to-teal-500/10 text-emerald-700 border border-emerald-200/60"
-                      : "bg-linear-to-r from-rose-500/10 to-red-500/10 text-rose-700 border border-rose-200/60"
+                      ? "border border-emerald-200/80 bg-emerald-50 text-emerald-700"
+                      : "border border-rose-200/80 bg-rose-50 text-rose-700"
                   }`}
                 >
                   {isIssued ? (
@@ -169,7 +252,7 @@ const CertificateManagement = () => {
           {
             label: "Issued Date",
             render: (row, formatDate) => (
-              <span className="inline-block px-2.5 py-1 rounded-lg bg-gray-50 text-gray-600 font-medium text-xs border border-gray-100">
+              <span className="inline-block rounded-lg border border-slate-200/70 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
                 {formatDate(row.issueDate || row.createdAt)}
               </span>
             ),
