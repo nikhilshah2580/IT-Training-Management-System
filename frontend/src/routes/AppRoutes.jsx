@@ -16,7 +16,6 @@ import BuildJobs from "../pages/public/buildjobs";
 import DemoClass from "../pages/public/DemoClass";
 import Counselling from "../pages/public/Counselling";
 
-
 // AUTH
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
@@ -304,4 +303,3 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
-

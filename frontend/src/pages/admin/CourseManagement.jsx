@@ -76,10 +76,18 @@ const CourseManagement = () => {
 
   // Calculate dynamic stats from API metadata or response
   const stats = {
-    active: data?.stats?.active || courses.filter((c) => c.status === "Active").length,
-    pending: data?.stats?.pending || courses.filter((c) => c.status === "Pending").length,
-    draft: data?.stats?.draft || courses.filter((c) => c.status === "Inactive" || c.status === "Draft").length,
-    free: data?.stats?.free || courses.filter((c) => Number(c.fee) === 0).length,
+    active:
+      data?.stats?.active ||
+      courses.filter((c) => c.status === "Active").length,
+    pending:
+      data?.stats?.pending ||
+      courses.filter((c) => c.status === "Pending").length,
+    draft:
+      data?.stats?.draft ||
+      courses.filter((c) => c.status === "Inactive" || c.status === "Draft")
+        .length,
+    free:
+      data?.stats?.free || courses.filter((c) => Number(c.fee) === 0).length,
     paid: data?.stats?.paid || courses.filter((c) => Number(c.fee) > 0).length,
   };
 
@@ -251,7 +259,9 @@ const CourseManagement = () => {
             <option value="">All Categories</option>
             <option value="Programming">Programming</option>
             <option value="Web Development">Web Development</option>
-            <option value="Data Science & Analytics">Data Science & Analytics</option>
+            <option value="Data Science & Analytics">
+              Data Science & Analytics
+            </option>
             <option value="Graphic Design">Graphic Design</option>
             <option value="Networking">Networking</option>
             <option value="Cyber Security">Cyber Security</option>
@@ -293,7 +303,11 @@ const CourseManagement = () => {
           </select>
         </div>
 
-        {(search || category || skillLevel || status || activeTab !== "All") && (
+        {(search ||
+          category ||
+          skillLevel ||
+          status ||
+          activeTab !== "All") && (
           <button
             onClick={handleReset}
             className="text-xs font-bold text-rose-500 hover:underline"
@@ -368,9 +382,13 @@ const CourseManagement = () => {
       ) : isError ? (
         <div className="rounded-2xl border border-rose-100 bg-white p-8 text-center">
           <AlertCircle className="mx-auto mb-2 text-rose-500" size={32} />
-          <p className="text-sm font-semibold text-rose-600">Failed to load courses</p>
+          <p className="text-sm font-semibold text-rose-600">
+            Failed to load courses
+          </p>
           <p className="text-xs text-slate-400 mt-1">
-            {error?.response?.data?.message || error?.message || "An error occurred"}
+            {error?.response?.data?.message ||
+              error?.message ||
+              "An error occurred"}
           </p>
           <button
             onClick={() => refetch()}
@@ -382,7 +400,9 @@ const CourseManagement = () => {
       ) : courses.length === 0 ? (
         <div className="rounded-2xl bg-slate-50 py-16 text-center text-slate-400">
           <BookOpen className="mx-auto mb-2 opacity-40" size={36} />
-          <p className="text-sm font-semibold">No courses found matching criteria.</p>
+          <p className="text-sm font-semibold">
+            No courses found matching criteria.
+          </p>
         </div>
       ) : viewMode === "grid" ? (
         /* GRID VIEW (FIGMA UI DESIGN) */
@@ -475,7 +495,9 @@ const CourseManagement = () => {
                         </>
                       )}
                       <button
-                        onClick={() => navigate(`/admin/courses/${course._id}/edit`)}
+                        onClick={() =>
+                          navigate(`/admin/courses/${course._id}/edit`)
+                        }
                         className="flex items-center gap-1 hover:text-indigo-600"
                       >
                         <Pencil size={13} /> Edit
@@ -511,7 +533,9 @@ const CourseManagement = () => {
               <tbody className="divide-y divide-slate-100">
                 {courses.map((course) => (
                   <tr key={course._id} className="hover:bg-slate-50/50">
-                    <td className="p-4 font-bold text-slate-900">{course.title}</td>
+                    <td className="p-4 font-bold text-slate-900">
+                      {course.title}
+                    </td>
                     <td className="p-4 text-slate-600">
                       {course.instructor?.fullName || "Unknown"}
                     </td>
@@ -527,13 +551,17 @@ const CourseManagement = () => {
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={() => navigate(`/admin/courses/${course._id}`)}
+                          onClick={() =>
+                            navigate(`/admin/courses/${course._id}`)
+                          }
                           className="text-slate-400 hover:text-indigo-600"
                         >
                           <Eye size={15} />
                         </button>
                         <button
-                          onClick={() => navigate(`/admin/courses/${course._id}/edit`)}
+                          onClick={() =>
+                            navigate(`/admin/courses/${course._id}/edit`)
+                          }
                           className="text-slate-400 hover:text-indigo-600"
                         >
                           <Pencil size={15} />
@@ -559,8 +587,8 @@ const CourseManagement = () => {
         <div className="flex items-center justify-between pt-4">
           <p className="text-xs text-slate-400">
             Page <strong className="text-slate-700">{page}</strong> of{" "}
-            <strong className="text-slate-700">{totalPages}</strong> ({totalCourses}{" "}
-            records)
+            <strong className="text-slate-700">{totalPages}</strong> (
+            {totalCourses} records)
           </p>
           <div className="flex items-center gap-1">
             <button

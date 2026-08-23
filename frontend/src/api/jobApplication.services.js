@@ -13,7 +13,9 @@ export const getJobApplications = async (params = {}) => {
 };
 
 export const updateJobApplicationStatus = async (id, status) => {
-  const response = await api.patch(`/job-applications/${id}/status`, { status });
+  const response = await api.patch(`/job-applications/${id}/status`, {
+    status,
+  });
   return response.data;
 };
 

@@ -10,7 +10,6 @@ import {
   UserRound,
   Sparkles,
   Share2,
-  Bookmark,
   AlertCircle,
 } from "lucide-react";
 

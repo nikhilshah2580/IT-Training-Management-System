@@ -6,9 +6,7 @@ import {
   deleteDemoClass,
 } from "../../api/demoClass.services";
 import {
-  Video,
   Calendar,
-  Clock,
   CheckCircle2,
   XCircle,
   AlertCircle,

@@ -7,7 +7,6 @@ import {
   Loader2,
   Upload,
   Sparkles,
-  AlertCircle,
   FileCheck,
   BookOpen,
 } from "lucide-react";

@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Clock,
   Search,
   ChevronRight,
-  User,
   Grid,
   List,
   SlidersHorizontal,
@@ -46,7 +44,7 @@ const Courses = () => {
         const data = await getCourses(params);
         setCourses(data.courses || []);
         setError(null);
-      } catch (err) {
+      } catch {
         setError("Failed to load courses. Please try again later.");
       } finally {
         setLoading(false);

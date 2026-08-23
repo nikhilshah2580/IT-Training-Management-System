@@ -54,7 +54,7 @@ const MyTestimonials = () => {
               Stories
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-              My Testimonials 
+              My Testimonials
             </h1>
             <p className="mt-1.5 text-sm text-indigo-100 max-w-xl">
               Track your submitted feedback, testimonial approval statuses, and

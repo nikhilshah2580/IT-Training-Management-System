@@ -10,8 +10,6 @@ import {
   Upload,
   Sparkles,
   CheckCircle2,
-  Clock,
-  ArrowRight,
   FileText,
 } from "lucide-react";
 

@@ -74,7 +74,7 @@ const MyReviews = () => {
               <Sparkles size={13} className="text-amber-300" /> Student Feedback
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-              Course Reviews 
+              Course Reviews
             </h1>
             <p className="mt-1.5 text-sm text-indigo-100 max-w-xl">
               Manage your published feedback, course ratings, and instructor

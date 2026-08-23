@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, ArrowRight, Loader2, KeyRound, ArrowLeft } from "lucide-react";
 import { forgotPassword } from "../../api/auth.services";

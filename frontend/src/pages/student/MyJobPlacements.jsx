@@ -58,7 +58,7 @@ const MyJobPlacements = () => {
               Opportunities
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-              My Job Placements 
+              My Job Placements
             </h1>
             <p className="mt-1.5 text-sm text-indigo-100 max-w-xl">
               Track your career placement milestones, corporate offers, and

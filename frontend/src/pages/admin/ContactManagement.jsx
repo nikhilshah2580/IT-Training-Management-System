@@ -6,7 +6,6 @@ import {
   deleteContact,
 } from "../../api/contact.services";
 import {
-  Mail,
   Phone,
   MessageSquare,
   CheckCircle2,

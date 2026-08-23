@@ -14,7 +14,8 @@ const Payment = () => {
         setError("");
 
         const response = await getMyPayments();
-        const paymentData = response?.payments || response?.data?.payments || [];
+        const paymentData =
+          response?.payments || response?.data?.payments || [];
         setPayments(Array.isArray(paymentData) ? paymentData : []);
       } catch (err) {
         setError(
@@ -45,7 +46,9 @@ const Payment = () => {
     return (
       <div className="rounded-2xl border border-red-100 bg-red-50 p-8 text-center shadow-sm">
         <AlertCircle className="mx-auto text-red-600" size={32} />
-        <h2 className="mt-4 text-lg font-bold text-red-800">Unable to load payments</h2>
+        <h2 className="mt-4 text-lg font-bold text-red-800">
+          Unable to load payments
+        </h2>
         <p className="mt-2 text-sm text-red-600">{error}</p>
       </div>
     );
@@ -73,21 +76,27 @@ const Payment = () => {
             >
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-500">{payment.course?.title || "Course"}</p>
+                  <p className="text-sm font-semibold text-slate-500">
+                    {payment.course?.title || "Course"}
+                  </p>
                   <p className="mt-1 text-xs text-slate-400">
                     Invoice: {payment.invoiceNumber || "-"}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold border ${
-                    payment.paymentStatus === "Paid"
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                      : payment.paymentStatus === "Failed"
-                        ? "bg-red-50 text-red-700 border-red-200"
-                        : "bg-amber-50 text-amber-700 border-amber-200"
-                  }`}>
-                    {payment.paymentStatus === "Paid" && <CheckCircle2 size={12} />}
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold border ${
+                      payment.paymentStatus === "Paid"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : payment.paymentStatus === "Failed"
+                          ? "bg-red-50 text-red-700 border-red-200"
+                          : "bg-amber-50 text-amber-700 border-amber-200"
+                    }`}
+                  >
+                    {payment.paymentStatus === "Paid" && (
+                      <CheckCircle2 size={12} />
+                    )}
                     {payment.paymentStatus || "Pending"}
                   </span>
 
@@ -107,20 +116,28 @@ const Payment = () => {
               <div className="mt-4 grid gap-3 text-xs text-slate-600 md:grid-cols-4">
                 <div>
                   <p className="text-slate-400">Amount</p>
-                  <p className="mt-1 font-semibold text-slate-800">Rs. {Number(payment.amount || 0).toFixed(2)}</p>
+                  <p className="mt-1 font-semibold text-slate-800">
+                    Rs. {Number(payment.amount || 0).toFixed(2)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-slate-400">Method</p>
-                  <p className="mt-1 font-semibold text-slate-800">{payment.paymentMethod || "-"}</p>
+                  <p className="mt-1 font-semibold text-slate-800">
+                    {payment.paymentMethod || "-"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-slate-400">Transaction</p>
-                  <p className="mt-1 font-semibold text-slate-800 break-all">{payment.transactionId || "-"}</p>
+                  <p className="mt-1 font-semibold text-slate-800 break-all">
+                    {payment.transactionId || "-"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-slate-400">Paid At</p>
                   <p className="mt-1 font-semibold text-slate-800">
-                    {payment.paidAt ? new Date(payment.paidAt).toLocaleString() : "-"}
+                    {payment.paidAt
+                      ? new Date(payment.paidAt).toLocaleString()
+                      : "-"}
                   </p>
                 </div>
               </div>

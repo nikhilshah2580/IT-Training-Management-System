@@ -15,7 +15,6 @@ import {
   Users,
   Sparkles,
   ArrowRight,
-  Play,
 } from "lucide-react";
 
 // Counter Animation Component for stats

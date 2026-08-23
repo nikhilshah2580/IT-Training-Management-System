@@ -202,7 +202,9 @@ const EnrollmentManagement = () => {
       {/* 2. STATS OVERVIEW CARDS */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <div className="rounded-xl bg-indigo-600 p-4 text-white shadow-xs">
-          <p className="text-xs font-semibold opacity-90">Total Registrations</p>
+          <p className="text-xs font-semibold opacity-90">
+            Total Registrations
+          </p>
           <p className="mt-1 text-2xl font-black">{stats.total}</p>
         </div>
         <div className="rounded-xl bg-emerald-500 p-4 text-white shadow-xs">
@@ -426,9 +428,7 @@ const EnrollmentManagement = () => {
                         </p>
                         <p className="font-mono text-[11px] text-slate-400">
                           Rs.{" "}
-                          {Number(
-                            enrollment.course?.fee ?? 0,
-                          ).toLocaleString()}
+                          {Number(enrollment.course?.fee ?? 0).toLocaleString()}
                         </p>
                       </td>
 
@@ -455,9 +455,7 @@ const EnrollmentManagement = () => {
 
                       {/* PAYMENT */}
                       <td className="px-6 py-4">
-                        <PaymentStatusBadge
-                          status={enrollment.paymentStatus}
-                        />
+                        <PaymentStatusBadge status={enrollment.paymentStatus} />
                       </td>
 
                       {/* PROGRESS */}

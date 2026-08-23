@@ -50,30 +50,28 @@ const CertificateManagement = () => {
 
   const students = useMemo(
     () =>
-      readArray(usersData, ["users"]).filter(
-        (user) => user.role === "student"
-      ),
-    [usersData]
+      readArray(usersData, ["users"]).filter((user) => user.role === "student"),
+    [usersData],
   );
 
   const courses = useMemo(
     () => readArray(coursesData, ["courses"]),
-    [coursesData]
+    [coursesData],
   );
 
   const rawCertificates = useMemo(
     () => readArray(certificatesData, ["certificates"]),
-    [certificatesData]
+    [certificatesData],
   );
 
   // OVERVIEW STATS
   const stats = useMemo(() => {
     const total = rawCertificates.length;
     const issued = rawCertificates.filter(
-      (c) => (c.status || "Issued") === "Issued"
+      (c) => (c.status || "Issued") === "Issued",
     ).length;
     const revoked = rawCertificates.filter(
-      (c) => c.status === "Revoked"
+      (c) => c.status === "Revoked",
     ).length;
 
     return { total, issued, revoked };
@@ -120,7 +118,7 @@ const CertificateManagement = () => {
         })),
       },
     ],
-    [courses, students]
+    [courses, students],
   );
 
   return (

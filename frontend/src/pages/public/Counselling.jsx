@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   PhoneCall,
@@ -41,7 +40,7 @@ const Counselling = () => {
       // Simulate backend submission API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again later.");
     } finally {
       setSubmitting(false);

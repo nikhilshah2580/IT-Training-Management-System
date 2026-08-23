@@ -12,17 +12,17 @@ import {
   ChevronRight,
   LayoutGrid,
   List,
-  Users,
-  GraduationCap,
-  UserCheck,
-  ShieldAlert,
   UserPlus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { getErrorMessage } from "../../utils/toast";
-import { createUserByAdmin, getUsers, deleteUser } from "../../api/user.services";
+import {
+  createUserByAdmin,
+  getUsers,
+  deleteUser,
+} from "../../api/user.services";
 
 const UserManagement = () => {
   const queryClient = useQueryClient();
@@ -617,9 +617,7 @@ const UserManagement = () => {
                   </span>
                   <button
                     onClick={() => handleDelete(user)}
-                    disabled={
-                      deleteMutation.isPending || user.role === "admin"
-                    }
+                    disabled={deleteMutation.isPending || user.role === "admin"}
                     className="flex items-center gap-1 text-slate-400 transition-colors hover:text-rose-500 disabled:opacity-30"
                   >
                     <Trash2 size={14} /> Remove

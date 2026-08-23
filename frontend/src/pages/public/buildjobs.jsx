@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { X, BriefcaseBusiness, Upload, FileText } from "lucide-react";
 import { toast } from "react-toastify";
 import { createJobApplication } from "../../api/jobApplication.services";
@@ -49,7 +49,9 @@ const BuildJobs = ({ job, onClose }) => {
       toast.success("Application submitted successfully");
       onClose();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to submit application");
+      toast.error(
+        error?.response?.data?.message || "Failed to submit application",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -102,78 +104,104 @@ const BuildJobs = ({ job, onClose }) => {
             Upload your resume to continue with this job application.
           </p>
 
-        {/* Form Area */}
-        <div className="mt-5 text-left">
-          <label className="mb-2 block text-sm font-semibold text-gray-900">
-            Resume
-          </label>
+          {/* Form Area */}
+          <div className="mt-5 text-left">
+            <label className="mb-2 block text-sm font-semibold text-gray-900">
+              Resume
+            </label>
 
-          <div className="mb-4 grid gap-3 sm:grid-cols-2">
-            <input required placeholder="Full name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="rounded-xl border px-3 py-2.5 text-sm" />
-            <input required type="email" placeholder="Email address" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="rounded-xl border px-3 py-2.5 text-sm" />
-            <input required type="tel" placeholder="Phone number" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} className="rounded-xl border px-3 py-2.5 text-sm" />
-          </div>
-
-          {/* Upload Dropzone */}
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`relative flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl border transition-all ${
-              isDragging
-                ? "border-purple-600 bg-purple-50/50"
-                : "border-gray-200 bg-white hover:border-purple-300"
-            }`}
-          >
-            <input
-              type="file"
-              accept=".pdf,.docx,.odt,.txt,image/*"
-              onChange={handleFileChange}
-              className="absolute inset-0 z-10 opacity-0 cursor-pointer"
-            />
-
-            {/* Upload Icon */}
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-600">
-              <Upload className="h-5 w-5" />
+            <div className="mb-4 grid gap-3 sm:grid-cols-2">
+              <input
+                required
+                placeholder="Full name"
+                value={form.name}
+                onChange={(event) =>
+                  setForm({ ...form, name: event.target.value })
+                }
+                className="rounded-xl border px-3 py-2.5 text-sm"
+              />
+              <input
+                required
+                type="email"
+                placeholder="Email address"
+                value={form.email}
+                onChange={(event) =>
+                  setForm({ ...form, email: event.target.value })
+                }
+                className="rounded-xl border px-3 py-2.5 text-sm"
+              />
+              <input
+                required
+                type="tel"
+                placeholder="Phone number"
+                value={form.phone}
+                onChange={(event) =>
+                  setForm({ ...form, phone: event.target.value })
+                }
+                className="rounded-xl border px-3 py-2.5 text-sm"
+              />
             </div>
 
-            {/* Upload Text or Selected File Details */}
-            {file ? (
-              <div className="text-center z-20">
-                <p className="text-sm font-semibold text-purple-600">
-                  {file.name}
-                </p>
-                <p className="mt-1 text-xs text-gray-500">
-                  {(file.size / (1024 * 1024)).toFixed(2)} MB
-                </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold text-purple-600">
-                    Click to upload
-                  </span>{" "}
-                  or drag and drop
-                </p>
-                <p className="mt-1 text-xs text-gray-500">
-                  We support PDF, DOCX, ODT, TXT, and image files up to 10MB
-                </p>
-              </div>
-            )}
-          </div>
+            {/* Upload Dropzone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`relative flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl border transition-all ${
+                isDragging
+                  ? "border-purple-600 bg-purple-50/50"
+                  : "border-gray-200 bg-white hover:border-purple-300"
+              }`}
+            >
+              <input
+                type="file"
+                accept=".pdf,.docx,.odt,.txt,image/*"
+                onChange={handleFileChange}
+                className="absolute inset-0 z-10 opacity-0 cursor-pointer"
+              />
 
-          {/* Submit Button */}
-          <button
-            type="button"
-            onClick={handleUpload}
-            disabled={isSubmitting}
-            className="mt-5 w-full rounded-xl bg-purple-600 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
-            {isSubmitting ? "Submitting..." : "Submit Application"}
-          </button>
+              {/* Upload Icon */}
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-600">
+                <Upload className="h-5 w-5" />
+              </div>
+
+              {/* Upload Text or Selected File Details */}
+              {file ? (
+                <div className="text-center z-20">
+                  <p className="text-sm font-semibold text-purple-600">
+                    {file.name}
+                  </p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    {(file.size / (1024 * 1024)).toFixed(2)} MB
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold text-purple-600">
+                      Click to upload
+                    </span>{" "}
+                    or drag and drop
+                  </p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    We support PDF, DOCX, ODT, TXT, and image files up to 10MB
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="button"
+              onClick={handleUpload}
+              disabled={isSubmitting}
+              className="mt-5 w-full rounded-xl bg-purple-600 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Application"}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

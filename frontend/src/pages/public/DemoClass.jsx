@@ -13,7 +13,7 @@ import {
   Sparkles,
   Lock,
   AlertCircle,
-  CalendarCheck
+  CalendarCheck,
 } from "lucide-react";
 
 import { bookDemoClass, getDemoClasses } from "../../api/demoClass.services";
@@ -58,13 +58,15 @@ const DemoClass = () => {
           className="relative z-10 mx-auto max-w-7xl"
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-1 text-xs font-bold text-pink-300 backdrop-blur-md shadow-sm mb-3">
-            <Sparkles size={13} className="text-pink-400 animate-pulse" /> Live Sessions
+            <Sparkles size={13} className="text-pink-400 animate-pulse" /> Live
+            Sessions
           </div>
           <h1 className="max-w-3xl text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-snug">
             Try a course before enrollment.
           </h1>
           <p className="mt-2.5 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-200 font-medium">
-            Browse scheduled online and offline demo sessions, check available seats, and book your spot from the student account.
+            Browse scheduled online and offline demo sessions, check available
+            seats, and book your spot from the student account.
           </p>
         </motion.div>
       </section>
@@ -72,7 +74,7 @@ const DemoClass = () => {
       {/* MAIN CONTENT SECTION */}
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         {!isAuthenticated ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
@@ -85,7 +87,8 @@ const DemoClass = () => {
               Login to view and book demos
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-500 font-medium">
-              Demo class schedules are connected to your student profile so bookings and cancellations can be tracked properly.
+              Demo class schedules are connected to your student profile so
+              bookings and cancellations can be tracked properly.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link
@@ -133,7 +136,8 @@ const DemoClass = () => {
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
                         <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">
-                          <Sparkles size={12} /> {demoClass.course?.title || "Course demo"}
+                          <Sparkles size={12} />{" "}
+                          {demoClass.course?.title || "Course demo"}
                         </span>
                         <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                           {demoClass.title}
@@ -150,10 +154,20 @@ const DemoClass = () => {
                     </p>
 
                     <div className="mt-6 grid gap-3 text-sm text-slate-700 sm:grid-cols-2 border-t border-slate-100 pt-5">
-                      <Info icon={CalendarDays}>{formatDate(demoClass.date)}</Info>
-                      <Info icon={Clock}>{demoClass.startTime} - {demoClass.endTime}</Info>
-                      <Info icon={demoClass.mode === "Online" ? Monitor : MapPin}>{demoClass.mode}</Info>
-                      <Info icon={Users}>{demoClass.instructor?.fullName || "Instructor"}</Info>
+                      <Info icon={CalendarDays}>
+                        {formatDate(demoClass.date)}
+                      </Info>
+                      <Info icon={Clock}>
+                        {demoClass.startTime} - {demoClass.endTime}
+                      </Info>
+                      <Info
+                        icon={demoClass.mode === "Online" ? Monitor : MapPin}
+                      >
+                        {demoClass.mode}
+                      </Info>
+                      <Info icon={Users}>
+                        {demoClass.instructor?.fullName || "Instructor"}
+                      </Info>
                     </div>
 
                     {demoClass.mode === "Offline" && demoClass.location && (
@@ -215,9 +229,12 @@ const EmptyState = () => (
     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500/10 to-purple-500/10 text-indigo-600 border border-indigo-200/60 mb-4">
       <CalendarCheck size={24} />
     </div>
-    <h2 className="text-lg font-bold text-slate-900">No scheduled demo classes</h2>
+    <h2 className="text-lg font-bold text-slate-900">
+      No scheduled demo classes
+    </h2>
     <p className="mt-1 text-sm text-slate-500 font-medium">
-      New demo sessions will appear here after instructors or admins schedule them.
+      New demo sessions will appear here after instructors or admins schedule
+      them.
     </p>
   </div>
 );

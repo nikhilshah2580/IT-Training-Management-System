@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShieldCheck, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { verifyOtp, forgotPassword } from "../../api/auth.services";

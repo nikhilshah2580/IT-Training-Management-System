@@ -20,7 +20,7 @@ const AuthInitializer = () => {
         } else {
           dispatch(clearAuth());
         }
-      } catch (error) {
+      } catch {
         dispatch(clearAuth());
       }
     };

@@ -12,9 +12,21 @@ export const initiateEsewaPayment = async (courseId) => {
   return response.data;
 };
 
+// STUDENT - INITIATE KHALTI PAYMENT
+export const initiateKhaltiPayment = async (courseId) => {
+  const response = await api.post("/payments/khalti/initiate", { courseId });
+  return response.data;
+};
+
 // STUDENT - VERIFY ESEWA PAYMENT
 export const verifyEsewaPayment = async (data) => {
   const response = await api.post("/payments/esewa/verify", { data });
+  return response.data;
+};
+
+// STUDENT - VERIFY KHALTI PAYMENT
+export const verifyKhaltiPayment = async (pidx) => {
+  const response = await api.post("/payments/khalti/verify", { pidx });
   return response.data;
 };
 
@@ -35,7 +47,6 @@ export const getPaymentById = async (id) => {
   const response = await api.get(`/payments/${id}`);
   return response.data;
 };
-
 
 // ADMIN - DELETE PAYMENT
 export const deletePayment = async (id) => {

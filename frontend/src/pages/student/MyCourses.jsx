@@ -1,4 +1,3 @@
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -11,8 +10,6 @@ import {
   Sparkles,
   PlayCircle,
   CheckCircle2,
-  Clock,
-  CreditCard,
 } from "lucide-react";
 
 import { getMyEnrollments } from "../../api/enrollment.services";

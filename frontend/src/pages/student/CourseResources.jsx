@@ -8,7 +8,6 @@ import {
   AlertCircle,
   Sparkles,
   BookOpen,
-  Download,
   Video,
   FileCode,
   Link2,

@@ -53,7 +53,6 @@ export const updateEnrollmentStatus = async (id, status) => {
   return response.data;
 };
 
-
 // ADMIN / INSTRUCTOR - UPDATE PROGRESS
 
 export const updateEnrollmentProgress = async (id, progress) => {

@@ -78,7 +78,7 @@ const AttendancePercentage = () => {
               <Sparkles size={13} className="text-amber-300" /> Academic Metrics
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-              Attendance Report 
+              Attendance Report
             </h1>
             <p className="mt-1.5 text-sm text-indigo-100 max-w-xl">
               Select your enrolled course to analyze your class presence,

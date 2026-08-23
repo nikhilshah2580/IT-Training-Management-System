@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import { verifyEsewaPayment } from "../../api/payment.services";
+import {
+  verifyEsewaPayment,
+  verifyKhaltiPayment,
+} from "../../api/payment.services";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -11,17 +14,22 @@ const PaymentSuccess = () => {
   useEffect(() => {
     const verifyPayment = async () => {
       const data = searchParams.get("data");
+      const pidx = searchParams.get("pidx");
 
-      if (!data) {
+      if (!data && !pidx) {
         setStatus("error");
-        setMessage("Payment response data was not received from eSewa.");
+        setMessage("Payment response data was not received.");
         return;
       }
 
       try {
-        await verifyEsewaPayment(data);
+        if (pidx) {
+          await verifyKhaltiPayment(pidx);
+        } else {
+          await verifyEsewaPayment(data);
+        }
         setStatus("success");
-        setMessage("Payment successful. Your course enrollment is now active.");
+        setMessage("Payment successful. Your enrollment is now active.");
       } catch (error) {
         setStatus("error");
         setMessage(

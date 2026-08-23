@@ -11,21 +11,20 @@ import {
   Loader2,
   User,
   CreditCard,
-  ShieldCheck,
   Users,
   FileText,
   ExternalLink,
-  CheckCircle,
   ChevronDown,
   ChevronUp,
-  Star,
   Tv,
   Award,
   Video,
   FileCheck,
-  Heart,
-  Share2,
-  UserRound,
+  CheckCircle2,
+  X,
+  Lock,
+  ArrowRight,
+  ShieldCheck,
 } from "lucide-react";
 
 import { getCourseById } from "../../api/course.services";
@@ -33,7 +32,10 @@ import { getCourseReviews } from "../../api/review.services";
 import ReviewList from "../../components/reviews/ReviewList";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import { createEnrollment } from "../../api/enrollment.services";
-import { initiateEsewaPayment } from "../../api/payment.services";
+import {
+  initiateEsewaPayment,
+  initiateKhaltiPayment,
+} from "../../api/payment.services";
 import { useSelector } from "react-redux";
 
 const submitEsewaForm = ({ endpoint, formData }) => {
@@ -59,6 +61,8 @@ const CourseDetails = () => {
   const queryClient = useQueryClient();
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [syllabusOpen, setSyllabusOpen] = useState(true);
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState("esewa"); // Default selection
 
   // AUTH USER
   const user = useSelector((state) => state.auth.user);
@@ -95,18 +99,20 @@ const CourseDetails = () => {
     setShowReviewForm(true);
   };
 
-  // ENROLLMENT + ESEWA PAYMENT MUTATION
+  // ENROLLMENT + PAYMENT MUTATION
   const enrollMutation = useMutation({
-    mutationFn: async (courseId) => {
+    mutationFn: async ({ courseId, paymentMethod }) => {
       try {
         await createEnrollment(courseId);
-      } catch (error) {
-        const message = error?.response?.data?.message || "";
+      } catch (err) {
+        const message = err?.response?.data?.message || "";
         if (!message.toLowerCase().includes("already enrolled")) {
-          throw error;
+          throw err;
         }
       }
-      return await initiateEsewaPayment(courseId);
+      return paymentMethod === "khalti"
+        ? await initiateKhaltiPayment(courseId)
+        : await initiateEsewaPayment(courseId);
     },
 
     onSuccess: (data) => {
@@ -120,12 +126,18 @@ const CourseDetails = () => {
         return;
       }
 
-      toast.error("eSewa payment details were not received.");
+      if (data?.khalti?.paymentUrl) {
+        toast.success("Enrollment created. Redirecting to Khalti...");
+        window.location.assign(data.khalti.paymentUrl);
+        return;
+      }
+
+      toast.error("Payment details were not received.");
     },
 
-    onError: (error) => {
+    onError: (err) => {
       toast.error(
-        error?.response?.data?.message || "Failed to start eSewa payment",
+        err?.response?.data?.message || "Failed to start checkout payment",
       );
     },
   });
@@ -150,7 +162,15 @@ const CourseDetails = () => {
       return;
     }
 
-    enrollMutation.mutate(course._id);
+    setShowPaymentOptions(true);
+  };
+
+  const executePayment = () => {
+    if (!selectedMethod) return;
+    enrollMutation.mutate({
+      courseId: course._id,
+      paymentMethod: selectedMethod,
+    });
   };
 
   if (isLoading) {
@@ -468,13 +488,18 @@ const CourseDetails = () => {
                   disabled={
                     enrollMutation.isPending || course.status !== "Active"
                   }
-                  className="w-full rounded-xl bg-[#5C42BD] hover:bg-[#4c35a3] py-3 text-xs font-bold text-white shadow-md shadow-indigo-200 transition disabled:opacity-50"
+                  className="w-full rounded-xl bg-[#5C42BD] hover:bg-[#4c35a3] py-3 text-xs font-bold text-white shadow-md shadow-indigo-200 transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {enrollMutation.isPending
-                    ? "Redirecting to eSewa..."
-                    : course.status === "Active"
-                      ? "Enroll Now"
-                      : "Course Inactive"}
+                  {enrollMutation.isPending ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      <span>Processing Payment...</span>
+                    </>
+                  ) : course.status === "Active" ? (
+                    "Enroll Now"
+                  ) : (
+                    "Course Inactive"
+                  )}
                 </button>
               ) : !user ? (
                 <button
@@ -579,6 +604,165 @@ const CourseDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* MODERN PAYMENT SELECTION MODAL */}
+      {showPaymentOptions && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100 transition-all">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                  <Lock size={16} />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">
+                    Checkout & Payment
+                  </h2>
+                  <p className="text-[11px] text-slate-500">
+                    Select your preferred gateway
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                aria-label="Close payment options"
+                onClick={() => setShowPaymentOptions(false)}
+                className="rounded-full p-1.5 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700 transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Course Brief Banner */}
+              <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
+                <div className="space-y-0.5">
+                  <p className="text-xs font-semibold text-slate-500">
+                    Total Payable
+                  </p>
+                  <p className="text-lg font-black text-slate-900">
+                    {course.fee ? `Rs. ${course.fee.toLocaleString()}` : "FREE"}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-bold text-slate-800 truncate max-w-[180px]">
+                    {course.title}
+                  </p>
+                  <p className="text-[11px] text-indigo-600 font-medium">
+                    Lifetime Access
+                  </p>
+                </div>
+              </div>
+
+              {/* Payment Methods Selection Cards */}
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                  Select Gateway
+                </label>
+
+                {/* eSewa Card */}
+                <div
+                  onClick={() => setSelectedMethod("esewa")}
+                  className={`group relative flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-all duration-200 ${
+                    selectedMethod === "esewa"
+                      ? "border-emerald-500 bg-emerald-50/40 ring-2 ring-emerald-500/20 shadow-xs"
+                      : "border-slate-200 bg-white hover:border-emerald-300 hover:bg-slate-50/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white font-black text-sm shadow-sm">
+                      eSewa
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-slate-900">
+                          eSewa Mobile Wallet
+                        </span>
+                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                          Popular
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Instant payment via eSewa account
+                      </p>
+                    </div>
+                  </div>
+                  <div className="ml-3 shrink-0">
+                    {selectedMethod === "esewa" ? (
+                      <CheckCircle2 size={20} className="text-emerald-600" />
+                    ) : (
+                      <div className="h-5 w-5 rounded-full border border-slate-300 group-hover:border-slate-400" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Khalti Card */}
+                <div
+                  onClick={() => setSelectedMethod("khalti")}
+                  className={`group relative flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-all duration-200 ${
+                    selectedMethod === "khalti"
+                      ? "border-purple-500 bg-purple-50/40 ring-2 ring-purple-500/20 shadow-xs"
+                      : "border-slate-200 bg-white hover:border-purple-300 hover:bg-slate-50/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#5C2D91] text-white font-black text-sm shadow-sm">
+                      Khalti
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-slate-900">
+                          Khalti Wallet
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Pay with Khalti Wallet or eBanking
+                      </p>
+                    </div>
+                  </div>
+                  <div className="ml-3 shrink-0">
+                    {selectedMethod === "khalti" ? (
+                      <CheckCircle2 size={20} className="text-purple-600" />
+                    ) : (
+                      <div className="h-5 w-5 rounded-full border border-slate-300 group-hover:border-slate-400" />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <button
+                type="button"
+                onClick={executePayment}
+                disabled={enrollMutation.isPending}
+                className="mt-2 w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 py-3.5 text-xs font-bold text-white shadow-lg transition disabled:opacity-50"
+              >
+                {enrollMutation.isPending ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin text-white" />
+                    <span>Connecting Gateway...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      Proceed with{" "}
+                      {selectedMethod === "esewa" ? "eSewa" : "Khalti"}
+                    </span>
+                    <ArrowRight size={15} />
+                  </>
+                )}
+              </button>
+
+              {/* Footer / Trust Badge */}
+              <div className="flex items-center justify-center gap-1.5 pt-1 text-[11px] font-medium text-slate-400">
+                <ShieldCheck size={14} className="text-emerald-600" />
+                <span>256-Bit Encrypted & Secure Checkout</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
