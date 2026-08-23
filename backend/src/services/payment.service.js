@@ -1,10 +1,15 @@
 import crypto from "crypto";
+import mongoose from "mongoose";
 import PDFDocument from "pdfkit";
 import Payment from "../models/payment.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
 import Enrollment from "../models/enrollment.model.js";
-import { notifyAdmins, notifyCourseInstructor, notifyUser } from "../utils/notificationEvents.js";
+import {
+  notifyAdmins,
+  notifyCourseInstructor,
+  notifyUser,
+} from "../utils/notificationEvents.js";
 
 export const generateInvoicePdf = async ({
   invoiceNumber,
@@ -37,7 +42,7 @@ export const generateInvoicePdf = async ({
       `Paid At: ${paidAt ? new Date(paidAt).toLocaleString() : "Not paid yet"}`,
     );
     doc.moveDown(1.5);
-    doc.text("Thank you for your payment." , { align: "center" });
+    doc.text("Thank you for your payment.", { align: "center" });
     doc.end();
   });
 };
@@ -49,19 +54,26 @@ const generateInvoiceNumber = () => {
   return `INV-${timestamp}-${random}`;
 };
 
-const generateEsewaTransactionUuid = (studentId) => {
-  const timestamp = Date.now();
-  const random = crypto.randomBytes(6).toString("hex");
-
-  return `ESEWA-${timestamp}-${studentId.toString().slice(-6)}-${random}`;
-};
-
 const getEsewaConfig = () => ({
   endpoint:
     process.env.ESEWA_PAYMENT_URL ||
     "https://rc-epay.esewa.com.np/api/epay/main/v2/form",
+  statusEndpoint:
+    process.env.ESEWA_STATUS_URL ||
+    "https://rc-epay.esewa.com.np/api/epay/transaction/status/",
   productCode: process.env.ESEWA_PRODUCT_CODE || "EPAYTEST",
   secretKey: process.env.ESEWA_SECRET_KEY || "8gBm/:&EnhH.1/q",
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+});
+
+const getKhaltiConfig = () => ({
+  endpoint:
+    process.env.KHALTI_PAYMENT_URL ||
+    "https://a.khalti.com/api/v2/epayment/initiate/",
+  verificationEndpoint:
+    process.env.KHALTI_VERIFICATION_URL ||
+    "https://a.khalti.com/api/v2/epayment/lookup/",
+  secretKey: process.env.KHALTI_SECRET_KEY,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
 });
 
@@ -69,7 +81,10 @@ const signEsewaPayload = ({ totalAmount, transactionUuid, productCode }) => {
   const { secretKey } = getEsewaConfig();
   const message = `total_amount=${totalAmount},transaction_uuid=${transactionUuid},product_code=${productCode}`;
 
-  return crypto.createHmac("sha256", secretKey).update(message).digest("base64");
+  return crypto
+    .createHmac("sha256", secretKey)
+    .update(message)
+    .digest("base64");
 };
 
 const decodeEsewaData = (data) => {
@@ -107,6 +122,40 @@ const verifyEsewaResponseSignature = (responseData) => {
     error.statusCode = 400;
     throw error;
   }
+};
+
+const verifyEsewaTransactionStatus = async ({
+  transactionUuid,
+  totalAmount,
+  productCode,
+}) => {
+  const { statusEndpoint } = getEsewaConfig();
+  const statusUrl = new URL(statusEndpoint);
+  statusUrl.searchParams.set("product_code", productCode);
+  statusUrl.searchParams.set("total_amount", totalAmount);
+  statusUrl.searchParams.set("transaction_uuid", transactionUuid);
+
+  const response = await fetch(statusUrl);
+
+  if (!response.ok) {
+    const error = new Error("eSewa transaction status request failed.");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  const statusData = await response.json();
+  const isMatchingTransaction =
+    statusData.transaction_uuid === transactionUuid &&
+    statusData.product_code === productCode &&
+    Number(statusData.total_amount) === Number(totalAmount);
+
+  if (statusData.status !== "COMPLETE" || !isMatchingTransaction) {
+    const error = new Error("eSewa transaction could not be verified.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return statusData;
 };
 
 const assertStudentCanPayCourse = async ({ studentId, courseId }) => {
@@ -216,7 +265,7 @@ export const initiateEsewaPaymentService = async ({ studentId, courseId }) => {
   const { course } = await assertStudentCanPayCourse({ studentId, courseId });
   const amount = Number(course.fee || 0);
   const { endpoint, productCode, frontendUrl } = getEsewaConfig();
-  const totalAmount = amount.toFixed(2);
+  const totalAmount = String(amount);
 
   const paidPayment = await Payment.findOne({
     student: studentId,
@@ -230,10 +279,12 @@ export const initiateEsewaPaymentService = async ({ studentId, courseId }) => {
     throw error;
   }
 
-  const transactionUuid = generateEsewaTransactionUuid(studentId);
+  const paymentId = new mongoose.Types.ObjectId();
+  const transactionUuid = paymentId.toString();
   const invoiceNumber = generateInvoiceNumber();
 
   const payment = await Payment.create({
+    _id: paymentId,
     student: studentId,
     course: courseId,
     amount,
@@ -270,6 +321,149 @@ export const initiateEsewaPaymentService = async ({ studentId, courseId }) => {
     },
   };
 };
+
+export const initiateKhaltiPaymentService = async ({ studentId, courseId }) => {
+  const { course } = await assertStudentCanPayCourse({ studentId, courseId });
+  const amount = Number(course.fee || 0);
+  const { endpoint, secretKey, frontendUrl } = getKhaltiConfig();
+
+  if (!secretKey || secretKey === "your_khalti_secret_key_here") {
+    const error = new Error("Khalti secret key is not configured.");
+    error.statusCode = 500;
+    throw error;
+  }
+
+  const paidPayment = await Payment.findOne({
+    student: studentId,
+    course: courseId,
+    paymentStatus: "Paid",
+  });
+
+  if (paidPayment) {
+    const error = new Error("This course payment is already completed.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const paymentId = new mongoose.Types.ObjectId();
+  const transactionUuid = paymentId.toString();
+  const payment = await Payment.create({
+    _id: paymentId,
+    student: studentId,
+    course: courseId,
+    amount,
+    paymentMethod: "Khalti",
+    transactionId: transactionUuid,
+    paymentStatus: "Pending",
+    invoiceNumber: generateInvoiceNumber(),
+    notes: "Khalti payment initiated.",
+  });
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      Authorization: `Key ${secretKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      return_url: `${frontendUrl}/student/payment/success`,
+      website_url: frontendUrl,
+      amount: Math.round(amount * 100),
+      purchase_order_id: transactionUuid,
+      purchase_order_name: course.title,
+    }),
+  });
+
+  if (!response.ok) {
+    await Payment.findByIdAndDelete(paymentId);
+    const error = new Error("Khalti payment initiation failed.");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  const paymentData = await response.json();
+
+  if (!paymentData.pidx || !paymentData.payment_url) {
+    await Payment.findByIdAndDelete(paymentId);
+    const error = new Error("Khalti payment details were not received.");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  payment.transactionId = paymentData.pidx;
+  payment.notes = `Khalti payment initiated for order ${transactionUuid}.`;
+  await payment.save();
+
+  return {
+    payment,
+    khalti: {
+      paymentUrl: paymentData.payment_url,
+      pidx: paymentData.pidx,
+    },
+  };
+};
+
+export const verifyKhaltiPaymentService = async ({ pidx }) => {
+  if (!pidx) {
+    const error = new Error("Khalti payment identifier is required.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const { verificationEndpoint, secretKey } = getKhaltiConfig();
+  const response = await fetch(verificationEndpoint, {
+    method: "POST",
+    headers: {
+      Authorization: `Key ${secretKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ pidx }),
+  });
+
+  let paymentData;
+
+  try {
+    paymentData = await response.json();
+  } catch {
+    const error = new Error(
+      "Khalti returned an invalid verification response.",
+    );
+    error.statusCode = 502;
+    throw error;
+  }
+
+  const payment = await Payment.findOne({ transactionId: pidx });
+
+  if (!payment) {
+    const error = new Error("Khalti payment not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const isMatchingPayment =
+    paymentData.pidx === pidx &&
+    Number(paymentData.total_amount) ===
+      Math.round(Number(payment.amount) * 100);
+
+  if (
+    !response.ok ||
+    paymentData.status !== "Completed" ||
+    !isMatchingPayment
+  ) {
+    const error = new Error(
+      `Khalti payment could not be verified: ${
+        paymentData.detail ||
+        paymentData.status ||
+        "payment details do not match"
+      }`,
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return await updatePaymentStatusService(payment._id, "Paid");
+};
+
 export const verifyEsewaPaymentService = async ({ data }) => {
   if (!data) {
     const error = new Error("eSewa response data is required.");
@@ -282,6 +476,7 @@ export const verifyEsewaPaymentService = async ({ data }) => {
 
   const transactionId = responseData.transaction_uuid;
   const status = String(responseData.status || "").toUpperCase();
+  const { productCode } = getEsewaConfig();
 
   if (!transactionId) {
     const error = new Error("Transaction UUID missing from eSewa response.");
@@ -297,9 +492,28 @@ export const verifyEsewaPaymentService = async ({ data }) => {
     throw error;
   }
 
-  const nextStatus = status === "COMPLETE" ? "Paid" : "Failed";
+  if (status !== "COMPLETE") {
+    const error = new Error("eSewa payment was not completed.");
+    error.statusCode = 400;
+    throw error;
+  }
 
-  return await updatePaymentStatusService(payment._id, nextStatus);
+  if (
+    responseData.product_code !== productCode ||
+    Number(responseData.total_amount) !== Number(payment.amount)
+  ) {
+    const error = new Error("eSewa payment details do not match the order.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await verifyEsewaTransactionStatus({
+    transactionUuid: transactionId,
+    totalAmount: responseData.total_amount,
+    productCode,
+  });
+
+  return await updatePaymentStatusService(payment._id, "Paid");
 };
 
 // Get all payments
@@ -425,7 +639,10 @@ export const updatePaymentStatusService = async (id, paymentStatus) => {
   await notifyCourseInstructor({
     course: populatedPayment?.course,
     sender: payment.student,
-    title: paymentStatus === "Paid" ? "Student payment completed" : "Student payment failed",
+    title:
+      paymentStatus === "Paid"
+        ? "Student payment completed"
+        : "Student payment failed",
     message: `${studentName}'s payment for ${courseTitle} was ${statusText}.`,
     type: "payment",
     referenceId: payment._id,
@@ -511,7 +728,3 @@ export const getPaymentReportService = async () => {
     totalRevenue: revenueResult[0]?.totalRevenue || 0,
   };
 };
-
-
-
-

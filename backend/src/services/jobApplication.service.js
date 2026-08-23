@@ -9,7 +9,10 @@ export const createJobApplicationService = async (data) => {
     error.statusCode = 400;
     throw error;
   }
-  const jobListing = await JobListing.findOne({ _id: job, status: "Published" });
+  const jobListing = await JobListing.findOne({
+    _id: job,
+    status: "Published",
+  });
   if (!jobListing) {
     const error = new Error("Job listing is not available");
     error.statusCode = 404;

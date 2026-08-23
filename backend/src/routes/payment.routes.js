@@ -3,7 +3,9 @@ import express from "express";
 import {
   createPayment,
   initiateEsewaPayment,
+  initiateKhaltiPayment,
   verifyEsewaPayment,
+  verifyKhaltiPayment,
   getPayments,
   getPayment,
   getMyPayments,
@@ -30,6 +32,18 @@ paymentRoutes.post(
   verifyToken,
   authorizeRoles("student"),
   verifyEsewaPayment,
+);
+paymentRoutes.post(
+  "/khalti/initiate",
+  verifyToken,
+  authorizeRoles("student"),
+  initiateKhaltiPayment,
+);
+paymentRoutes.post(
+  "/khalti/verify",
+  verifyToken,
+  authorizeRoles("student"),
+  verifyKhaltiPayment,
 );
 // Student gets own payments
 paymentRoutes.get(
@@ -65,5 +79,3 @@ paymentRoutes.delete(
 );
 
 export default paymentRoutes;
-
-

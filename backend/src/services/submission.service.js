@@ -2,7 +2,11 @@ import Submission from "../models/submission.model.js";
 import Assignment from "../models/assignment.model.js";
 import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
-import { notifyAdmins, notifyCourseInstructor, notifyUser } from "../utils/notificationEvents.js";
+import {
+  notifyAdmins,
+  notifyCourseInstructor,
+  notifyUser,
+} from "../utils/notificationEvents.js";
 
 // Create Submission
 export const createSubmissionService = async ({
@@ -324,4 +328,3 @@ export const getAllSubmissionsService = async ({
     },
   };
 };
-

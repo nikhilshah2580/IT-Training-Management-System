@@ -56,9 +56,16 @@ export const deleteJobApplication = async (req, res) => {
 
 export const downloadJobApplicationResume = async (req, res) => {
   const application = await getJobApplicationsService({});
-  const match = application.find((item) => item._id.toString() === req.params.id);
+  const match = application.find(
+    (item) => item._id.toString() === req.params.id,
+  );
   if (!match || !match.resumeFile || !fs.existsSync(match.resumeFile)) {
-    return res.status(404).json({ success: false, message: "Resume not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Resume not found" });
   }
-  return res.download(path.resolve(match.resumeFile), match.resumeName || "resume");
+  return res.download(
+    path.resolve(match.resumeFile),
+    match.resumeName || "resume",
+  );
 };

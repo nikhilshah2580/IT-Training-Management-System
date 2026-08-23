@@ -67,7 +67,10 @@ export const getMyCertificates = async (req, res) => {
 };
 
 export const downloadCertificate = async (req, res) => {
-  const certificate = await getCertificateDownloadService(req.params.id, req.user);
+  const certificate = await getCertificateDownloadService(
+    req.params.id,
+    req.user,
+  );
 
   if (!certificate) {
     const error = new Error("Certificate not found");

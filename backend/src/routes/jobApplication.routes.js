@@ -25,5 +25,10 @@ routes.patch(
   authorizeRoles("admin"),
   updateJobApplicationStatus,
 );
-routes.delete("/:id", verifyToken, authorizeRoles("admin"), deleteJobApplication);
+routes.delete(
+  "/:id",
+  verifyToken,
+  authorizeRoles("admin"),
+  deleteJobApplication,
+);
 export default routes;

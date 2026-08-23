@@ -78,7 +78,8 @@ export const getSubmissionFile = async (req, res) => {
   }
 
   const filePath =
-    /^([A-Za-z]:[\\/]|\/)/.test(submission.file) || submission.file.startsWith(".")
+    /^([A-Za-z]:[\\/]|\/)/.test(submission.file) ||
+    submission.file.startsWith(".")
       ? submission.file
       : path.resolve(submission.file);
 
@@ -144,5 +145,3 @@ export const getAllSubmissions = async (req, res) => {
     ...result,
   });
 };
-
-

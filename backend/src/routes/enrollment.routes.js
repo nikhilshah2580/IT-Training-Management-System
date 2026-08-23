@@ -60,7 +60,6 @@ enrollmentRoutes.patch(
   updateEnrollmentStatus,
 );
 
-
 // Admin + Instructor can update progress
 // Instructor ownership is checked inside the service
 enrollmentRoutes.patch(
@@ -79,5 +78,3 @@ enrollmentRoutes.patch(
 );
 
 export default enrollmentRoutes;
-
-

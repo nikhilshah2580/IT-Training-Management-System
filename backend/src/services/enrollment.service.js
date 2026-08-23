@@ -1,7 +1,11 @@
 import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
-import { notifyAdmins, notifyCourseInstructor, notifyUser } from "../utils/notificationEvents.js";
+import {
+  notifyAdmins,
+  notifyCourseInstructor,
+  notifyUser,
+} from "../utils/notificationEvents.js";
 
 //CREATE ENROLLMENT
 
@@ -166,6 +170,7 @@ export const getEnrollmentService = async (id) => {
 export const getMyEnrollmentsService = async (studentId) => {
   return await Enrollment.find({
     student: studentId,
+    paymentStatus: "Paid",
   })
     .populate("course", "title description duration fee instructor courseImage")
     .sort({ createdAt: -1 });
@@ -250,6 +255,26 @@ export const updateEnrollmentStatusService = async (id, status) => {
     throw error;
   }
 
+  const existingEnrollment =
+    await Enrollment.findById(id).select("paymentStatus");
+
+  if (!existingEnrollment) {
+    const error = new Error("Enrollment not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (
+    ["Active", "Completed"].includes(status) &&
+    existingEnrollment.paymentStatus !== "Paid"
+  ) {
+    const error = new Error(
+      "Enrollment can only be activated after payment is completed",
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
   const updates = {
     status,
   };
@@ -287,7 +312,6 @@ export const updateEnrollmentStatusService = async (id, status) => {
 
   return enrollment;
 };
-
 
 //UPDATE COURSE PROGRESS
 

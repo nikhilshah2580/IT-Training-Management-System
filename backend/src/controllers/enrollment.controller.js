@@ -89,7 +89,6 @@ export const updateEnrollmentStatus = async (req, res) => {
   });
 };
 
-
 // UPDATE COURSE PROGRESS
 export const updateEnrollmentProgress = async (req, res) => {
   const enrollment = await updateEnrollmentProgressService(

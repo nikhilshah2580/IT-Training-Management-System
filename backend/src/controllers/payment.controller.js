@@ -1,7 +1,9 @@
 import {
   createPaymentService,
   initiateEsewaPaymentService,
+  initiateKhaltiPaymentService,
   verifyEsewaPaymentService,
+  verifyKhaltiPaymentService,
   getPaymentsService,
   getPaymentService,
   getMyPaymentsService,
@@ -38,6 +40,19 @@ export const initiateEsewaPayment = async (req, res) => {
   });
 };
 
+export const initiateKhaltiPayment = async (req, res) => {
+  const result = await initiateKhaltiPaymentService({
+    studentId: req.user._id,
+    courseId: req.body.courseId,
+  });
+
+  return res.status(201).json({
+    success: true,
+    message: "Khalti payment initiated successfully.",
+    ...result,
+  });
+};
+
 export const verifyEsewaPayment = async (req, res) => {
   const payment = await verifyEsewaPaymentService({
     data: req.body.data,
@@ -46,6 +61,18 @@ export const verifyEsewaPayment = async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "eSewa payment verified successfully.",
+    payment,
+  });
+};
+
+export const verifyKhaltiPayment = async (req, res) => {
+  const payment = await verifyKhaltiPaymentService({
+    pidx: req.body.pidx,
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Khalti payment verified successfully.",
     payment,
   });
 };

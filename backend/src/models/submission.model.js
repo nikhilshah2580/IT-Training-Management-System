@@ -73,4 +73,3 @@ const submissionSchema = new mongoose.Schema(
 submissionSchema.index({ assignment: 1, student: 1 }, { unique: true });
 
 export default mongoose.model("Submission", submissionSchema);
-
