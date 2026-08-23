@@ -646,7 +646,7 @@ const CourseDetails = () => {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-slate-800 truncate max-w-[180px]">
+                  <p className="text-xs font-bold text-slate-800 truncate max-w-45">
                     {course.title}
                   </p>
                   <p className="text-[11px] text-indigo-600 font-medium">
