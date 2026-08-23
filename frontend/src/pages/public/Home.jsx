@@ -283,12 +283,12 @@ const Home = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/60 px-4 py-1.5 text-xs font-semibold text-blue-600 mb-6">
-              <Award size={14} /> Nepal's Data Science Specialists
+              <Award size={14} /> Nepal's Full Stack MERN Specialists
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-[1.15]">
-              Data Science Training in Nepal —{" "}
-              <span className="text-blue-600">and the data products</span> we
+              Full Stack MERN Training in Nepal —{" "}
+              <span className="text-blue-600">and the web applications</span> we
               build for clients
             </h1>
 
@@ -310,7 +310,7 @@ const Home = () => {
                 to="/contact"
                 className="rounded-xl bg-blue-600 hover:bg-blue-700 px-7 py-3.5 font-bold text-white shadow-md shadow-blue-500/20 transition-all text-sm flex items-center gap-2"
               >
-                Hire Our Data Team <Database size={16} />
+                Hire Our Mern Team <Database size={16} />
               </Link>
               <a
                 href="#contact-section"
