@@ -5,6 +5,7 @@ import {
   ClipboardList,
   Award,
   FileText,
+  House,
   UserCircle,
   Send,
   Menu,
@@ -16,6 +17,11 @@ const InstructorSidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
+    {
+      label: "Home",
+      path: "/",
+      icon: House,
+    },
     {
       label: "Dashboard",
       path: "/instructor/dashboard",

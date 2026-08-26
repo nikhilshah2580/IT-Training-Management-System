@@ -6,6 +6,7 @@ import {
   Briefcase,
   CalendarDays,
   GraduationCap,
+  House,
   LayoutDashboard,
   Mail,
   Menu,
@@ -19,6 +20,11 @@ import {
 } from "lucide-react";
 
 const menuItems = [
+  {
+    name: "Home",
+    path: "/",
+    icon: House,
+  },
   {
     name: "Dashboard",
     path: "/admin/dashboard",

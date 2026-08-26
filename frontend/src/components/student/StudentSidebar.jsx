@@ -9,6 +9,7 @@ import {
   CreditCard,
   FileText,
   GraduationCap,
+  House,
   LayoutDashboard,
   Menu,
   MessageSquareQuote,
@@ -18,6 +19,11 @@ import {
 } from "lucide-react";
 
 const menuItems = [
+  {
+    name: "Home",
+    path: "/",
+    icon: House,
+  },
   {
     name: "Dashboard",
     path: "/student/dashboard",

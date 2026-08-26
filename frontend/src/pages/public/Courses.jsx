@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Search,
+  ArrowLeft,
   ChevronRight,
   Grid,
   List,
@@ -13,6 +14,9 @@ import {
 import { getCourses } from "../../api/course.services";
 
 const Courses = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
+
   // Data States
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +30,6 @@ const Courses = () => {
   const [maxPrice, setMaxPrice] = useState(50000);
 
   // Top Bar Search & Sort States
-  const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid"); // 'grid' | 'list'
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -110,7 +113,11 @@ const Courses = () => {
     setSelectedLevel("All");
     setPriceType("All");
     setMaxPrice(50000);
-    setSearchQuery("");
+    setSearchParams((currentParams) => {
+      const nextParams = new URLSearchParams(currentParams);
+      nextParams.delete("search");
+      return nextParams;
+    }, { replace: true });
   };
 
   const categories = [
@@ -137,6 +144,15 @@ const Courses = () => {
             }`}
           >
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs space-y-6">
+              <button
+                type="button"
+                onClick={() => setMobileFilterOpen(false)}
+                className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 transition hover:text-purple-600 lg:hidden"
+              >
+                <ArrowLeft size={17} />
+                Back to Courses
+              </button>
+
               {/* Filter Header */}
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
@@ -354,7 +370,15 @@ const Courses = () => {
                     type="text"
                     placeholder="Search..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      const nextParams = new URLSearchParams(searchParams);
+                      if (e.target.value.trim()) {
+                        nextParams.set("search", e.target.value);
+                      } else {
+                        nextParams.delete("search");
+                      }
+                      setSearchParams(nextParams, { replace: true });
+                    }}
                     className="w-full rounded-xl border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 shadow-2xs focus:outline-none focus:ring-2 focus:ring-purple-600/20"
                   />
                 </div>
