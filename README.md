@@ -101,6 +101,8 @@ This is a comprehensive MERN stack project that enables:
 - Comprehensive audit logging
 - File uploads to Cloudinary
 - Email notifications
+- Light and dark theme toggle with saved user preference
+- Floating WhatsApp contact button with prefilled support message
 - Responsive design (mobile-first)
 
 ---
@@ -192,7 +194,8 @@ npm run preview      # Preview production build
 ## UI/UX Features
 
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Dark Mode Ready**: Flexible color schemes
+- **Theme Support**: Light and dark modes with automatic system preference detection
+- **WhatsApp Support**: Floating WhatsApp contact button using +977-9851344071
 - **Animations**: Smooth transitions with Framer Motion
 - **Loading States**: Visual feedback during operations
 - **Error Handling**: User-friendly error messages
