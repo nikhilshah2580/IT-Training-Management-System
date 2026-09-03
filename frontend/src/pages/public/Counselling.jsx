@@ -61,7 +61,7 @@ const Counselling = () => {
             className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-bold text-blue-600 shadow-2xs"
           >
             <Sparkles size={14} className="text-blue-600 animate-pulse" />{" "}
-            Sipalaya InfoTech • Free Career Guidance
+            GyanTech • Free Career Guidance
           </motion.div>
 
           <motion.h1

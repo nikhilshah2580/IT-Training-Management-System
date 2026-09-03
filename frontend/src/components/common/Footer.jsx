@@ -80,10 +80,10 @@ const Footer = () => {
               <div className="flex items-center gap-2.5">
                 <Mail size={16} className="shrink-0 text-blue-500" />
                 <a
-                  href="mailto:infotech@sipalaya.com"
+                  href="mailto:infotech@gmail.com"
                   className="hover:text-white"
                 >
-                  infotech@sipalaya.com
+                  infotech@gmail.com
                 </a>
               </div>
 
@@ -100,7 +100,7 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-3 pt-5 text-xs text-gray-500 sm:flex-row">
-          <p>© {year} Sipalaya InfoTech. All rights reserved.</p>
+          <p>© {year} GyanTech. All rights reserved.</p>
 
           <div className="flex items-center gap-3">
             <Link to="/privacy-policy" className="hover:text-gray-300">

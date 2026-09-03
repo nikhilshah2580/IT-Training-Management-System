@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
@@ -15,9 +16,11 @@ import {
   ShieldCheck,
   Sparkles,
   UserCheck,
+  LayoutDashboard,
+  LogOut,
 } from "lucide-react";
-import { setAuth } from "../../redux/authSlice";
-import { getCurrentUser } from "../../api/auth.services";
+import { clearAuth, setAuth } from "../../redux/authSlice";
+import { getCurrentUser, logoutUser } from "../../api/auth.services";
 import { updateProfile, changePassword } from "../../api/profile.services";
 import { profileSchema, passwordSchema } from "../../schemas/profile.schema";
 
@@ -51,8 +54,15 @@ const FormInput = ({ icon: Icon, label, error, helperText, ...props }) => (
   </div>
 );
 
+const dashboardPaths = {
+  admin: "/admin/dashboard",
+  instructor: "/instructor/dashboard",
+  student: "/student/dashboard",
+};
+
 const Profile = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((s) => s.auth.user);
 
   // Navigation & Active View State
@@ -210,6 +220,17 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      dispatch(clearAuth());
+      toast.success("Logged out successfully");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Logout failed");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gray-50/70 pb-20 pt-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-6">
@@ -265,6 +286,15 @@ const Profile = () => {
               </div>
 
               <nav className="mt-4 space-y-1">
+                {dashboardPaths[user?.role] && (
+                  <Link
+                    to={dashboardPaths[user.role]}
+                    className="flex w-full items-center gap-2.5 rounded-xl bg-blue-50 px-3.5 py-2.5 text-sm font-semibold text-blue-700 transition-all hover:bg-blue-100"
+                  >
+                    <LayoutDashboard size={16} /> Dashboard
+                  </Link>
+                )}
+
                 <button
                   onClick={() => setActiveTab("profile")}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all ${
@@ -289,6 +319,14 @@ const Profile = () => {
                   <span className="flex items-center gap-2.5">
                     <ShieldCheck size={16} /> Security & Passwords
                   </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium text-red-600 transition-all hover:bg-red-50"
+                >
+                  <LogOut size={16} /> Logout
                 </button>
               </nav>
             </div>

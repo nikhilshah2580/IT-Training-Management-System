@@ -1,14 +1,9 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { LogOut, Menu, User, X, Search } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-
-import { logoutUser } from "../../api/auth.services";
-import { clearAuth } from "../../redux/authSlice";
+import { Menu, User, X, Search } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -54,17 +49,6 @@ const Navbar = () => {
       navigate(`/courses?search=${encodeURIComponent(searchQuery.trim())}`);
       setMobileSearchOpen(false);
       setMobileMenuOpen(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      dispatch(clearAuth());
-      toast.success("Logged out successfully");
-      navigate("/login", { replace: true });
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Logout failed");
     }
   };
 
@@ -183,15 +167,6 @@ const Navbar = () => {
               >
                 {renderUserAvatar()}
               </Link>
-
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
             </div>
           )}
         </div>
@@ -338,14 +313,6 @@ const Navbar = () => {
                     {user?.fullName || "User Profile"}
                   </span>
                 </Link>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 font-medium text-red-600 transition hover:bg-red-50"
-                >
-                  <LogOut size={18} />
-                  Logout
-                </button>
               </div>
             )}
           </div>

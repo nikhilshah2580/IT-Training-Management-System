@@ -58,7 +58,7 @@ const Instructors = () => {
             Learn from mentors with practical industry experience.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
-            Meet the trainers behind Sipalaya InfoTech courses, workshops,
+            Meet the trainers behind GyanTech courses, workshops,
             assignments, feedback, and certification preparation.
           </p>
         </div>

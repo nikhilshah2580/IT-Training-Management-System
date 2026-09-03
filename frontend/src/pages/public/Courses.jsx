@@ -12,6 +12,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { getCourses } from "../../api/course.services";
+import PublicPageHero from "../../components/common/PublicPageHero";
 
 const Courses = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -134,6 +135,11 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-slate-800 pb-20 font-sans pt-6">
+      <PublicPageHero
+        title="Build Your"
+        accent="Future"
+        description="Learn practical technology skills through focused courses designed for real projects, confident careers, and continuous growth."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Grid: Left Filters Sidebar + Right Course Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">

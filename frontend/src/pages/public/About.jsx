@@ -16,6 +16,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
+import PublicPageHero from "../../components/common/PublicPageHero";
 
 // Counter Animation Component for stats
 const AnimatedCounter = ({ value }) => {
@@ -111,7 +112,7 @@ const values = [
   },
   {
     title: "Certificates",
-    text: "Finish with a recognized Sipalaya InfoTech completion certificate documenting your practical skills and completed work.",
+    text: "Finish with a recognized GyanTech completion certificate documenting your practical skills and completed work.",
     icon: CheckCircle2,
   },
   {
@@ -129,6 +130,11 @@ const values = [
 const About = () => {
   return (
     <div className="min-h-screen bg-white text-slate-900 pb-20">
+      <PublicPageHero
+        title="About"
+        accent="GyanTech"
+        description="Practical technology education, career guidance, and project-focused learning for the next generation of digital professionals."
+      />
       {/* HERO SECTION WITH CLEAN WHITE BACKGROUND & EMBEDDED VIDEO */}
       <section className="relative overflow-hidden bg-white py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-100">
         <div className="absolute top-0 right-0 -z-10 h-96 w-96 rounded-full bg-blue-50 blur-3xl pointer-events-none" />
@@ -151,7 +157,7 @@ const About = () => {
               </span>
             </h1>
             <p className="mt-5 text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
-              Sipalaya InfoTech helps learners in Kathmandu and across Nepal
+              GyanTech helps learners in Kathmandu and across Nepal
               build career-ready digital skills through guided training,
               certification preparation, corporate workshops, and
               placement-focused support.
@@ -188,7 +194,7 @@ const About = () => {
               <iframe
                 className="absolute inset-0 h-full w-full border-0"
                 src="https://www.youtube.com/embed/5Vjv1ZKTRdE?si=ljPv5CojFwW0X-2c"
-                title="Sipalaya InfoTech Kathmandu - Introduction Video"
+                title="GyanTech Kathmandu - Introduction Video"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />

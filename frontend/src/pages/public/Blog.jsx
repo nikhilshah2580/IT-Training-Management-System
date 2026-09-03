@@ -9,12 +9,12 @@ import {
   Loader2,
   Search,
   Tags,
-  Sparkles,
   BookOpen,
   AlertCircle,
 } from "lucide-react";
 
 import { getBlogs } from "../../api/blog.services";
+import PublicPageHero from "../../components/common/PublicPageHero";
 
 const categories = [
   "All",
@@ -56,29 +56,11 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-900 pb-20">
-      {/* COMPACT & VIBRANT COLORFUL HERO SECTION */}
-      <section className="relative overflow-hidden bg-linear-to-r from-indigo-900 via-purple-900 to-blue-900 py-14 px-4 sm:px-6 lg:px-8 text-white shadow-md">
-        <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-pink-500/30 blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 h-64 w-64 rounded-full bg-cyan-500/30 blur-2xl pointer-events-none" />
-
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="relative z-10 mx-auto max-w-7xl"
-        >
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-1 text-xs font-bold text-pink-300 backdrop-blur-md shadow-sm mb-3">
-            <Sparkles size={13} className="text-pink-400 animate-pulse" /> Blog
-            Insights
-          </div>
-          <h1 className="max-w-3xl text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-snug">
-            IT trends, learning tips, and career guidance.
-          </h1>
-          <p className="mt-2.5 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-200 font-medium">
-            Managed articles from Sipalaya
-          </p>
-        </motion.div>
-      </section>
+      <PublicPageHero
+        title="Our"
+        accent="Blogs"
+        description="Explore practical insights on programming, web development, design, career growth, and technology from the GyanTech team."
+      />
 
       {/* FILTER & SEARCH TOOLBAR */}
       <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">

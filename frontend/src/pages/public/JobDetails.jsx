@@ -179,7 +179,7 @@ const JobDetails = () => {
                 className="shrink-0 mt-0.5 text-amber-600"
               />
               <p>
-                Application link is not available yet. Please contact Sipalaya
+                Application link is not available yet. Please contact GyanTech
                 placement support for assistance.
               </p>
             </div>

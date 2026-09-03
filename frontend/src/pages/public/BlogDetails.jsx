@@ -82,7 +82,7 @@ const BlogDetails = () => {
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 border border-white/20 text-pink-300">
                 <UserRound size={18} />
               </div>
-              <span>{blog.author?.fullName || "Sipalaya Team"}</span>
+              <span>{blog.author?.fullName || "GyanTech Team"}</span>
             </div>
 
             {/* Extra SaaS Feature: Quick Actions Bar */}

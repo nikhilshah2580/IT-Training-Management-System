@@ -49,24 +49,7 @@ const Login = () => {
 
       toast.success(response.message || "Login successful");
 
-      // Role-based redirect
-      switch (user.role) {
-        case "admin":
-          navigate("/admin/dashboard");
-          break;
-
-        case "instructor":
-          navigate("/instructor/dashboard");
-          break;
-
-        case "student":
-          navigate("/student/dashboard");
-          break;
-
-        default:
-          toast.error("Invalid user role");
-          break;
-      }
+      navigate("/");
     } catch (error) {
       toast.error(
         error?.response?.data?.message || error?.message || "Login failed",

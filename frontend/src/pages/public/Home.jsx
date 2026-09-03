@@ -83,8 +83,8 @@ const contactItems = [
   {
     icon: Mail,
     label: "Email",
-    value: "gyantech@sipalaya.com",
-    href: "mailto:infotech@sipalaya.com",
+    value: "gyantech@gmail.com",
+    href: "mailto:gyantech@gmail.com",
     color:
       "from-blue-500/10 to-indigo-500/10 text-indigo-600 border-indigo-200/60",
   },
