@@ -2,6 +2,7 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Menu, User, X, Search } from "lucide-react";
 import { useSelector } from "react-redux";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -128,6 +129,7 @@ const Navbar = () => {
 
         {/* Desktop Actions (Search + Auth) */}
         <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle />
           <form onSubmit={handleSearchSubmit} className="relative">
             <Search
               size={16}
@@ -173,6 +175,7 @@ const Navbar = () => {
 
         {/* Mobile Action Buttons */}
         <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
           <button
             type="button"
             className="rounded-lg p-2 text-gray-700 transition hover:bg-gray-200/60"

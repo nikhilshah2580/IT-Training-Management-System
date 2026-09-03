@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import NotificationBell from "../notifications/NotificationBell";
 import LogoutButton from "../auth/LogoutButton";
+import ThemeToggle from "../common/ThemeToggle";
 
 const InstructorNavbar = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const InstructorNavbar = () => {
 
       {/* Right */}
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <NotificationBell />
 
         {/* Profile */}

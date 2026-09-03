@@ -34,6 +34,8 @@ const Courses = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid"); // 'grid' | 'list'
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 6;
 
   // Fetch API Data
   useEffect(() => {
@@ -108,12 +110,23 @@ const Courses = () => {
       return 0;
     });
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredCourses.length / coursesPerPage),
+  );
+  const visiblePage = Math.min(currentPage, totalPages);
+  const paginatedCourses = filteredCourses.slice(
+    (visiblePage - 1) * coursesPerPage,
+    visiblePage * coursesPerPage,
+  );
+
   const handleResetFilters = () => {
     setSelectedCategory("All");
     setSelectedInstructor("All");
     setSelectedLevel("All");
     setPriceType("All");
     setMaxPrice(50000);
+    setCurrentPage(1);
     setSearchParams((currentParams) => {
       const nextParams = new URLSearchParams(currentParams);
       nextParams.delete("search");
@@ -134,13 +147,14 @@ const Courses = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-slate-800 pb-20 font-sans pt-6">
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-800 pb-8 font-sans">
       <PublicPageHero
         title="Build Your"
         accent="Future"
         description="Learn practical technology skills through focused courses designed for real projects, confident careers, and continuous growth."
+        actionLabel=""
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto mt-5 max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Main Grid: Left Filters Sidebar + Right Course Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
           {/* LEFT SIDEBAR: FILTERS */}
@@ -307,7 +321,7 @@ const Courses = () => {
           </aside>
 
           {/* RIGHT SIDE: TOP TOOLBAR & COURSE GRID */}
-          <main className="lg:col-span-3 space-y-6">
+          <main className="lg:col-span-3 space-y-4">
             {/* Top Toolbar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
               <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
@@ -414,7 +428,7 @@ const Courses = () => {
                     : "space-y-4"
                 }
               >
-                {filteredCourses.map((course, idx) => {
+                {paginatedCourses.map((course, idx) => {
                   return (
                     <motion.div
                       key={course._id}
@@ -486,6 +500,34 @@ const Courses = () => {
                   );
                 })}
               </div>
+            )}
+
+            {!loading && !error && filteredCourses.length > 0 && totalPages > 1 && (
+              <nav
+                aria-label="Course pages"
+                className="flex items-center justify-center gap-2 pt-2"
+              >
+                {Array.from({ length: totalPages }, (_, pageIndex) => {
+                  const pageNumber = pageIndex + 1;
+                  const isActive = pageNumber === visiblePage;
+
+                  return (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      onClick={() => setCurrentPage(pageNumber)}
+                      aria-current={isActive ? "page" : undefined}
+                      className={`flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold transition ${
+                        isActive
+                          ? "bg-purple-600 text-white shadow-sm"
+                          : "border border-slate-200 bg-white text-slate-600 hover:border-purple-300 hover:text-purple-600"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+              </nav>
             )}
 
             {/* Empty Results State */}

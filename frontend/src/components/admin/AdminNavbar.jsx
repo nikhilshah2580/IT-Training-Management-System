@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../auth/LogoutButton";
 import NotificationBell from "../notifications/NotificationBell";
+import ThemeToggle from "../common/ThemeToggle";
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const AdminNavbar = () => {
       </div>
 
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <NotificationBell />
 
         <button

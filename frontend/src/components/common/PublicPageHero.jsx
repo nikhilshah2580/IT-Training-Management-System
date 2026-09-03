@@ -9,6 +9,8 @@ const PublicPageHero = ({
   description,
   actionLabel = "Get Started",
   actionTo = "/",
+  className = "",
+  compact = false,
 }) => {
   // Stagger animation container for smoother sequential loads
   const containerVariants = {
@@ -32,7 +34,9 @@ const PublicPageHero = ({
   };
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#0b142a] px-4 py-8 text-white sm:px-6 sm:py-10 lg:px-8">
+    <section
+      className={`relative isolate overflow-hidden bg-[#0b142a] px-4 py-8 text-white sm:px-6 sm:py-10 lg:px-8 ${className}`}
+    >
       {/* Dark gradient background */}
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(115deg,#0b142a_0%,#0e172d_62%,#1c1726_100%)]" />
 
@@ -56,7 +60,7 @@ const PublicPageHero = ({
         {/* Main Title with Multi-Style Underline */}
         <motion.h1
           variants={itemVariants}
-          className="relative mt-4 text-3xl font-black leading-none tracking-[-0.03em] sm:text-4xl lg:text-5xl"
+          className={`relative text-3xl font-black leading-none tracking-[-0.03em] sm:text-4xl lg:text-5xl ${compact ? "mt-0" : "mt-4"}`}
           style={{ fontFamily: "'Trebuchet MS', system-ui, sans-serif" }}
         >
           {title}{" "}
@@ -79,7 +83,7 @@ const PublicPageHero = ({
         {description && (
           <motion.p
             variants={itemVariants}
-            className="mt-4 max-w-2xl text-xs leading-6 text-slate-300/95 sm:text-sm"
+            className={`${compact ? "mt-2" : "mt-4"} max-w-2xl text-xs leading-6 text-slate-300/95 sm:text-sm`}
           >
             {description}
           </motion.p>
