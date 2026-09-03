@@ -68,12 +68,12 @@ export const register = async (data) => {
 
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-      <h2>Sipalaya Info Tech Pvt. Ltd.</h2>
+      <h2>Gyantech Pvt. Ltd.</h2>
 
       <p>Hello <strong>${user.fullName}</strong>,</p>
 
       <p>
-        Thank you for registering with Sipalaya Info Tech Pvt. Ltd.
+        Thank you for registering with Gyantech Pvt. Ltd.
       </p>
 
       <p>Your email verification OTP is:</p>
@@ -85,15 +85,15 @@ export const register = async (data) => {
       <p>This OTP will expire in 10 minutes.</p>
 
       <p>
-        Sipalaya Info Tech Pvt. Ltd.<br>
+        Gyantech Pvt. Ltd.<br>
         Narephat 32, Koteshwor, Kathmandu<br>
         Ph: 9851344071 | 9806393939<br>
-        Email: infotech@sipalaya.com
+        Email: infotech@gmail.com
       </p>
     </div>
   `;
 
-  await sendEmail(user.email, "Verify Your Email - Sipalaya Info Tech", html);
+  await sendEmail(user.email, "Verify Your Email - Gyantech", html);
 
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
@@ -187,7 +187,7 @@ export const resendVerificationOtp = async (email) => {
 
   const html = `
     <div style="font-family:Arial,sans-serif;">
-      <h2>Sipalaya Info Tech Pvt. Ltd.</h2>
+      <h2>Gyantech Pvt. Ltd.</h2>
       <p>Hello ${user.fullName},</p>
       <p>Your new email verification OTP is:</p>
       <h1 style="letter-spacing:8px;">${otp}</h1>
@@ -405,7 +405,7 @@ export const forgotPassword = async (email) => {
 
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-      <h2>Sipalaya Info Tech Pvt. Ltd.</h2>
+      <h2>Gyantech Pvt. Ltd.</h2>
 
       <p>Hello <strong>${user.fullName}</strong>,</p>
 
@@ -428,7 +428,7 @@ export const forgotPassword = async (email) => {
     </div>
   `;
 
-  await sendEmail(user.email, "Password Reset OTP - Sipalaya Info Tech", html);
+  await sendEmail(user.email, "Password Reset OTP - Gyantech", html);
 
   return {
     success: true,
