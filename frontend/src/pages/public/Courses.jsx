@@ -442,8 +442,9 @@ const Courses = () => {
                       }`}
                     >
                       {/* Course Image */}
-                      <div
-                        className={`relative overflow-hidden bg-slate-100 ${
+                      <Link
+                        to={`/course/${course._id}`}
+                        className={`relative overflow-hidden bg-slate-100 block cursor-pointer ${
                           viewMode === "list"
                             ? "w-full sm:w-48 h-36 rounded-xl shrink-0"
                             : "h-44 w-full"
@@ -460,7 +461,7 @@ const Courses = () => {
                             <BookOpen size={40} />
                           </div>
                         )}
-                      </div>
+                      </Link>
 
                       {/* Course Info Details */}
                       <div

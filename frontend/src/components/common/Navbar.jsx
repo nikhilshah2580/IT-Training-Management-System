@@ -87,9 +87,24 @@ const Navbar = () => {
       className="sticky top-0 z-50 border-b border-gray-100 bg-[#f5f5f5]/90 backdrop-blur-md"
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+        {/* Mobile Toggle Button (LEFT) - Only visible on mobile */}
+        <button
+          type="button"
+          className="rounded-lg p-2 text-gray-700 transition hover:bg-gray-200/60 md:hidden"
+          onClick={() => {
+            setMobileMenuOpen((prev) => !prev);
+            if (mobileSearchOpen) setMobileSearchOpen(false);
+          }}
+          aria-expanded={mobileMenuOpen}
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Logo - Centered on Mobile, Left on Desktop */}
         <Link
           to="/"
-          className="inline-flex shrink-0 text-3xl tracking-normal transition-colors duration-200"
+          className="absolute left-1/2 -translate-x-1/2 inline-flex shrink-0 text-2xl sm:text-3xl tracking-normal transition-colors duration-200 md:static md:translate-x-0"
           style={{ fontFamily: "'Pacifico', cursive" }}
         >
           <span className="text-black">G</span>
@@ -173,7 +188,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Action Buttons */}
+        {/* Mobile Action Buttons (RIGHT) */}
         <div className="flex items-center gap-1 md:hidden">
           <ThemeToggle />
           <button
@@ -198,19 +213,6 @@ const Navbar = () => {
               {renderUserAvatar()}
             </Link>
           )}
-
-          <button
-            type="button"
-            className="rounded-lg p-2 text-gray-700 transition hover:bg-gray-200/60"
-            onClick={() => {
-              setMobileMenuOpen((prev) => !prev);
-              if (mobileSearchOpen) setMobileSearchOpen(false);
-            }}
-            aria-expanded={mobileMenuOpen}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </nav>
 
@@ -237,7 +239,30 @@ const Navbar = () => {
         </form>
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Expandable Search Bar */}
+      <div
+        className={`overflow-hidden bg-white px-4 transition-all duration-300 ease-in-out md:hidden ${
+          mobileSearchOpen
+            ? "max-h-20 border-b border-gray-100 py-3 opacity-100"
+            : "pointer-events-none max-h-0 py-0 opacity-0"
+        }`}
+      >
+        <form onSubmit={handleSearchSubmit} className="relative">
+          <Search
+            size={18}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            type="text"
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-base text-gray-800 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white sm:text-xs"
+          />
+        </form>
+      </div>
+
+      {/* Mobile Dropdown Menu - Opens below navbar */}
       <div
         className={`absolute left-0 top-full w-full overflow-hidden bg-white shadow-xl transition-all duration-300 ease-in-out md:hidden ${
           mobileMenuOpen
@@ -249,42 +274,49 @@ const Navbar = () => {
           <NavLink
             to="/"
             className={navLinkClass + " rounded-lg px-3 py-2 hover:bg-gray-50"}
+            onClick={() => setMobileMenuOpen(false)}
           >
             Home
           </NavLink>
           <NavLink
             to="/courses"
             className={navLinkClass + " rounded-lg px-3 py-2 hover:bg-gray-50"}
+            onClick={() => setMobileMenuOpen(false)}
           >
             Courses
           </NavLink>
           <NavLink
             to="/about"
             className={navLinkClass + " rounded-lg px-3 py-2 hover:bg-gray-50"}
+            onClick={() => setMobileMenuOpen(false)}
           >
             About Us
           </NavLink>
           <NavLink
             to="/demo-classes"
             className={navLinkClass + " rounded-lg px-3 py-2 hover:bg-gray-50"}
+            onClick={() => setMobileMenuOpen(false)}
           >
             Demo Classes
           </NavLink>
           <NavLink
             to="/blogs"
             className={navLinkClass + " rounded-lg px-3 py-2 hover:bg-gray-50"}
+            onClick={() => setMobileMenuOpen(false)}
           >
             Blogs
           </NavLink>
           <NavLink
             to="/jobs"
             className={navLinkClass + " rounded-lg px-3 py-2 hover:bg-gray-50"}
+            onClick={() => setMobileMenuOpen(false)}
           >
             Jobs
           </NavLink>
           <NavLink
             to="/contact"
             className={navLinkClass + " rounded-lg px-3 py-2 hover:bg-gray-50"}
+            onClick={() => setMobileMenuOpen(false)}
           >
             Contact
           </NavLink>
@@ -295,12 +327,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   className="rounded-lg border border-gray-200 px-4 py-2.5 text-center font-medium text-gray-700 transition hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
                   className="rounded-lg bg-blue-600 px-4 py-2.5 text-center font-semibold text-white transition hover:bg-blue-700"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   Signup
                 </Link>
@@ -310,6 +344,7 @@ const Navbar = () => {
                 <Link
                   to="/profile"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-gray-700 transition hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   {renderUserAvatar()}
                   <span className="min-w-0 truncate font-semibold">
@@ -326,3 +361,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

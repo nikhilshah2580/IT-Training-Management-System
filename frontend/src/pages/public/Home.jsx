@@ -232,6 +232,10 @@ const Home = () => {
     useState("Courses & Learning");
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
+  // Mobile Touch Hover States
+  const [hoveredCoreService, setHoveredCoreService] = useState(null);
+  const [hoveredWhyChoose, setHoveredWhyChoose] = useState(null);
+
   // Contact Form State
   const [form, setForm] = useState(initialForm);
 
@@ -352,24 +356,29 @@ const Home = () => {
                     className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-blue-200 transition-all duration-300 group text-left"
                   >
                     <div>
-                      <div className="w-full h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                        {course.courseImage ? (
-                          <img
-                            src={course.courseImage}
-                            alt={course.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="text-center p-4">
-                            <span className="text-white font-bold text-base block">
-                              {course.title}
-                            </span>
-                          </div>
-                        )}
-                        <span className="absolute top-3 left-3 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-gray-800 shadow-sm">
-                          {course.category || "IT Training"}
-                        </span>
-                      </div>
+                      <Link
+                        to={`/course/${course._id}`}
+                        className="block cursor-pointer"
+                      >
+                        <div className="w-full h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                          {course.courseImage ? (
+                            <img
+                              src={course.courseImage}
+                              alt={course.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="text-center p-4">
+                              <span className="text-white font-bold text-base block">
+                                {course.title}
+                              </span>
+                            </div>
+                          )}
+                          <span className="absolute top-3 left-3 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-gray-800 shadow-sm">
+                            {course.category || "IT Training"}
+                          </span>
+                        </div>
+                      </Link>
 
                       <div className="p-6">
                         <div className="flex items-center justify-between text-xs font-semibold text-gray-500 mb-2">
@@ -444,8 +453,22 @@ const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Card 1: IT Training (Blue Theme) */}
-            <div className="group rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-400 hover:-translate-y-2 transition-all duration-300 text-center flex flex-col items-center">
-              <div className="inline-flex p-3 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+            <div
+              className={`group rounded-2xl border bg-white p-8 shadow-sm text-center flex flex-col items-center transition-all duration-300 cursor-pointer ${
+                hoveredCoreService === 0
+                  ? "shadow-2xl shadow-blue-500/10 border-blue-400 -translate-y-2"
+                  : "border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-400 hover:-translate-y-2"
+              }`}
+              onTouchStart={() => setHoveredCoreService(0)}
+              onTouchEnd={() => setHoveredCoreService(null)}
+              onMouseEnter={() => setHoveredCoreService(0)}
+              onMouseLeave={() => setHoveredCoreService(null)}
+            >
+              <div className={`inline-flex p-3 rounded-xl border mb-6 transition-colors duration-300 ${
+                hoveredCoreService === 0
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-blue-50 text-blue-600 border-blue-100 group-hover:bg-blue-600 group-hover:text-white"
+              }`}>
                 <BookOpen size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -458,8 +481,22 @@ const Home = () => {
             </div>
 
             {/* Card 2: Certification Prep (Indigo Theme) */}
-            <div className="group rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-400 hover:-translate-y-2 transition-all duration-300 text-center flex flex-col items-center">
-              <div className="inline-flex p-3 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+            <div
+              className={`group rounded-2xl border bg-white p-8 shadow-sm text-center flex flex-col items-center transition-all duration-300 cursor-pointer ${
+                hoveredCoreService === 1
+                  ? "shadow-2xl shadow-indigo-500/10 border-indigo-400 -translate-y-2"
+                  : "border-gray-100 hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-400 hover:-translate-y-2"
+              }`}
+              onTouchStart={() => setHoveredCoreService(1)}
+              onTouchEnd={() => setHoveredCoreService(null)}
+              onMouseEnter={() => setHoveredCoreService(1)}
+              onMouseLeave={() => setHoveredCoreService(null)}
+            >
+              <div className={`inline-flex p-3 rounded-xl border mb-6 transition-colors duration-300 ${
+                hoveredCoreService === 1
+                  ? "bg-indigo-600 text-white border-indigo-600"
+                  : "bg-indigo-50 text-indigo-600 border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white"
+              }`}>
                 <Award size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -472,8 +509,22 @@ const Home = () => {
             </div>
 
             {/* Card 3: Corporate Workshops (Emerald Theme) */}
-            <div className="group rounded-2xl border border-gray-100 bg-white p-8 shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-400 hover:-translate-y-2 transition-all duration-300 text-center flex flex-col items-center">
-              <div className="inline-flex p-3 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+            <div
+              className={`group rounded-2xl border bg-white p-8 shadow-sm text-center flex flex-col items-center transition-all duration-300 cursor-pointer ${
+                hoveredCoreService === 2
+                  ? "shadow-2xl shadow-emerald-500/10 border-emerald-400 -translate-y-2"
+                  : "border-gray-100 hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-400 hover:-translate-y-2"
+              }`}
+              onTouchStart={() => setHoveredCoreService(2)}
+              onTouchEnd={() => setHoveredCoreService(null)}
+              onMouseEnter={() => setHoveredCoreService(2)}
+              onMouseLeave={() => setHoveredCoreService(null)}
+            >
+              <div className={`inline-flex p-3 rounded-xl border mb-6 transition-colors duration-300 ${
+                hoveredCoreService === 2
+                  ? "bg-emerald-600 text-white border-emerald-600"
+                  : "bg-emerald-50 text-emerald-600 border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white"
+              }`}>
                 <Building2 size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -511,11 +562,23 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: idx * 0.05 }}
-                className={`group relative rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between text-left ${item.accent}`}
+                onTouchStart={() => setHoveredWhyChoose(idx)}
+                onTouchEnd={() => setHoveredWhyChoose(null)}
+                onMouseEnter={() => setHoveredWhyChoose(idx)}
+                onMouseLeave={() => setHoveredWhyChoose(null)}
+                className={`group relative rounded-3xl border bg-white p-7 shadow-xs transition-all duration-300 flex flex-col justify-between text-left cursor-pointer ${
+                  hoveredWhyChoose === idx
+                    ? `${item.accent} -translate-y-1 shadow-2xl`
+                    : `border-slate-200/80 hover:-translate-y-1 hover:shadow-2xl ${item.accent}`
+                }`}
               >
                 <div>
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all duration-300 mb-5 ${item.iconBg} ${item.iconColor}`}
+                    className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all duration-300 mb-5 ${
+                      hoveredWhyChoose === idx
+                        ? item.iconBg.replace("group-hover:", "")
+                        : item.iconBg
+                    }`}
                   >
                     <IconComponent size={22} />
                   </div>
