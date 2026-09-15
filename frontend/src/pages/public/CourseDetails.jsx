@@ -10,7 +10,6 @@ import {
   GraduationCap,
   Loader2,
   User,
-  CreditCard,
   Users,
   FileText,
   ExternalLink,
@@ -25,6 +24,8 @@ import {
   Lock,
   ArrowRight,
   ShieldCheck,
+  MessageSquare,
+  ListOrdered,
 } from "lucide-react";
 
 import { getCourseById } from "../../api/course.services";
@@ -62,7 +63,8 @@ const CourseDetails = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [syllabusOpen, setSyllabusOpen] = useState(true);
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState("esewa"); // Default selection
+  const [selectedMethod, setSelectedMethod] = useState("esewa");
+  const [activeTab, setActiveTab] = useState("content");
 
   // AUTH USER
   const user = useSelector((state) => state.auth.user);
@@ -255,216 +257,288 @@ const CourseDetails = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* LEFT MAIN CONTENT */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* HERO BANNER IMAGE */}
-            <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs">
-              <div className="relative h-64 sm:h-80 w-full bg-slate-100">
-                {course.courseImage ? (
-                  <img
-                    src={course.courseImage}
-                    alt={course.title}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-indigo-50">
-                    <GraduationCap size={64} className="text-indigo-400" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* OVERVIEW & DESCRIPTION */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
-              <div>
-                <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-1">
-                  Overview
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                  {course.title}
-                </h1>
-              </div>
-
-              <div>
-                <h2 className="text-sm font-bold text-slate-900 mb-2">
-                  Course Description
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal whitespace-pre-line">
-                  {course.description || "No course description available."}
-                </p>
-              </div>
-
-              {/* WHAT YOU'LL LEARN / PREREQUISITES */}
-              {course.prerequisites && (
-                <div className="border-t border-slate-100 pt-5">
-                  <h2 className="text-sm font-bold text-slate-900 mb-3">
-                    Requirements & Prerequisites
-                  </h2>
-                  <ul className="space-y-2 text-xs sm:text-sm text-slate-600">
-                    {course.prerequisites.split("\n").map((req, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-indigo-600 mt-1">•</span>
-                        <span>{req}</span>
-                      </li>
-                    ))}
-                  </ul>
+          <div className="lg:col-span-2 space-y-6">
+            {/* HERO & OVERVIEW SIDE-BY-SIDE CARD */}
+            <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs p-5 sm:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                {/* SMALLER IMAGE SIDE */}
+                <div className="md:col-span-5 relative w-full aspect-video sm:aspect-4/3 rounded-xl overflow-hidden bg-slate-100 border border-slate-200/60 shrink-0">
+                  {course.courseImage ? (
+                    <img
+                      src={course.courseImage}
+                      alt={course.title}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-indigo-50">
+                      <GraduationCap size={48} className="text-indigo-400" />
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* OVERVIEW CONTENT SIDE */}
+                <div className="md:col-span-7 space-y-4">
+                  <div>
+                    <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">
+                      Overview
+                    </span>
+                    <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                      {course.title}
+                    </h1>
+                  </div>
+
+                  <div>
+                    <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">
+                      Description
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal whitespace-pre-line line-clamp-6">
+                      {course.description || "No course description available."}
+                    </p>
+                  </div>
+
+                  {course.prerequisites && (
+                    <div className="border-t border-slate-100 pt-3">
+                      <h2 className="text-xs font-bold text-slate-900 mb-1.5">
+                        Prerequisites
+                      </h2>
+                      <ul className="space-y-1 text-xs text-slate-600">
+                        {course.prerequisites.split("\n").map((req, idx) => (
+                          <li key={idx} className="flex items-start gap-1.5">
+                            <span className="text-indigo-600 font-bold">•</span>
+                            <span>{req}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* COURSE CONTENT / SYLLABUS */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-bold text-slate-900">
-                  Course Content
-                </h2>
-                <span className="text-xs text-rose-500 font-semibold">
-                  {course.duration || "Self-Paced"}
-                </span>
-              </div>
-
-              <div className="rounded-xl border border-slate-200 overflow-hidden">
+            {/* TABBED NAVIGATION & DETAILED SECTIONS */}
+            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-2xs overflow-hidden">
+              {/* Tab Navigation Header */}
+              <div className="flex border-b border-slate-200 bg-slate-50/50 overflow-x-auto scrollbar-none">
                 <button
                   type="button"
-                  onClick={() => setSyllabusOpen(!syllabusOpen)}
-                  className="w-full flex items-center justify-between bg-slate-50 px-4 py-3 text-left border-b border-slate-200"
+                  onClick={() => setActiveTab("content")}
+                  className={`flex items-center gap-2 border-b-2 px-5 py-3.5 text-xs font-bold transition whitespace-nowrap ${
+                    activeTab === "content"
+                      ? "border-indigo-600 text-indigo-600 bg-white"
+                      : "border-transparent text-slate-500 hover:text-slate-800"
+                  }`}
                 >
-                  <span className="text-xs font-bold text-slate-800">
-                    Course Modules & Syllabus
-                  </span>
-                  {syllabusOpen ? (
-                    <ChevronUp size={16} className="text-slate-500" />
-                  ) : (
-                    <ChevronDown size={16} className="text-slate-500" />
-                  )}
+                  <ListOrdered size={16} />
+                  Course Content
                 </button>
 
-                {syllabusOpen && (
-                  <div className="p-4 bg-white text-xs text-slate-700 leading-relaxed whitespace-pre-line border-t border-slate-100">
-                    {course.syllabus || "No syllabus detailed for this course."}
-                  </div>
+                {course.resources && course.resources.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("resources")}
+                    className={`flex items-center gap-2 border-b-2 px-5 py-3.5 text-xs font-bold transition whitespace-nowrap ${
+                      activeTab === "resources"
+                        ? "border-indigo-600 text-indigo-600 bg-white"
+                        : "border-transparent text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    <FileText size={16} />
+                    Resources
+                  </button>
                 )}
-              </div>
-            </div>
 
-            {/* COURSE RESOURCES */}
-            {course.resources && course.resources.length > 0 && (
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs">
-                <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <FileText size={18} className="text-indigo-600" />
-                  Downloadable Resources
-                </h2>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {course.resources.map((res, index) => (
-                    <a
-                      key={res._id || index}
-                      href={res.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-indigo-500 transition group"
-                    >
-                      <div>
-                        <p className="text-xs font-bold text-slate-800 group-hover:text-indigo-600">
-                          {res.title || "Untitled Resource"}
-                        </p>
-                        <span className="text-[10px] font-semibold text-slate-400 uppercase">
-                          {res.type || "Resource"}
+                {course.instructor && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("instructor")}
+                    className={`flex items-center gap-2 border-b-2 px-5 py-3.5 text-xs font-bold transition whitespace-nowrap ${
+                      activeTab === "instructor"
+                        ? "border-indigo-600 text-indigo-600 bg-white"
+                        : "border-transparent text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    <User size={16} />
+                    Instructor
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("reviews")}
+                  className={`flex items-center gap-2 border-b-2 px-5 py-3.5 text-xs font-bold transition whitespace-nowrap ${
+                    activeTab === "reviews"
+                      ? "border-indigo-600 text-indigo-600 bg-white"
+                      : "border-transparent text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <MessageSquare size={16} />
+                  Reviews
+                </button>
+              </div>
+
+              {/* Tab Contents */}
+              <div className="p-6 sm:p-8">
+                {/* COURSE CONTENT / SYLLABUS TAB */}
+                {activeTab === "content" && (
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-base font-bold text-slate-900">
+                        Course Content
+                      </h2>
+                      <span className="text-xs text-rose-500 font-semibold">
+                        {course.duration || "Self-Paced"}
+                      </span>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => setSyllabusOpen(!syllabusOpen)}
+                        className="w-full flex items-center justify-between bg-slate-50 px-4 py-3 text-left border-b border-slate-200"
+                      >
+                        <span className="text-xs font-bold text-slate-800">
+                          Course Modules & Syllabus
                         </span>
-                      </div>
-                      <ExternalLink
-                        size={14}
-                        className="text-slate-400 group-hover:text-indigo-600"
-                      />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
+                        {syllabusOpen ? (
+                          <ChevronUp size={16} className="text-slate-500" />
+                        ) : (
+                          <ChevronDown size={16} className="text-slate-500" />
+                        )}
+                      </button>
 
-            {/* ABOUT THE INSTRUCTOR */}
-            {course.instructor && (
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs">
-                <h2 className="text-base font-bold text-slate-900 mb-4">
-                  About the Instructor
-                </h2>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    {instructorPhoto ? (
-                      <img
-                        src={instructorPhoto}
-                        alt={instructorName}
-                        className="h-14 w-14 shrink-0 rounded-full object-cover border border-slate-200 shadow-xs"
-                      />
-                    ) : (
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 font-bold border border-slate-200">
-                        {instructorInitials || <User size={20} />}
-                      </div>
-                    )}
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-900">
-                        {instructorName}
-                      </h3>
-                      <p className="text-xs text-indigo-600 font-medium">
-                        Course Mentor
-                      </p>
-                      {instructorObj?.email && (
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          {instructorObj.email}
-                        </p>
+                      {syllabusOpen && (
+                        <div className="p-4 bg-white text-xs text-slate-700 leading-relaxed whitespace-pre-line border-t border-slate-100">
+                          {course.syllabus ||
+                            "No syllabus detailed for this course."}
+                        </div>
                       )}
                     </div>
                   </div>
+                )}
 
-                  {instructorId && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate(`/instructor/profile/${instructorId}`)
-                      }
-                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-indigo-600 transition"
-                    >
-                      View Profile
-                      <ExternalLink size={13} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
+                {/* COURSE RESOURCES TAB */}
+                {activeTab === "resources" && course.resources && (
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                      <FileText size={18} className="text-indigo-600" />
+                      Downloadable Resources
+                    </h2>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {course.resources.map((res, index) => (
+                        <a
+                          key={res._id || index}
+                          href={res.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-indigo-500 transition group"
+                        >
+                          <div>
+                            <p className="text-xs font-bold text-slate-800 group-hover:text-indigo-600">
+                              {res.title || "Untitled Resource"}
+                            </p>
+                            <span className="text-[10px] font-semibold text-slate-400 uppercase">
+                              {res.type || "Resource"}
+                            </span>
+                          </div>
+                          <ExternalLink
+                            size={14}
+                            className="text-slate-400 group-hover:text-indigo-600"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* STUDENT REVIEWS SECTION */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-base font-bold text-slate-900">
-                    Student Feedback
-                  </h2>
-                  <p className="text-xs text-slate-500">
-                    Reviews from verified course students
-                  </p>
-                </div>
-                {user?.role === "student" && (
-                  <button
-                    type="button"
-                    onClick={handleWriteReview}
-                    className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition"
-                  >
-                    Write Review
-                  </button>
+                {/* ABOUT THE INSTRUCTOR TAB */}
+                {activeTab === "instructor" && course.instructor && (
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900 mb-4">
+                      About the Instructor
+                    </h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        {instructorPhoto ? (
+                          <img
+                            src={instructorPhoto}
+                            alt={instructorName}
+                            className="h-14 w-14 shrink-0 rounded-full object-cover border border-slate-200 shadow-xs"
+                          />
+                        ) : (
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 font-bold border border-slate-200">
+                            {instructorInitials || <User size={20} />}
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">
+                            {instructorName}
+                          </h3>
+                          <p className="text-xs text-indigo-600 font-medium">
+                            Course Mentor
+                          </p>
+                          {instructorObj?.email && (
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              {instructorObj.email}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {instructorId && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigate(`/instructor/profile/${instructorId}`)
+                          }
+                          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-indigo-600 transition"
+                        >
+                          View Profile
+                          <ExternalLink size={13} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* REVIEWS TAB */}
+                {activeTab === "reviews" && (
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h2 className="text-base font-bold text-slate-900">
+                          Student Feedback
+                        </h2>
+                        <p className="text-xs text-slate-500">
+                          Reviews from verified course students
+                        </p>
+                      </div>
+                      {user?.role === "student" && (
+                        <button
+                          type="button"
+                          onClick={handleWriteReview}
+                          className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition"
+                        >
+                          Write Review
+                        </button>
+                      )}
+                    </div>
+
+                    {showReviewForm && (
+                      <div className="mb-6 rounded-xl bg-slate-50 p-4 border border-slate-200">
+                        <ReviewForm
+                          fixedCourseId={course._id}
+                          fixedCourseTitle={course.title}
+                          embedded
+                          onCancel={() => setShowReviewForm(false)}
+                          onSuccess={() => setShowReviewForm(false)}
+                        />
+                      </div>
+                    )}
+
+                    <ReviewList reviews={reviews} isLoading={reviewsLoading} />
+                  </div>
                 )}
               </div>
-
-              {showReviewForm && (
-                <div className="mb-6 rounded-xl bg-slate-50 p-4 border border-slate-200">
-                  <ReviewForm
-                    fixedCourseId={course._id}
-                    fixedCourseTitle={course.title}
-                    embedded
-                    onCancel={() => setShowReviewForm(false)}
-                    onSuccess={() => setShowReviewForm(false)}
-                  />
-                </div>
-              )}
-
-              <ReviewList reviews={reviews} isLoading={reviewsLoading} />
             </div>
           </div>
 
@@ -671,8 +745,12 @@ const CourseDetails = () => {
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white font-black text-sm shadow-sm">
-                      eSewa
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 p-1.5 shadow-xs overflow-hidden">
+                      <img
+                        src="/esewa.png"
+                        alt="eSewa Logo"
+                        className="h-full w-full object-contain"
+                      />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -680,7 +758,6 @@ const CourseDetails = () => {
                           eSewa Mobile Wallet
                         </span>
                         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                          Popular
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
@@ -707,8 +784,12 @@ const CourseDetails = () => {
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#5C2D91] text-white font-black text-sm shadow-sm">
-                      Khalti
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl p-1.5 shadow-xs overflow-hidden">
+                      <img
+                        src="/khalti.png"
+                        alt="Khalti Logo"
+                        className="h-full w-full object-contain"
+                      />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -753,12 +834,6 @@ const CourseDetails = () => {
                   </>
                 )}
               </button>
-
-              {/* Footer / Trust Badge */}
-              <div className="flex items-center justify-center gap-1.5 pt-1 text-[11px] font-medium text-slate-400">
-                <ShieldCheck size={14} className="text-emerald-600" />
-                <span>256-Bit Encrypted & Secure Checkout</span>
-              </div>
             </div>
           </div>
         </div>
