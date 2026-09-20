@@ -62,15 +62,25 @@ const Login = () => {
       <div className="w-full max-w-md">
         {/* CARD */}
         <div className="rounded-3xl bg-white border border-slate-100 p-8 sm:p-10 shadow-xl shadow-slate-200/50">
-          {/* Header */}
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              Welcome back
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Please enter your details to sign in
-            </p>
+          {/* Brand Logo Header */}
+          <div className="text-center mb-6">
+            <Link
+              to=""
+              className="inline-flex shrink-0 text-3xl sm:text-4xl tracking-normal transition-transform duration-200"
+              style={{ fontFamily: "'Pacifico', cursive" }}
+            >
+              <span className="text-black">G</span>
+              <span className="text-black">y</span>
+              <span className="text-black">a</span>
+              <span className="text-black">n</span>
+              <span className="text-green-600">T</span>
+              <span className="text-green-600">e</span>
+              <span className="text-green-600">c</span>
+              <span className="text-green-600">h</span>
+            </Link>
           </div>
+
+        
 
           {/* FORM */}
           <form
@@ -100,7 +110,7 @@ const Login = () => {
                   className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-4 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
                     errors.email
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
-                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                      : "border-slate-200 focus:border-emerald-600 focus:ring-emerald-600/10"
                   } disabled:bg-slate-100`}
                 />
               </div>
@@ -133,7 +143,7 @@ const Login = () => {
                   className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-12 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
                     errors.password
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
-                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                      : "border-slate-200 focus:border-emerald-600 focus:ring-emerald-600/10"
                   } disabled:bg-slate-100`}
                 />
 
@@ -158,7 +168,7 @@ const Login = () => {
               <div className="flex justify-end mt-2">
                 <Link
                   to="/forgot-password"
-                  className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                  className="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -169,7 +179,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 w-full flex items-center justify-center rounded-2xl bg-blue-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-blue-500/25 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+              className="mt-2 w-full flex items-center justify-center rounded-2xl bg-emerald-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
             >
               {isSubmitting ? (
                 <>
@@ -188,7 +198,7 @@ const Login = () => {
               Don't have an account?{" "}
               <Link
                 to="/signup"
-                className="font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                className="font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
               >
                 Sign up
               </Link>

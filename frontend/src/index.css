@@ -36,7 +36,6 @@ body {
 	background-color: #1e293b !important;
 }
 
-:root[data-theme="dark"] [class~="bg-white/50"],
 :root[data-theme="dark"] [class~="bg-white/60"],
 :root[data-theme="dark"] [class~="bg-white/80"],
 :root[data-theme="dark"] [class*="bg-gray-50"],

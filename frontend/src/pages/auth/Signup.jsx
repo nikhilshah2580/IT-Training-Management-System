@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, Loader2 } from "lucide-react";
 
 import { signupSchema } from "../../schemas/auth.schema";
 import { signupUser } from "../../api/auth.services";
@@ -59,15 +59,25 @@ const Signup = () => {
       <div className="w-full max-w-md">
         {/* CARD */}
         <div className="rounded-3xl bg-white border border-slate-100 p-8 sm:p-10 shadow-xl shadow-slate-200/50">
-          {/* Header */}
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              Create Account
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Join our IT Training Management System
-            </p>
+          {/* Brand Logo Header */}
+          <div className="text-center mb-6">
+            <Link
+              to=""
+              className="inline-flex shrink-0 text-3xl sm:text-4xl tracking-normal transition-transform duration-200"
+              style={{ fontFamily: "'Pacifico', cursive" }}
+            >
+              <span className="text-black">G</span>
+              <span className="text-black">y</span>
+              <span className="text-black">a</span>
+              <span className="text-black">n</span>
+              <span className="text-green-600">T</span>
+              <span className="text-green-600">e</span>
+              <span className="text-green-600">c</span>
+              <span className="text-green-600">h</span>
+            </Link>
           </div>
+
+          
 
           {/* FORM */}
           <form
@@ -97,7 +107,7 @@ const Signup = () => {
                   className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-4 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
                     errors.fullName
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
-                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                      : "border-slate-200 focus:border-emerald-600 focus:ring-emerald-600/10"
                   } disabled:bg-slate-100`}
                 />
               </div>
@@ -130,7 +140,7 @@ const Signup = () => {
                   className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-4 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
                     errors.email
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
-                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                      : "border-slate-200 focus:border-emerald-600 focus:ring-emerald-600/10"
                   } disabled:bg-slate-100`}
                 />
               </div>
@@ -164,7 +174,7 @@ const Signup = () => {
                   className={`w-full rounded-2xl border bg-slate-50/50 py-3.5 pl-11 pr-12 text-base sm:text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-4 ${
                     errors.password
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
-                      : "border-slate-200 focus:border-blue-600 focus:ring-blue-600/10"
+                      : "border-slate-200 focus:border-emerald-600 focus:ring-emerald-600/10"
                   } disabled:bg-slate-100`}
                 />
 
@@ -185,29 +195,36 @@ const Signup = () => {
                 </p>
               ) : (
                 <p className="mt-2 text-xs text-slate-500 font-medium">
-                  Password must contain at least 6 characters.
+                 
                 </p>
               )}
             </div>
 
-            {/* Submit */}
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 w-full rounded-2xl bg-blue-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2 w-full flex items-center justify-center rounded-2xl bg-emerald-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
             >
-              {isSubmitting ? "Creating Account..." : "Create Account"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={18} className="animate-spin mr-2" />
+                  Creating Account...
+                </>
+              ) : (
+                "Create Account"
+              )}
             </button>
           </form>
 
           {/* Login Link */}
-          <div className="mt-8 text-center text-sm text-slate-600">
+          <div className="mt-8 text-center pt-6 border-t border-slate-100 text-sm text-slate-600">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-bold text-blue-600 hover:text-blue-700"
+              className="font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
             >
-              Login
+              Sign in
             </Link>
           </div>
         </div>
