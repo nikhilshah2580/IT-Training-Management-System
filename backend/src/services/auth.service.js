@@ -48,10 +48,6 @@ export const register = async (data) => {
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  const verificationOtp = crypto.randomInt(100000, 1000000).toString();
-
-  const verificationOtpExpire = new Date(Date.now() + 10 * 60 * 1000);
-
   const user = await User.create({
     fullName,
     email: normalizedEmail,
@@ -61,39 +57,8 @@ export const register = async (data) => {
     photo,
     role: "student",
     authProvider: "local",
-    isVerified: false,
-    verificationOtp,
-    verificationOtpExpire,
+    isVerified: true,
   });
-
-  const html = `
-    <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-      <h2>Gyantech Pvt. Ltd.</h2>
-
-      <p>Hello <strong>${user.fullName}</strong>,</p>
-
-      <p>
-        Thank you for registering with Gyantech Pvt. Ltd.
-      </p>
-
-      <p>Your email verification OTP is:</p>
-
-      <h1 style="letter-spacing:8px;">
-        ${verificationOtp}
-      </h1>
-
-      <p>This OTP will expire in 10 minutes.</p>
-
-      <p>
-        Gyantech Pvt. Ltd.<br>
-        Narephat 32, Koteshwor, Kathmandu<br>
-        Ph: 9851344071 | 9806393939<br>
-        Email: infotech@gmail.com
-      </p>
-    </div>
-  `;
-
-  await sendEmail(user.email, "Verify Your Email - Gyantech", html);
 
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
@@ -105,101 +70,6 @@ export const register = async (data) => {
     accessToken,
     refreshToken,
     user: await getSafeUser(user._id),
-  };
-};
-
-// VERIFY EMAIL
-export const verifyEmail = async (email, otp) => {
-  const normalizedEmail = email?.toLowerCase().trim();
-
-  const user = await User.findOne({
-    email: normalizedEmail,
-  }).select("+verificationOtp +verificationOtpExpire");
-
-  if (!user) {
-    const error = new Error("User not found");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  if (user.isVerified) {
-    const error = new Error("Email is already verified");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (!user.verificationOtp) {
-    const error = new Error("Verification OTP not found");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (user.verificationOtp !== otp) {
-    const error = new Error("Invalid verification OTP");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (!user.verificationOtpExpire || user.verificationOtpExpire < new Date()) {
-    const error = new Error("Verification OTP expired");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  user.isVerified = true;
-  user.verificationOtp = "";
-  user.verificationOtpExpire = null;
-
-  await user.save();
-
-  return {
-    success: true,
-    message: "Email verified successfully",
-  };
-};
-
-// RESEND VERIFICATION OTP
-export const resendVerificationOtp = async (email) => {
-  const normalizedEmail = email?.toLowerCase().trim();
-
-  const user = await User.findOne({
-    email: normalizedEmail,
-  }).select("+verificationOtp +verificationOtpExpire");
-
-  if (!user) {
-    const error = new Error("User not found");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  if (user.isVerified) {
-    const error = new Error("Email is already verified");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  const otp = crypto.randomInt(100000, 1000000).toString();
-
-  user.verificationOtp = otp;
-  user.verificationOtpExpire = new Date(Date.now() + 10 * 60 * 1000);
-
-  await user.save();
-
-  const html = `
-    <div style="font-family:Arial,sans-serif;">
-      <h2>Gyantech Pvt. Ltd.</h2>
-      <p>Hello ${user.fullName},</p>
-      <p>Your new email verification OTP is:</p>
-      <h1 style="letter-spacing:8px;">${otp}</h1>
-      <p>This OTP expires in 10 minutes.</p>
-    </div>
-  `;
-
-  await sendEmail(user.email, "Email Verification OTP", html);
-
-  return {
-    success: true,
-    message: "Verification OTP sent successfully",
   };
 };
 
@@ -223,11 +93,6 @@ export const login = async ({ email, password }) => {
     throw error;
   }
 
-  if (!user.isVerified) {
-    const error = new Error("Please verify your email before logging in");
-    error.statusCode = 403;
-    throw error;
-  }
 
   if (!user.password) {
     const error = new Error(

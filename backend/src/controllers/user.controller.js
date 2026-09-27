@@ -14,8 +14,6 @@ import {
   forgotPassword,
   verifyOtp,
   resetPassword,
-  verifyEmail,
-  resendVerificationOtp,
 } from "../services/auth.service.js";
 
 import {
@@ -53,26 +51,9 @@ export const signUpUser = async (req, res) => {
 
   return res.status(201).json({
     success: true,
-    message:
-      "Registration successful. Please verify your email before logging in.",
+    message: "Registration successful",
     user: result.user,
   });
-};
-
-// VERIFY EMAIL
-export const verifyEmailController = async (req, res) => {
-  const { email, otp } = req.body;
-
-  const result = await verifyEmail(email, otp);
-
-  return res.status(200).json(result);
-};
-
-// RESEND EMAIL OTP
-export const resendVerificationOtpController = async (req, res) => {
-  const result = await resendVerificationOtp(req.body.email);
-
-  return res.status(200).json(result);
 };
 
 // LOGIN

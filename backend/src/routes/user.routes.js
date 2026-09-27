@@ -16,8 +16,6 @@ import {
   verifyOtpController,
   resetPasswordController,
   createUserByAdmin,
-  verifyEmailController,
-  resendVerificationOtpController,
 } from "../controllers/user.controller.js";
 
 import { verifyToken } from "../middlewares/auth.middleware.js";
@@ -43,12 +41,6 @@ userRoutes.post("/google-login", authLimiter, googleLogin);
 userRoutes.post("/forgot-password", otpLimiter, forgotPasswordController);
 userRoutes.post("/verify-otp", otpLimiter, verifyOtpController);
 userRoutes.post("/reset-password", otpLimiter, resetPasswordController);
-userRoutes.post("/verify-email", otpLimiter, verifyEmailController);
-userRoutes.post(
-  "/resend-verification-otp",
-  otpLimiter,
-  resendVerificationOtpController,
-);
 
 // AUTHENTICATED USER ROUTES
 
