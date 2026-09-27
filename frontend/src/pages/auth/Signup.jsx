@@ -37,16 +37,13 @@ const Signup = () => {
 
       const response = await signupUser(payload);
 
-      if (!response?.success) {
+      if (!response?.success || !response?.user) {
         throw new Error(response?.message || "Signup failed");
       }
 
       toast.success(response.message || "Account created successfully");
 
-      navigate("/verify-email", {
-        state: { email: payload.email },
-        replace: true,
-      });
+      navigate("/login", { replace: true });
     } catch (error) {
       toast.error(
         error?.response?.data?.message || error?.message || "Signup failed",
